@@ -97,6 +97,21 @@ body {
   margin: 0 auto;
 }
 
+.feed-layout {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .feed-layout {
+    grid-template-columns: 1fr;
+  }
+  .feed-layout > :last-child {
+    display: none;
+  }
+}
+
 button { cursor: pointer; font-family: var(--font); }
 img { display: block; }
 ::-webkit-scrollbar { width: 0; height: 0; }
