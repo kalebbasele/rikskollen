@@ -9,14 +9,14 @@ export interface PartyInfo {
 }
 
 export const PARTIES: PartyInfo[] = [
-  { id: 'S',  color: '#e81010', bloc: 'left' },
-  { id: 'V',  color: '#cc0000', bloc: 'left' },
-  { id: 'MP', color: '#83c440', textColor: '#1a3a00', bloc: 'left' },
-  { id: 'M',  color: '#1d6ab1', bloc: 'right' },
-  { id: 'SD', color: '#cccc00', textColor: '#444400', bloc: 'right' },
-  { id: 'KD', color: '#005080', bloc: 'right' },
-  { id: 'C',  color: '#009a44', bloc: 'right' },
-  { id: 'L',  color: '#0063a5', bloc: 'right' },
+  { id: 'S',  color: '#E8112d', bloc: 'left' },
+  { id: 'V',  color: '#DA291C', bloc: 'left' },
+  { id: 'MP', color: '#83CF39', textColor: '#0e2200', bloc: 'left' },
+  { id: 'M',  color: '#52BDEC', textColor: '#000', bloc: 'right' },
+  { id: 'SD', color: '#dddd00', textColor: '#1a1a00', bloc: 'right' },
+  { id: 'KD', color: '#231977', bloc: 'right' },
+  { id: 'C',  color: '#009933', bloc: 'right' },
+  { id: 'L',  color: '#006AB3', bloc: 'right' },
 ]
 
 export function getParty(id: string): PartyInfo | undefined {

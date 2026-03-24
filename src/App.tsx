@@ -11,16 +11,17 @@ type Tab = 'debatter' | 'omrostningar'
 
 const CATEGORIES = ['Alla', 'Migration', 'Ekonomi', 'Klimat', 'Vård', 'Försvar', 'Utbildning', 'Utrikespolitik']
 
-function getCategoryColor(text: string): string {
+function getCategory(text: string): { label: string; color: string } {
   const t = text.toLowerCase()
-  if (t.match(/äldreom/)) return '#b8916a'
-  if (t.match(/ekonomi|budget|skatt|finans|moms|pension/)) return '#6a9e7f'
-  if (t.match(/vård|sjukvård|hälso|omsorg/)) return '#9a6e9e'
-  if (t.match(/migration|asyl|gräns|utvisning|flykt/)) return '#6a8aae'
-  if (t.match(/trafik|väg|järnväg|infra/)) return '#8a8aae'
-  if (t.match(/försvar|nato|militär|säkerhet/)) return '#8a9a6e'
-  if (t.match(/utbildning|skola|lärare|förskola|högskola/)) return '#7a8aae'
-  return '#888888'
+  if (t.match(/äldreom/)) return { label: 'Äldreomsorg', color: '#b8916a' }
+  if (t.match(/ekonomi|budget|skatt|finans|moms|pension/)) return { label: 'Ekonomi', color: '#6a9e7f' }
+  if (t.match(/vård|sjukvård|hälso|omsorg/)) return { label: 'Vård', color: '#9a6e9e' }
+  if (t.match(/migration|asyl|gräns|utvisning|flykt/)) return { label: 'Migration', color: '#6a8aae' }
+  if (t.match(/trafik|väg|järnväg|bostad|hyres/)) return { label: 'Trafik & Bostad', color: '#8a8aae' }
+  if (t.match(/försvar|nato|militär|säkerhet/)) return { label: 'Försvar', color: '#8a9a6e' }
+  if (t.match(/utbildning|skola|lärare|förskola|högskola/)) return { label: 'Utbildning', color: '#7a8aae' }
+  if (t.match(/klimat|miljö|utsläpp|energi|kärnkraft/)) return { label: 'Klimat', color: '#6a9e8a' }
+  return { label: 'Riksdag', color: 'rgba(255,255,255,0.3)' }
 }
 
 function matchesCategory(debate: Debate, cat: string): boolean {
@@ -38,9 +39,24 @@ function matchesCategory(debate: Debate, cat: string): boolean {
   return (map[cat] ?? []).some(k => text.includes(k))
 }
 
+function PartyBadge({ party, size = 20 }: { party: string; size?: number }) {
+  const p = getParty(party)
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%',
+      background: p?.color ?? '#333',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: Math.round(size * 0.36), fontWeight: 800,
+      color: p?.textColor ?? '#fff',
+      flexShrink: 0,
+    }}>
+      {party.slice(0, 2)}
+    </div>
+  )
+}
+
 export default function App() {
   const [tab, setTab] = useState<Tab>('debatter')
-  const [filters] = useState<ActiveFilters>({ parties: [], regions: [] })
   const [selectedDebateId, setSelectedDebateId] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState('Alla')
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
@@ -89,35 +105,33 @@ export default function App() {
   return (
     <div>
       {/* Navbar */}
-      <div style={{ background: 'var(--top-bg)', borderBottom: theme === 'dark' ? '1px solid rgba(124,92,252,0.4)' : 'none', height: 44 }}>
+      <div style={{ background: '#0b0b18', borderBottom: '0.5px solid rgba(255,255,255,0.07)', height: 44 }}>
         <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 20px' }}>
           <div onClick={handleLogoClick} style={{ fontSize: 18, fontWeight: 500, color: '#fff', letterSpacing: '-0.02em', cursor: 'default', userSelect: 'none' }}>
-            Civi<span style={{ color: 'var(--logo-accent)' }}>ca</span>
+            Civi<span style={{ color: '#9b7dff' }}>ca</span>
           </div>
           <div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center' }}>
             {showDetail ? (
-              <button onClick={() => setSelectedDebateId(null)} style={{ fontSize: 12, fontWeight: 600, color: 'var(--logo-accent)', background: 'none', border: 'none' }}>
-                ← Tillbaka
+              <button onClick={() => setSelectedDebateId(null)} style={{ fontSize: 12, fontWeight: 600, color: '#9b7dff', background: 'none', border: 'none' }}>
+                Tillbaka
               </button>
             ) : (
               <>
                 {(['debatter', 'omrostningar'] as Tab[]).map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
-                    fontSize: 11,
-                    color: tab === t ? '#fff' : 'rgba(255,255,255,0.4)',
-                    padding: '0 12px',
-                    background: 'none', border: 'none',
-                    borderLeft: '0.5px solid rgba(255,255,255,0.08)',
-                    height: 44,
+                    fontSize: 11, color: tab === t ? '#fff' : 'rgba(255,255,255,0.35)',
+                    padding: '0 14px', background: 'none', border: 'none',
+                    borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 44,
+                    fontWeight: tab === t ? 500 : 400,
                   }}>
                     {t === 'debatter' ? 'Debatter' : 'Omröstningar'}
                   </button>
                 ))}
                 <button onClick={toggleTheme} style={{
-                  fontSize: 11, color: 'rgba(255,255,255,0.4)', padding: '0 12px',
-                  borderLeft: '0.5px solid rgba(255,255,255,0.08)', background: 'none', border: 'none', height: 44,
+                  fontSize: 10, color: 'rgba(255,255,255,0.3)', padding: '0 14px',
+                  borderLeft: '0.5px solid rgba(255,255,255,0.07)', background: 'none', border: 'none', height: 44,
                 }}>
-                  {theme === 'dark' ? '☀' : '◐'}
+                  {theme === 'dark' ? 'Ljust' : 'Mörkt'}
                 </button>
               </>
             )}
@@ -127,9 +141,9 @@ export default function App() {
 
       {/* Ticker */}
       {!showDetail && latestDebate && (
-        <div style={{ background: 'var(--ticker-bg)', borderBottom: '0.5px solid var(--ticker-border)' }}>
-          <div className="page-inner" style={{ padding: '6px 20px', fontSize: 10, color: 'rgba(255,255,255,0.45)', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--ticker-label)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Senaste</span>
+        <div style={{ borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
+          <div className="page-inner" style={{ padding: '6px 20px', fontSize: 10, color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 9, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Senaste</span>
             {latestDebate.topic} · {formatDate(latestDebate.date)}
           </div>
         </div>
@@ -137,15 +151,14 @@ export default function App() {
 
       {/* Category tabs */}
       {!showDetail && tab === 'debatter' && (
-        <div style={{ background: 'rgba(255,255,255,0.015)', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
           <div className="page-inner" style={{ padding: '0 20px', display: 'flex', overflowX: 'auto' }}>
             {CATEGORIES.map(cat => (
               <button key={cat} onClick={() => setActiveCategory(cat)} style={{
                 fontSize: 10,
-                color: activeCategory === cat ? 'var(--cat-active)' : 'var(--text3)',
-                padding: '8px 12px',
-                background: 'none', border: 'none',
-                borderBottom: activeCategory === cat ? '2px solid var(--cat-active-border)' : '2px solid transparent',
+                color: activeCategory === cat ? '#fff' : 'rgba(255,255,255,0.3)',
+                padding: '8px 12px', background: 'none', border: 'none',
+                borderBottom: activeCategory === cat ? '2px solid rgba(155,125,255,0.7)' : '2px solid transparent',
                 whiteSpace: 'nowrap',
                 fontWeight: activeCategory === cat ? 500 : 400,
               }}>
@@ -156,178 +169,276 @@ export default function App() {
         </div>
       )}
 
-      {/* Main content */}
-      <div className="page-inner" style={{ padding: '0 20px 60px' }}>
-        {showDetail ? (
-          <div style={{ maxWidth: 860, margin: '0 auto', paddingTop: 20 }}>
+      {/* Content */}
+      {showDetail ? (
+        <div className="page-inner" style={{ padding: '20px 20px 60px' }}>
+          <div style={{ maxWidth: 860, margin: '0 auto' }}>
             <DebateDetail debate={selectedDebate!} onUpdate={(updated: Debate) => updateDebate(updated)} />
           </div>
-        ) : tab === 'debatter' ? (
-          <div className="feed-layout" style={{ paddingTop: 16 }}>
-            {/* Left: debate feed */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingRight: 20 }}>
-              {debatesLoading
-                ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-                : debatesError
-                ? <ErrorMessage message={debatesError} />
-                : filteredDebates.length === 0
-                ? <EmptyState message="Inga debatter matchar." />
-                : filteredDebates.map(d => (
-                    <FeedCard key={d.id} debate={d} onClick={() => setSelectedDebateId(d.id)} />
-                  ))
-              }
+        </div>
+      ) : tab === 'debatter' ? (
+        <div className="page-inner">
+          {debatesLoading ? (
+            <div style={{ padding: 20 }}>
+              {Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
             </div>
-            {/* Right: sidebar */}
-            <div style={{
-              borderLeft: '0.5px solid rgba(255,255,255,0.05)',
-              background: 'rgba(255,255,255,0.01)',
-              paddingLeft: 16,
-              position: 'sticky',
-              top: 0,
-              maxHeight: '100vh',
-              overflowY: 'auto',
-            }}>
-              <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, paddingTop: 8 }}>
-                Senaste omröstningar
-              </div>
-              {votesLoading
-                ? Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="skeleton" style={{ height: 64, borderRadius: 6, marginBottom: 8 }} />
-                  ))
-                : votes.slice(0, 12).map(v => <SidebarVoteItem key={v.id} vote={v} />)
-              }
-            </div>
-          </div>
-        ) : (
-          <div style={{ paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          ) : debatesError ? (
+            <StatusMessage message={debatesError} />
+          ) : filteredDebates.length === 0 ? (
+            <StatusMessage message="Inga debatter matchar." />
+          ) : (
+            <>
+              {/* Hero — first debate */}
+              <HeroCard debate={filteredDebates[0]} onClick={() => setSelectedDebateId(filteredDebates[0].id)} />
+
+              {/* Subgrid — debates 2–4 */}
+              {filteredDebates.length > 1 && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
+                  {filteredDebates.slice(1, 4).map((d, i, arr) => (
+                    <SubgridCard
+                      key={d.id}
+                      debate={d}
+                      onClick={() => setSelectedDebateId(d.id)}
+                      isLast={i === arr.length - 1}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Feed — debates 5+ grouped by date */}
+              {filteredDebates.length > 4 && (
+                <FeedSection debates={filteredDebates.slice(4)} onSelect={(id) => setSelectedDebateId(id)} />
+              )}
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="page-inner" style={{ padding: '16px 20px 60px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {votesLoading
               ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
               : votesError
-              ? <ErrorMessage message={votesError} />
+              ? <StatusMessage message={votesError} />
               : votes.length === 0
-              ? <EmptyState message="Inga omröstningar." />
+              ? <StatusMessage message="Inga omröstningar." />
               : votes.map(v => <VoteCard key={v.id} vote={v} />)
             }
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
 
-function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) {
-  const [hovered, setHovered] = useState(false)
-  const color = getCategoryColor(debate.topic + debate.title)
+// ── Hero card (debate[0]) ─────────────────────────────────────────────────────
+
+function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) {
+  const cat = getCategory(debate.topic + debate.title)
   const participants = debate.participants.slice(0, 2)
 
   return (
     <div
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
         display: 'grid',
-        gridTemplateColumns: '1fr 180px',
-        background: hovered ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.03)',
-        border: `0.5px solid ${hovered ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.07)'}`,
-        borderRadius: 10,
-        overflow: 'hidden',
+        gridTemplateColumns: '1fr 240px',
+        minHeight: 200,
         cursor: 'pointer',
-        transition: 'background 0.15s, border-color 0.15s',
-        minHeight: 90,
+        borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+      }}
+    >
+      {/* Left — text */}
+      <div style={{
+        padding: '28px 24px',
+        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+        background: 'rgba(124,92,252,0.06)',
+      }}>
+        <div style={{ fontSize: 9, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>
+          Senaste · {cat.label}
+        </div>
+        <div style={{ fontSize: 26, fontWeight: 500, color: '#f0f0fa', lineHeight: 1.2, marginBottom: 10 }}>
+          {debate.title}
+        </div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+          {formatDate(debate.date)} · {debate.venue} · Interpellationsdebatt
+        </div>
+      </div>
+
+      {/* Right — portraits side by side */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: participants.length > 1 ? '1fr 1fr' : '1fr',
+        borderLeft: '0.5px solid rgba(255,255,255,0.06)',
+      }}>
+        {participants.map((p, i) => (
+          <div key={p.person.id || i} style={{
+            display: 'flex', flexDirection: 'column',
+            borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.05)' : 'none',
+          }}>
+            <div style={{ flex: 1, minHeight: 140, position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.07)' }}>
+              <img
+                src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
+              />
+            </div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', textAlign: 'center', padding: '5px 4px 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {p.person.firstName[0]}. {p.person.lastName}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 9 }}>
+              <PartyBadge party={p.person.party} size={20} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Subgrid card (debates 2–4) ────────────────────────────────────────────────
+
+function SubgridCard({ debate, onClick, isLast }: { debate: Debate; onClick: () => void; isLast: boolean }) {
+  const cat = getCategory(debate.topic + debate.title)
+  const participants = debate.participants.slice(0, 2)
+
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: 'flex', flexDirection: 'column',
+        cursor: 'pointer',
+        borderRight: isLast ? 'none' : '0.5px solid rgba(255,255,255,0.05)',
       }}
     >
       {/* Text */}
-      <div style={{ padding: '12px 13px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <div>
-          <span style={{
-            display: 'inline-block',
-            fontSize: 9, fontWeight: 700, color,
-            textTransform: 'uppercase', letterSpacing: '0.07em',
-            marginBottom: 6,
-          }}>
-            {debate.topic.length > 35 ? debate.topic.slice(0, 35) + '…' : debate.topic}
-          </span>
-          <div style={{ fontSize: 15, fontWeight: 500, color: '#e0e0ec', lineHeight: 1.35 }}>
-            {debate.title.length > 100 ? debate.title.slice(0, 100) + '…' : debate.title}
-          </div>
+      <div style={{ flex: 1, padding: '14px 14px 10px' }}>
+        <div style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 5 }}>
+          {cat.label}
         </div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 8 }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.82)', fontWeight: 500, lineHeight: 1.3, marginBottom: 6 }}>
+          {debate.title.length > 80 ? debate.title.slice(0, 80) + '…' : debate.title}
+        </div>
+        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)' }}>
+          {formatDate(debate.date)}
+        </div>
+      </div>
+
+      {/* Portraits */}
+      <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.04)', padding: '8px 14px 10px', display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+        {participants.map((p, i) => (
+          <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 6, overflow: 'hidden', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
+              <img
+                src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
+              />
+            </div>
+            <PartyBadge party={p.person.party} size={15} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Feed section (debates 5+, grouped by date) ────────────────────────────────
+
+function FeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: (id: string) => void }) {
+  const groups: { date: string; debates: Debate[] }[] = []
+  const seen = new Map<string, number>()
+  debates.forEach(d => {
+    const key = d.date.slice(0, 10)
+    if (seen.has(key)) {
+      groups[seen.get(key)!].debates.push(d)
+    } else {
+      seen.set(key, groups.length)
+      groups.push({ date: key, debates: [d] })
+    }
+  })
+
+  return (
+    <>
+      {groups.map(group => (
+        <div key={group.date}>
+          <div style={{
+            padding: '8px 20px 5px',
+            fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.2)',
+            textTransform: 'uppercase', letterSpacing: '0.1em',
+            borderTop: '0.5px solid rgba(255,255,255,0.05)',
+          }}>
+            {formatDateLabel(group.date)}
+          </div>
+          {group.debates.map(d => (
+            <FeedCard key={d.id} debate={d} onClick={() => onSelect(d.id)} />
+          ))}
+        </div>
+      ))}
+    </>
+  )
+}
+
+function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) {
+  const cat = getCategory(debate.topic + debate.title)
+  const participants = debate.participants.slice(0, 2)
+
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 180px',
+        minHeight: 76,
+        borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+        cursor: 'pointer',
+      }}
+    >
+      {/* Left — text */}
+      <div style={{ padding: '12px 16px' }}>
+        <div style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: cat.color, marginBottom: 4 }}>
+          {cat.label}
+        </div>
+        <div style={{ fontSize: 13, color: '#e0e0f0', fontWeight: 500, lineHeight: 1.35, marginBottom: 5 }}>
+          {debate.title.length > 90 ? debate.title.slice(0, 90) + '…' : debate.title}
+        </div>
+        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)' }}>
           {formatDate(debate.date)} · {debate.venue}
         </div>
       </div>
-      {/* Portraits — side by side */}
-      <div style={{ display: 'grid', gridTemplateColumns: participants.length > 1 ? '1fr 1fr' : '1fr' }}>
-        {participants.length > 0 ? participants.map((p, i) => {
-          const party = getParty(p.person.party)
-          return (
-            <div key={p.person.id || i} style={{
-              position: 'relative',
-              borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none',
-              background: `${party?.color ?? '#334'}18`,
-              overflow: 'hidden',
-            }}>
+
+      {/* Right — portraits */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: participants.length > 1 ? '1fr 1fr' : '1fr',
+        borderLeft: '0.5px solid rgba(255,255,255,0.05)',
+      }}>
+        {participants.map((p, i) => (
+          <div key={p.person.id || i} style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
+            paddingBottom: 7,
+            borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none',
+          }}>
+            <div style={{ flex: 1, minHeight: 52, width: '100%', position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.07)' }}>
               <img
-                src={p.person.photoUrl}
-                alt={p.person.name}
-                loading="lazy"
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+                src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
               />
-              <div style={{
-                position: 'absolute', bottom: 0, left: 0, right: 0,
-                background: 'rgba(0,0,0,0.6)',
-                padding: '3px 5px',
-                display: 'flex', alignItems: 'center', gap: 4,
-              }}>
-                <span style={{
-                  fontSize: 9, color: '#fff', fontWeight: 500,
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
-                }}>
-                  {p.person.firstName[0]}. {p.person.lastName}
-                </span>
-                <span style={{
-                  fontSize: 7, fontWeight: 800, flexShrink: 0,
-                  padding: '1px 4px', borderRadius: 3,
-                  background: party?.color ?? '#444',
-                  color: party?.textColor ?? '#fff',
-                }}>
-                  {p.person.party}
-                </span>
-              </div>
             </div>
-          )
-        }) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)' }} />
-        )}
+            <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', marginTop: 3, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '90%' }}>
+              {p.person.firstName[0]}. {p.person.lastName}
+            </div>
+            <div style={{ marginTop: 3 }}>
+              <PartyBadge party={p.person.party} size={20} />
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
 }
 
-function SidebarVoteItem({ vote }: { vote: Vote }) {
-  const color = getCategoryColor(vote.title)
-  const total = vote.totalJa + vote.totalNej
-  const jaPct = total > 0 ? (vote.totalJa / total) * 100 : 50
-
-  return (
-    <div style={{ padding: '10px 0', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
-      <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8f0', lineHeight: 1.35, marginBottom: 7 }}>
-        {(vote.humanTitle ?? vote.title).length > 80
-          ? (vote.humanTitle ?? vote.title).slice(0, 80) + '…'
-          : (vote.humanTitle ?? vote.title)}
-      </div>
-      <div style={{ height: 4, borderRadius: 2, overflow: 'hidden', display: 'flex', marginBottom: 5 }}>
-        <div style={{ width: `${jaPct}%`, background: '#4a7a5a' }} />
-        <div style={{ width: `${100 - jaPct}%`, background: '#7a3a3a' }} />
-      </div>
-      <div style={{ display: 'flex', gap: 8, fontSize: 10 }}>
-        <span style={{ color: '#7aaa8a' }}>{vote.totalJa} ja</span>
-        <span style={{ color: '#9e6a6a' }}>{vote.totalNej} nej</span>
-      </div>
-    </div>
-  )
-}
+// ── Utilities ─────────────────────────────────────────────────────────────────
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return ''
@@ -336,18 +447,17 @@ function formatDate(dateStr: string): string {
   } catch { return dateStr }
 }
 
-function ErrorMessage({ message }: { message: string }) {
-  return (
-    <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text3)' }}>
-      <p style={{ fontSize: 14 }}>{message}</p>
-    </div>
-  )
+function formatDateLabel(dateStr: string): string {
+  if (!dateStr) return ''
+  try {
+    return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long' }).toUpperCase()
+  } catch { return dateStr }
 }
 
-function EmptyState({ message }: { message: string }) {
+function StatusMessage({ message }: { message: string }) {
   return (
-    <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text3)' }}>
-      <p style={{ fontSize: 14 }}>{message}</p>
+    <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.25)' }}>
+      <p style={{ fontSize: 13 }}>{message}</p>
     </div>
   )
 }

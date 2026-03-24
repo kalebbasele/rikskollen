@@ -1,5 +1,5 @@
 :root {
-  --bg: #0d0b14;
+  --bg: #0b0b18;
   --surface: #1a1728;
   --surface2: #242130;
   --surface3: #2e2a3e;
@@ -13,13 +13,13 @@
   --green: #2ec27e;
   --radius: 12px;
   --font: 'Inter', sans-serif;
-  --top-bg: #13101f;
+  --top-bg: #0b0b18;
   --ticker-bg: rgba(124,92,252,0.15);
   --ticker-border: rgba(124,92,252,0.25);
   --ticker-label: #9b6fff;
   --cat-active: #fff;
   --cat-active-border: rgba(155,111,255,0.6);
-  --page-bg: #0d0b14;
+  --page-bg: #0b0b18;
   --card-bg: #1a1728;
   --footer-bg: rgba(0,0,0,0.2);
   --cta-color: rgba(155,111,255,0.9);
