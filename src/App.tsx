@@ -394,7 +394,7 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       style={{
         display: 'grid',
         gridTemplateColumns: '1fr 190px',
-        minHeight: 84,
+        minHeight: 120,
         borderBottom: '0.5px solid rgba(255,255,255,0.05)',
         cursor: 'pointer',
       }}
@@ -418,6 +418,7 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         gridTemplateColumns: participants.length > 1 ? '1fr 1fr' : '1fr',
         borderLeft: '0.5px solid rgba(255,255,255,0.05)',
         height: '100%',
+        minHeight: 120,
       }}>
         {participants.map((p, i) => (
           <div key={p.person.id || i} style={{
