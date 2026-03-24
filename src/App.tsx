@@ -270,11 +270,12 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         gridTemplateColumns: participants.length > 1 ? '1fr 1fr' : '1fr',
         borderLeft: '0.5px solid rgba(255,255,255,0.06)',
         height: '100%',
+        padding: 8,
+        gap: 6,
       }}>
         {participants.map((p, i) => (
           <div key={p.person.id || i} style={{
-            position: 'relative', overflow: 'hidden',
-            borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.05)' : 'none',
+            position: 'relative', overflow: 'hidden', borderRadius: 8,
           }}>
             <img
               src={p.person.photoUrl} alt={p.person.name} loading="lazy"
@@ -419,11 +420,12 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         borderLeft: '0.5px solid rgba(255,255,255,0.05)',
         height: '100%',
         minHeight: 158,
+        padding: 8,
+        gap: 6,
       }}>
         {participants.map((p, i) => (
           <div key={p.person.id || i} style={{
-            position: 'relative', overflow: 'hidden',
-            borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none',
+            position: 'relative', overflow: 'hidden', borderRadius: 8,
           }}>
             <img
               src={p.person.photoUrl} alt={p.person.name} loading="lazy"
