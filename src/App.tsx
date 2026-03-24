@@ -243,8 +243,8 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       onClick={onClick}
       style={{
         display: 'grid',
-        gridTemplateColumns: '1fr 240px',
-        minHeight: 258,
+        gridTemplateColumns: '1fr 270px',
+        minHeight: 290,
         cursor: 'pointer',
         margin: '16px 16px 8px',
         borderRadius: 16,
@@ -261,13 +261,13 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
         background: 'rgba(124,92,252,0.06)',
       }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 12 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 14 }}>
           Senaste · {cat.label}
         </div>
-        <div style={{ fontSize: 32, fontWeight: 500, color: 'var(--text)', lineHeight: 1.2, marginBottom: 12 }}>
+        <div style={{ fontSize: 36, fontWeight: 500, color: 'var(--text)', lineHeight: 1.2, marginBottom: 14 }}>
           {debate.title}
         </div>
-        <div style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.6 }}>
           {formatDate(debate.date)} · {debate.venue} · Interpellationsdebatt
         </div>
       </div>
@@ -296,8 +296,8 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
               padding: '6px 8px 8px',
               display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6,
             }}>
-              <PartyBadge party={p.person.party} size={22} radius={6} />
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
+              <PartyBadge party={p.person.party} size={24} radius={6} />
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                 {p.person.name}
               </div>
             </div>
@@ -330,30 +330,30 @@ function SubgridCard({ debate, onClick, isLast: _isLast }: { debate: Debate; onC
       }}
     >
       {/* Text */}
-      <div style={{ flex: 1, padding: '18px 18px 12px' }}>
-        <div style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 8 }}>
+      <div style={{ flex: 1, padding: '20px 20px 14px' }}>
+        <div style={{ fontSize: 14, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 10 }}>
           {cat.label}
         </div>
-        <div style={{ fontSize: 17, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
+        <div style={{ fontSize: 19, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
           {debate.title.length > 80 ? debate.title.slice(0, 80) + '…' : debate.title}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 8 }}>
+        <div style={{ fontSize: 14, color: 'var(--text3)', marginTop: 10 }}>
           {formatDate(debate.date)}
         </div>
       </div>
 
       {/* Portraits */}
-      <div style={{ borderTop: '0.5px solid var(--border)', padding: '10px 18px 14px', display: 'flex', gap: 10, alignItems: 'flex-end' }}>
+      <div style={{ borderTop: '0.5px solid var(--border)', padding: '12px 20px 16px', display: 'flex', gap: 10, alignItems: 'flex-end' }}>
         {participants.map((p, i) => (
           <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
-            <div style={{ width: 68, height: 68, borderRadius: 8, overflow: 'hidden', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
+            <div style={{ width: 76, height: 76, borderRadius: 8, overflow: 'hidden', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
               <img
                 src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
               />
             </div>
-            <PartyBadge party={p.person.party} size={16} />
+            <PartyBadge party={p.person.party} size={18} />
           </div>
         ))}
       </div>
@@ -382,7 +382,7 @@ function FeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: (id: 
         <div key={group.date}>
           <div style={{
             padding: '10px 24px 6px',
-            fontSize: 12, fontWeight: 700, color: 'var(--text3)',
+            fontSize: 13, fontWeight: 700, color: 'var(--text3)',
             textTransform: 'uppercase', letterSpacing: '0.1em',
             borderTop: '0.5px solid rgba(255,255,255,0.05)',
           }}>
@@ -409,8 +409,8 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       onClick={onClick}
       style={{
         display: 'grid',
-        gridTemplateColumns: '1fr 190px',
-        minHeight: 158,
+        gridTemplateColumns: '1fr 210px',
+        minHeight: 175,
         cursor: 'pointer',
         borderRadius: 14,
         background: 'var(--glass-bg)',
@@ -422,14 +422,14 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       }}
     >
       {/* Left — text */}
-      <div style={{ padding: '18px 22px' }}>
-        <div style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: cat.color, marginBottom: 7 }}>
+      <div style={{ padding: '20px 24px' }}>
+        <div style={{ fontSize: 14, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: cat.color, marginBottom: 8 }}>
           {cat.label}
         </div>
-        <div style={{ fontSize: 18, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
+        <div style={{ fontSize: 20, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
           {debate.title.length > 90 ? debate.title.slice(0, 90) + '…' : debate.title}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 8 }}>
+        <div style={{ fontSize: 14, color: 'var(--text3)', marginTop: 10 }}>
           {formatDate(debate.date)} · {debate.venue}
         </div>
       </div>
@@ -440,7 +440,7 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         gridTemplateColumns: `repeat(${cols}, 1fr)`,
         borderLeft: '0.5px solid var(--border)',
         height: '100%',
-        minHeight: 158,
+        minHeight: 175,
         padding: 8,
         gap: 6,
       }}>
@@ -459,8 +459,8 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
               padding: '6px 8px 8px',
               display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6,
             }}>
-              <PartyBadge party={p.person.party} size={22} radius={6} />
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
+              <PartyBadge party={p.person.party} size={24} radius={6} />
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                 {p.person.name}
               </div>
             </div>
