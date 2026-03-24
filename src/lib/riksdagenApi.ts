@@ -31,17 +31,23 @@ export async function fetchDebates(): Promise<Debate[]> {
     })()
     const undertecknare = intressenter.find((i: any) => i.roll === 'undertecknare')
     const besvaradav = intressenter.find((i: any) => i.roll === 'besvaradav')
-    const toParticipant = (i: any): { person: Person; role: string } => ({
-      person: {
-        id: i.intressent_id ?? '',
-        name: i.namn ?? 'Okänd',
-        firstName: (i.namn ?? '').split(' ')[0],
-        lastName: (i.namn ?? '').split(' ').slice(1).join(' '),
-        party: i.partibet ?? '',
-        photoUrl: personPhotoUrl(i.intressent_id ?? ''),
-      },
-      role: i.roll ?? 'talare',
-    })
+    const toParticipant = (i: any): { person: Person; role: string } => {
+      // anforande.talare has the actual full name; dokintressent.namn is sometimes a title
+      const anforande = anforanden.find((a: any) => a.intressent_id === i.intressent_id)
+      const name = anforande?.talare ?? i.namn ?? 'Okänd'
+      const party = i.partibet ?? anforande?.partibet ?? ''
+      return {
+        person: {
+          id: i.intressent_id ?? '',
+          name,
+          firstName: name.split(' ')[0],
+          lastName: name.split(' ').slice(1).join(' '),
+          party,
+          photoUrl: personPhotoUrl(i.intressent_id ?? ''),
+        },
+        role: i.roll ?? 'talare',
+      }
+    }
     const p1 = undertecknare ?? intressenter[0]
     const p2 = besvaradav ?? intressenter.find((i: any) => i.intressent_id !== p1?.intressent_id)
     if (!p1) continue
