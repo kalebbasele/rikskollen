@@ -39,11 +39,12 @@ function matchesCategory(debate: Debate, cat: string): boolean {
   return (map[cat] ?? []).some(k => text.includes(k))
 }
 
-function PartyBadge({ party, size = 20 }: { party: string; size?: number }) {
+function PartyBadge({ party, size = 20, radius }: { party: string; size?: number; radius?: number }) {
   const p = getParty(party)
   return (
     <div style={{
-      width: size, height: size, borderRadius: '50%',
+      width: size, height: size,
+      borderRadius: radius !== undefined ? radius : '50%',
       background: p?.color ?? '#333',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: Math.round(size * 0.36), fontWeight: 800,
@@ -284,15 +285,13 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
             />
             <div style={{
               position: 'absolute', bottom: 0, left: 0, right: 0,
-              background: 'linear-gradient(transparent, rgba(0,0,0,0.75))',
-              padding: '6px 6px 8px',
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.0) 30%, rgba(0,0,0,0.85) 100%)',
+              padding: '6px 8px 8px',
+              display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6,
             }}>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+              <PartyBadge party={p.person.party} size={22} radius={6} />
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                 {p.person.name}
-              </div>
-              <div style={{ marginTop: 3 }}>
-                <PartyBadge party={p.person.party} size={20} />
               </div>
             </div>
           </div>
@@ -434,15 +433,13 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
             />
             <div style={{
               position: 'absolute', bottom: 0, left: 0, right: 0,
-              background: 'linear-gradient(transparent, rgba(0,0,0,0.75))',
-              padding: '4px 4px 5px',
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.0) 30%, rgba(0,0,0,0.85) 100%)',
+              padding: '6px 8px 8px',
+              display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6,
             }}>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+              <PartyBadge party={p.person.party} size={22} radius={6} />
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                 {p.person.name}
-              </div>
-              <div style={{ marginTop: 2 }}>
-                <PartyBadge party={p.person.party} size={16} />
               </div>
             </div>
           </div>

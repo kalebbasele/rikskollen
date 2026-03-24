@@ -12,6 +12,14 @@ export function guessEmoji(_title: string): string {
   return ''
 }
 
+function cleanName(raw: string): string {
+  return raw
+    .replace(/\s*\([^)]+\)\s*$/, '')  // strip "(KD)" suffix
+    .replace(/^\S*minister\s+/i, '')   // strip "Infrastrukturminister " etc
+    .replace(/^Statssekreterare\s+/i, '')
+    .trim()
+}
+
 export async function fetchDebates(): Promise<Debate[]> {
   const res = await fetch(
     `${BACKEND}/api/dokumentlista/?doktyp=ip&utformat=json&antal=30&sort=debattdag&sortorder=desc`
@@ -34,7 +42,8 @@ export async function fetchDebates(): Promise<Debate[]> {
     const toParticipant = (i: any): { person: Person; role: string } => {
       // anforande.talare has the actual full name; dokintressent.namn is sometimes a title
       const anforande = anforanden.find((a: any) => a.intressent_id === i.intressent_id)
-      const name = anforande?.talare ?? i.namn ?? 'Okänd'
+      const rawName = anforande?.talare ?? i.namn ?? 'Okänd'
+      const name = cleanName(rawName)
       const party = i.partibet ?? anforande?.partibet ?? ''
       return {
         person: {
