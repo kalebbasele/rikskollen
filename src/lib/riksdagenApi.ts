@@ -15,7 +15,7 @@ export function guessEmoji(_title: string): string {
 function cleanName(raw: string): string {
   return raw
     .replace(/\s*\([^)]+\)\s*$/, '')        // strip "(KD)" suffix
-    .replace(/^\S*minister\s+/i, '')          // strip "Infrastrukturminister " etc
+    .replace(/^.*minister\s+/i, '')           // strip "Gymnasie-, högskole- och forskningsminister " etc
     .replace(/^Statssekreterare\s+/i, '')
     .replace(/^Talman\s+/i, '')
     .trim()
