@@ -273,22 +273,26 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       }}>
         {participants.map((p, i) => (
           <div key={p.person.id || i} style={{
-            display: 'flex', flexDirection: 'column',
+            position: 'relative', overflow: 'hidden',
             borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.05)' : 'none',
-            overflow: 'hidden',
           }}>
-            <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.07)' }}>
-              <img
-                src={p.person.photoUrl} alt={p.person.name} loading="lazy"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
-              />
-            </div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', textAlign: 'center', padding: '6px 4px 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {p.person.firstName[0]}. {p.person.lastName}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 10, marginTop: 4 }}>
-              <PartyBadge party={p.person.party} size={22} />
+            <img
+              src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+              onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
+            />
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0,
+              background: 'linear-gradient(transparent, rgba(0,0,0,0.75))',
+              padding: '6px 6px 8px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+            }}>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                {p.person.firstName[0]}. {p.person.lastName}
+              </div>
+              <div style={{ marginTop: 3 }}>
+                <PartyBadge party={p.person.party} size={20} />
+              </div>
             </div>
           </div>
         ))}
@@ -417,22 +421,26 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       }}>
         {participants.map((p, i) => (
           <div key={p.person.id || i} style={{
-            display: 'flex', flexDirection: 'column',
+            position: 'relative', overflow: 'hidden',
             borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none',
-            overflow: 'hidden',
           }}>
-            <div style={{ flex: 1, position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.07)' }}>
-              <img
-                src={p.person.photoUrl} alt={p.person.name} loading="lazy"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
-              />
-            </div>
-            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', padding: '3px 4px', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {p.person.firstName[0]}. {p.person.lastName}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 7, marginTop: 2 }}>
-              <PartyBadge party={p.person.party} size={20} />
+            <img
+              src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+              onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
+            />
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0,
+              background: 'linear-gradient(transparent, rgba(0,0,0,0.75))',
+              padding: '4px 4px 5px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+            }}>
+              <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.7)', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                {p.person.firstName[0]}. {p.person.lastName}
+              </div>
+              <div style={{ marginTop: 2 }}>
+                <PartyBadge party={p.person.party} size={16} />
+              </div>
             </div>
           </div>
         ))}
