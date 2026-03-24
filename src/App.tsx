@@ -194,7 +194,7 @@ export default function App() {
 
               {/* Subgrid — debates 2–4 */}
               {filteredDebates.length > 1 && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, padding: '16px 16px 8px' }}>
                   {filteredDebates.slice(1, 4).map((d, i, arr) => (
                     <SubgridCard
                       key={d.id}
@@ -245,7 +245,13 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         gridTemplateColumns: '1fr 240px',
         minHeight: 258,
         cursor: 'pointer',
-        borderBottom: '0.5px solid rgba(255,255,255,0.05)',
+        margin: '16px 16px 8px',
+        borderRadius: 16,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '0.5px solid rgba(255,255,255,0.1)',
+        boxShadow: '0 4px 32px rgba(0,0,0,0.35)',
+        overflow: 'hidden',
       }}
     >
       {/* Left — text */}
@@ -303,7 +309,7 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
 
 // ── Subgrid card (debates 2–4) ────────────────────────────────────────────────
 
-function SubgridCard({ debate, onClick, isLast }: { debate: Debate; onClick: () => void; isLast: boolean }) {
+function SubgridCard({ debate, onClick, isLast: _isLast }: { debate: Debate; onClick: () => void; isLast: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
   const participants = debate.participants.slice(0, 2)
 
@@ -313,24 +319,30 @@ function SubgridCard({ debate, onClick, isLast }: { debate: Debate; onClick: () 
       style={{
         display: 'flex', flexDirection: 'column',
         cursor: 'pointer',
-        borderRight: isLast ? 'none' : '0.5px solid rgba(255,255,255,0.05)',
+        borderRadius: 14,
+        background: 'rgba(255,255,255,0.04)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '0.5px solid rgba(255,255,255,0.09)',
+        boxShadow: '0 2px 20px rgba(0,0,0,0.25)',
+        overflow: 'hidden',
       }}
     >
       {/* Text */}
       <div style={{ flex: 1, padding: '18px 18px 12px' }}>
-        <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 8 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 8 }}>
           {cat.label}
         </div>
-        <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.82)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
+        <div style={{ fontSize: 17, color: 'rgba(255,255,255,0.88)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
           {debate.title.length > 80 ? debate.title.slice(0, 80) + '…' : debate.title}
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.2)', marginTop: 8 }}>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', marginTop: 8 }}>
           {formatDate(debate.date)}
         </div>
       </div>
 
       {/* Portraits */}
-      <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.04)', padding: '10px 18px 14px', display: 'flex', gap: 10, alignItems: 'flex-end' }}>
+      <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.06)', padding: '10px 18px 14px', display: 'flex', gap: 10, alignItems: 'flex-end' }}>
         {participants.map((p, i) => (
           <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
             <div style={{ width: 68, height: 68, borderRadius: 8, overflow: 'hidden', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
@@ -375,9 +387,11 @@ function FeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: (id: 
           }}>
             {formatDateLabel(group.date)}
           </div>
-          {group.debates.map(d => (
-            <FeedCard key={d.id} debate={d} onClick={() => onSelect(d.id)} />
-          ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '0 16px 8px' }}>
+            {group.debates.map(d => (
+              <FeedCard key={d.id} debate={d} onClick={() => onSelect(d.id)} />
+            ))}
+          </div>
         </div>
       ))}
     </>
@@ -395,19 +409,25 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         display: 'grid',
         gridTemplateColumns: '1fr 190px',
         minHeight: 158,
-        borderBottom: '0.5px solid rgba(255,255,255,0.05)',
         cursor: 'pointer',
+        borderRadius: 14,
+        background: 'rgba(255,255,255,0.04)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '0.5px solid rgba(255,255,255,0.09)',
+        boxShadow: '0 2px 20px rgba(0,0,0,0.25)',
+        overflow: 'hidden',
       }}
     >
       {/* Left — text */}
-      <div style={{ padding: '16px 20px' }}>
-        <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: cat.color, marginBottom: 6 }}>
+      <div style={{ padding: '18px 22px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: cat.color, marginBottom: 7 }}>
           {cat.label}
         </div>
-        <div style={{ fontSize: 17, color: '#e8e8f8', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
+        <div style={{ fontSize: 18, color: '#e8e8f8', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
           {debate.title.length > 90 ? debate.title.slice(0, 90) + '…' : debate.title}
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.2)', marginTop: 6 }}>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', marginTop: 8 }}>
           {formatDate(debate.date)} · {debate.venue}
         </div>
       </div>
