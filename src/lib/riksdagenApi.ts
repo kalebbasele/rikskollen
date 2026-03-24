@@ -5,7 +5,7 @@ const BACKEND = import.meta.env.DEV
   : 'https://web-production-1e2f2.up.railway.app'
 
 export function personPhotoUrl(id: string): string {
-  return `https://data.riksdagen.se/filarkiv/bilder/ledamot/${id}_192.jpg`
+  return `https://data.riksdagen.se/filarkiv/bilder/ledamot/${id}_max.jpg`
 }
 
 export function guessEmoji(_title: string): string {
