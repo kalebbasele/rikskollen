@@ -16,15 +16,15 @@ export default function VoteCard({ vote }: Props) {
   return (
     <div
       style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '0.5px solid rgba(255,255,255,0.07)',
+        background: 'var(--glass-bg)',
+        border: '0.5px solid var(--glass-border)',
         borderRadius: 10,
         overflow: 'hidden',
       }}
     >
       {/* Header */}
       <div style={{ padding: '14px 14px 10px' }}>
-        <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.35, color: '#e8e8f0' }}>
+        <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.35, color: 'var(--text)' }}>
           {vote.humanTitle ?? (vote.title.length > 80 ? vote.title.slice(0, 80) + '…' : vote.title)}
         </div>
       </div>
@@ -35,7 +35,7 @@ export default function VoteCard({ vote }: Props) {
           <div style={{ fontSize: 10, fontWeight: 700, color: '#7aaa8a', marginBottom: 4, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             JA innebar
           </div>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>
             {vote.jaMeaning ?? <span className="skeleton" style={{ display: 'block', height: 30 }} />}
           </p>
         </div>
@@ -43,7 +43,7 @@ export default function VoteCard({ vote }: Props) {
           <div style={{ fontSize: 10, fontWeight: 700, color: '#9e6a6a', marginBottom: 4, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             NEJ innebar
           </div>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>
             {vote.nejMeaning ?? <span className="skeleton" style={{ display: 'block', height: 30 }} />}
           </p>
         </div>
@@ -51,34 +51,34 @@ export default function VoteCard({ vote }: Props) {
 
       {/* Result bar */}
       <div style={{ padding: '0 14px 12px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, marginBottom: 5, color: 'rgba(255,255,255,0.4)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, marginBottom: 5, color: 'var(--text3)' }}>
           <span style={{ color: '#7aaa8a' }}>JA — {vote.totalJa} röster ({jaPct}%)</span>
           <span style={{ color: '#9e6a6a' }}>NEJ — {vote.totalNej} ({nejPct}%)</span>
         </div>
-        <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', display: 'flex' }}>
+        <div style={{ height: 6, borderRadius: 3, background: 'var(--surface3)', overflow: 'hidden', display: 'flex' }}>
           <div style={{ width: `${jaPct}%`, background: '#4a7a5a' }} />
           <div style={{ width: `${nejPct}%`, background: '#7a3a3a' }} />
         </div>
       </div>
 
       {/* Vad händer nu */}
-      <div style={{ margin: '0 14px 12px', background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: '10px 11px' }}>
-        <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 5 }}>
+      <div style={{ margin: '0 14px 12px', background: 'var(--surface2)', border: '0.5px solid var(--border)', borderRadius: 8, padding: '10px 11px' }}>
+        <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 5 }}>
           Vad händer nu?
         </div>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.55 }}>
+        <p style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.55 }}>
           {vote.consequence ?? 'Laddar…'}
         </p>
       </div>
 
       {/* Så röstade partierna — collapsible */}
-      <div style={{ margin: '0 14px 13px', borderTop: '0.5px solid rgba(255,255,255,0.07)', paddingTop: 10 }}>
+      <div style={{ margin: '0 14px 13px', borderTop: '0.5px solid var(--border)', paddingTop: 10 }}>
         <button
           onClick={() => setPvOpen(o => !o)}
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             width: '100%', background: 'none', border: 'none', padding: 0,
-            color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 600, cursor: 'pointer',
+            color: 'var(--text2)', fontSize: 11, fontWeight: 600, cursor: 'pointer',
           }}
         >
           <span>Så röstade partierna</span>
@@ -104,7 +104,7 @@ export default function VoteCard({ vote }: Props) {
                     }}>
                       {pv.party}
                     </span>
-                    <div style={{ flex: 1, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden', display: 'flex' }}>
+                    <div style={{ flex: 1, height: 5, borderRadius: 3, background: 'var(--surface3)', overflow: 'hidden', display: 'flex' }}>
                       <div style={{ width: `${jaW}%`, background: '#4a7a5a' }} />
                       <div style={{ width: `${100 - jaW}%`, background: '#7a3a3a' }} />
                     </div>
@@ -124,7 +124,7 @@ export default function VoteCard({ vote }: Props) {
             href={`https://www.riksdagen.se/sv/dokument-och-lagar/dokument/votering/?bet=${vote.dokId}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', textDecoration: 'none', borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}
+            style={{ fontSize: 11, color: 'var(--text3)', textDecoration: 'none', borderBottom: '0.5px solid var(--border)' }}
           >
             Se hur alla röstade →
           </a>
