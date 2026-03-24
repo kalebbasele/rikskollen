@@ -40,7 +40,8 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
     }
   }
 
-  const mainParticipants = debate.participants.slice(0, 2)
+  const mainParticipants = debate.participants.slice(0, 4)
+  const allParticipants = debate.participants
   const bannerHeight = 196
 
   return (
@@ -98,13 +99,13 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
           </div>
         </div>
 
-        {/* Side-by-side portraits */}
+        {/* Portraits — up to 4 */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: mainParticipants.length > 1 ? '1fr 1fr' : '1fr',
+            gridTemplateColumns: `repeat(${mainParticipants.length}, 1fr)`,
             flexShrink: 0,
-            width: mainParticipants.length > 1 ? 172 : 86,
+            width: mainParticipants.length * 72,
             height: bannerHeight,
             overflow: 'hidden',
           }}
@@ -119,9 +120,6 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                   overflow: 'hidden',
                   borderLeft: i > 0 ? '0.5px solid rgba(255,255,255,0.07)' : 'none',
                   background: `${party?.color ?? '#334'}18`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
                 }}
               >
                 <img
@@ -129,28 +127,26 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                   alt={p.person.name}
                   loading="lazy"
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                  style={{ width: '100%', flex: 1, objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
                 />
                 <div style={{
                   position: 'absolute', bottom: 0, left: 0, right: 0,
-                  background: 'rgba(0,0,0,0.6)',
-                  padding: '3px 5px',
-                  display: 'flex', alignItems: 'center', gap: 4,
+                  background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                  padding: '6px 4px 4px',
                 }}>
-                  <span style={{
-                    fontSize: 9, color: '#fff', fontWeight: 500,
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
-                  }}>
-                    {p.person.name}
-                  </span>
-                  <span style={{
-                    fontSize: 7, fontWeight: 800, flexShrink: 0,
-                    padding: '1px 4px', borderRadius: 3,
-                    background: party?.color ?? '#444',
-                    color: party?.textColor ?? '#fff',
-                  }}>
-                    {p.person.party}
-                  </span>
+                  <div style={{ fontSize: 8, color: '#fff', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center' }}>
+                    {p.person.name.split(' ').slice(-1)[0]}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+                    <span style={{
+                      fontSize: 7, fontWeight: 800,
+                      padding: '1px 4px', borderRadius: 3,
+                      background: party?.color ?? '#444',
+                      color: party?.textColor ?? '#fff',
+                    }}>
+                      {p.person.party}
+                    </span>
+                  </div>
                 </div>
               </div>
             )
@@ -176,6 +172,34 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
         <p style={{ fontSize: 14, color: 'var(--text3)', marginBottom: 15 }}>
           Laddar sammanfattning…
         </p>
+      )}
+
+      {/* Alla talare */}
+      {allParticipants.length > 0 && (
+        <div style={{ marginBottom: 15 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>
+            Talare i debatten
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {allParticipants.map((p, i) => {
+              const party = getParty(p.person.party)
+              return (
+                <div key={p.person.id || i} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--surface2)', borderRadius: 8, padding: '5px 8px' }}>
+                  <img
+                    src={p.person.photoUrl}
+                    alt={p.person.name}
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                    style={{ width: 24, height: 24, borderRadius: 4, objectFit: 'cover', objectPosition: 'top center' }}
+                  />
+                  <span style={{ fontSize: 12, color: 'var(--text)', fontWeight: 500 }}>{p.person.name}</span>
+                  <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 5px', borderRadius: 3, background: party?.color ?? '#444', color: party?.textColor ?? '#fff' }}>
+                    {p.person.party}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       )}
 
       {/* Bloc summaries */}
