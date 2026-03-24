@@ -227,14 +227,14 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       onMouseLeave={() => setHovered(false)}
       style={{
         display: 'grid',
-        gridTemplateColumns: '1fr 80px',
+        gridTemplateColumns: '1fr 180px',
         background: hovered ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.03)',
         border: `0.5px solid ${hovered ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.07)'}`,
         borderRadius: 10,
         overflow: 'hidden',
         cursor: 'pointer',
         transition: 'background 0.15s, border-color 0.15s',
-        minHeight: 96,
+        minHeight: 90,
       }}
     >
       {/* Text */}
@@ -248,7 +248,7 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
           }}>
             {debate.topicEmoji} {debate.topic.length > 35 ? debate.topic.slice(0, 35) + '…' : debate.topic}
           </span>
-          <div style={{ fontSize: 14, fontWeight: 500, color: '#e0e0ec', lineHeight: 1.35 }}>
+          <div style={{ fontSize: 15, fontWeight: 500, color: '#e0e0ec', lineHeight: 1.35 }}>
             {debate.title.length > 100 ? debate.title.slice(0, 100) + '…' : debate.title}
           </div>
         </div>
@@ -256,39 +256,47 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
           {formatDate(debate.date)} · {debate.venue}
         </div>
       </div>
-      {/* Portraits */}
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {/* Portraits — side by side */}
+      <div style={{ display: 'grid', gridTemplateColumns: participants.length > 1 ? '1fr 1fr' : '1fr' }}>
         {participants.length > 0 ? participants.map((p, i) => {
           const party = getParty(p.person.party)
           return (
             <div key={p.person.id || i} style={{
-              flex: 1,
-              position: 'relative',
-              overflow: 'hidden',
-              borderTop: i > 0 ? '0.5px solid rgba(255,255,255,0.07)' : 'none',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
+              paddingBottom: 8,
+              borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none',
               background: `${party?.color ?? '#334'}18`,
+              overflow: 'hidden',
             }}>
               <img
                 src={p.person.photoUrl}
                 alt={p.person.name}
                 loading="lazy"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
+                style={{ width: '100%', height: 70, objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
               />
-              <div style={{ position: 'absolute', bottom: 3, left: 0, right: 0, textAlign: 'center' }}>
-                <span style={{
-                  display: 'inline-block', padding: '1px 4px', borderRadius: 3,
-                  fontSize: 7, fontWeight: 800,
-                  background: party?.color ?? '#444',
-                  color: party?.textColor ?? '#fff',
-                }}>
-                  {p.person.party}
-                </span>
+              <div style={{
+                fontSize: 9, color: 'rgba(255,255,255,0.5)',
+                marginTop: 4, textAlign: 'center',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                maxWidth: '90%',
+              }}>
+                {p.person.firstName[0]}. {p.person.lastName}
+              </div>
+              <div style={{
+                width: 18, height: 18, borderRadius: '50%',
+                background: party?.color ?? '#444',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 7, fontWeight: 800,
+                color: party?.textColor ?? '#fff',
+                marginTop: 3,
+              }}>
+                {p.person.party.slice(0, 2)}
               </div>
             </div>
           )
         }) : (
-          <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)' }}>
             <span style={{ fontSize: 22 }}>🏛️</span>
           </div>
         )}
