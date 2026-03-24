@@ -235,7 +235,8 @@ export default function App() {
 
 function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) {
   const cat = getCategory(debate.topic + debate.title)
-  const participants = debate.participants.slice(0, 2)
+  const participants = debate.participants.slice(0, 4)
+  const cols = participants.length <= 2 ? participants.length : 2
 
   return (
     <div
@@ -271,10 +272,10 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         </div>
       </div>
 
-      {/* Right — portraits side by side */}
+      {/* Right — portraits grid (up to 4, 2×2) */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: participants.length > 1 ? '1fr 1fr' : '1fr',
+        gridTemplateColumns: `repeat(${cols}, 1fr)`,
         borderLeft: '0.5px solid rgba(255,255,255,0.06)',
         height: '100%',
         padding: 8,
@@ -311,7 +312,7 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
 
 function SubgridCard({ debate, onClick, isLast: _isLast }: { debate: Debate; onClick: () => void; isLast: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
-  const participants = debate.participants.slice(0, 2)
+  const participants = debate.participants.slice(0, 3)
 
   return (
     <div
@@ -400,7 +401,8 @@ function FeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: (id: 
 
 function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) {
   const cat = getCategory(debate.topic + debate.title)
-  const participants = debate.participants.slice(0, 2)
+  const participants = debate.participants.slice(0, 4)
+  const cols = participants.length <= 2 ? participants.length : 2
 
   return (
     <div
@@ -432,10 +434,10 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         </div>
       </div>
 
-      {/* Right — portraits */}
+      {/* Right — portraits grid (up to 4, 2×2) */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: participants.length > 1 ? '1fr 1fr' : '1fr',
+        gridTemplateColumns: `repeat(${cols}, 1fr)`,
         borderLeft: '0.5px solid var(--border)',
         height: '100%',
         minHeight: 158,

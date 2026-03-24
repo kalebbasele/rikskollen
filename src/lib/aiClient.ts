@@ -5,8 +5,6 @@ const BACKEND = import.meta.env.DEV
   ? 'http://localhost:3001'
   : 'https://web-production-1e2f2.up.railway.app'
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 async function callClaude(prompt: string): Promise<string> {
   const res = await fetch(`${BACKEND}/ai`, {
     method: 'POST',
@@ -22,38 +20,27 @@ async function callClaude(prompt: string): Promise<string> {
   return data.content?.[0]?.text ?? ''
 }
 
-async function fetchProtocolText(dokId: string): Promise<string> {
-  // 1. Try the document text endpoint
-  try {
-    const res = await fetch(`${BACKEND}/api/dokument/${dokId}.text`)
-    if (res.ok) {
-      const text = await res.text()
-      if (text.length > 200) return text.slice(0, 7000)
-    }
-  } catch {}
-
-  // 2. Fallback: fetch anforande list and extract speech texts
+// Fetch all speeches for a debate from riksdagen's anforandelista API
+async function fetchSpeeches(dokId: string): Promise<string> {
   try {
     const res = await fetch(`${BACKEND}/api/anforandelista/?dok_id=${dokId}&utformat=json`)
-    if (res.ok) {
-      const data = await res.json()
-      const raw = data?.anforandelista?.anforande ?? []
-      const arr: any[] = Array.isArray(raw) ? raw : [raw]
-      const text = arr
-        .filter((a: any) => a.anf_text || a.anf_ffstycke)
-        .map((a: any) => {
-          const body = (a.anf_text ?? a.anf_ffstycke ?? '')
-            .replace(/<[^>]+>/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim()
-            .slice(0, 800)
-          return `${a.talare ?? ''}: ${body}`
-        })
-        .join('\n\n')
-      if (text.length > 200) return text.slice(0, 7000)
-    }
+    if (!res.ok) throw new Error()
+    const data = await res.json()
+    const raw = data?.anforandelista?.anforande ?? []
+    const arr: any[] = Array.isArray(raw) ? raw : [raw]
+    const text = arr
+      .filter((a: any) => a.anf_text || a.anf_ffstycke)
+      .map((a: any) => {
+        const body = (a.anf_text ?? a.anf_ffstycke ?? '')
+          .replace(/<[^>]+>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 1000)
+        return `${a.talare ?? 'Talare'} (${a.partibet ?? ''}): ${body}`
+      })
+      .join('\n\n')
+    if (text.length > 100) return text.slice(0, 8000)
   } catch {}
-
   return ''
 }
 
@@ -64,72 +51,65 @@ export async function generateDebateSummary(
   _protocol: string
 ): Promise<{ ingress: string; leftBloc: Debate['leftBloc']; rightBloc: Debate['rightBloc'] }> {
 
-  // 1. Try the cached backend /summary endpoint first
-  try {
-    const titleParam = encodeURIComponent(debate.title ?? '')
-    const dateParam = encodeURIComponent(debate.date ?? '')
-    const res = await fetch(
-      `${BACKEND}/summary/${debate.dokId}?title=${titleParam}&date=${dateParam}`,
-      { headers: { 'x-api-key': ANTHROPIC_KEY } }
-    )
-    if (res.ok) {
-      const data = await res.json()
-      const ingress: string = data.ingress ?? ''
-      // Only use if it contains real content
-      if (ingress.length > 50 && !ingress.toLowerCase().includes('ingen information')) {
-        return {
-          ingress,
-          leftBloc: {
-            parties: data.vansterblocket?.parties ?? [],
-            summary: data.vansterblocket?.summary ?? '',
-            keyArg: data.vansterblocket?.keyArg ?? '',
-          },
-          rightBloc: {
-            parties: data.hogerblocket?.parties ?? [],
-            summary: data.hogerblocket?.summary ?? '',
-            keyArg: data.hogerblocket?.keyArg ?? '',
-          },
-        }
-      }
-    }
-  } catch {}
+  // Fetch actual speech texts from anforandelista (most reliable source)
+  const speechText = await fetchSpeeches(debate.dokId ?? '')
 
-  // 2. Fetch protocol text and generate directly with Claude
-  const protocolText = await fetchProtocolText(debate.dokId ?? '')
-  if (!protocolText) throw new Error('Ingen debatttext hittades')
+  if (speechText) {
+    const participants = debate.participants
+      .map(p => `${p.person.name} (${p.person.party})`)
+      .join(', ')
 
-  const participants = debate.participants
-    .map(p => `${p.person.name} (${p.person.party})`)
-    .join(', ')
-
-  const prompt = `Du är en politisk journalist. Sammanfatta denna riksdagsdebatt på svenska.
+    const prompt = `Du är en politisk journalist. Sammanfatta denna riksdagsdebatt på svenska, baserat på de faktiska anförandena nedan.
 
 Debatt: ${debate.title}
 Datum: ${debate.date}
-Deltagare: ${participants}
+Talare: ${participants}
 
-Debattprotokoll:
-${protocolText}
+Anföranden:
+${speechText}
 
-Svara ENDAST med ett JSON-objekt:
+Svara ENDAST med ett JSON-objekt utan kommentarer:
 {
-  "ingress": "[2-3 meningar som sammanfattar debatten neutralt och konkret]",
+  "ingress": "[2-3 meningar som neutralt och konkret sammanfattar vad debatten handlade om och vad som sades]",
   "vansterblocket": {
     "parties": ["S", "V", "MP"],
-    "summary": "[Vänsterblockets ståndpunkt, 1-2 meningar]",
+    "summary": "[Vänsterblockets ståndpunkt i debatten, 1-2 meningar]",
     "keyArg": "[Deras starkaste argument, 1 mening]"
   },
   "hogerblocket": {
     "parties": ["M", "SD", "KD", "C", "L"],
-    "summary": "[Högerblockets ståndpunkt, 1-2 meningar]",
+    "summary": "[Högerblockets ståndpunkt i debatten, 1-2 meningar]",
     "keyArg": "[Deras starkaste argument, 1 mening]"
   }
 }`
 
-  const raw = await callClaude(prompt)
-  const clean = raw.replace(/```json|```/g, '').trim()
-  const data = JSON.parse(clean)
+    const raw = await callClaude(prompt)
+    const clean = raw.replace(/```json|```/g, '').trim()
+    const parsed = JSON.parse(clean)
+    return {
+      ingress: parsed.ingress ?? '',
+      leftBloc: {
+        parties: parsed.vansterblocket?.parties ?? [],
+        summary: parsed.vansterblocket?.summary ?? '',
+        keyArg: parsed.vansterblocket?.keyArg ?? '',
+      },
+      rightBloc: {
+        parties: parsed.hogerblocket?.parties ?? [],
+        summary: parsed.hogerblocket?.summary ?? '',
+        keyArg: parsed.hogerblocket?.keyArg ?? '',
+      },
+    }
+  }
 
+  // Fallback: use cached backend /summary endpoint
+  const titleParam = encodeURIComponent(debate.title ?? '')
+  const dateParam = encodeURIComponent(debate.date ?? '')
+  const res = await fetch(
+    `${BACKEND}/summary/${debate.dokId}?title=${titleParam}&date=${dateParam}`,
+    { headers: { 'x-api-key': ANTHROPIC_KEY } }
+  )
+  if (!res.ok) throw new Error(`Summary fetch failed: ${res.status}`)
+  const data = await res.json()
   return {
     ingress: data.ingress ?? '',
     leftBloc: {
@@ -164,8 +144,8 @@ Partier:
 ${partyBreakdown}
 
 VIKTIGT:
-- "humanTitle": Skriv en kort fråga (max 8 ord) som vanliga människor förstår, t.ex. "Ska straffen för minderåriga höjas?" eller "Får arbetsgivare säga upp utan skäl?". INTE det tekniska dokumentnamnet.
-- "jaMeaning"/"nejMeaning": Förklara KONKRET vad som händer i verkligheten — INTE "att rösta ja innebär att man stödjer förslaget". T.ex. "Arbetsgivare får säga upp utan skäl under 24 månader" eller "Nuvarande sjukpenningregler behålls".
+- "humanTitle": Skriv en kort fråga (max 8 ord) som vanliga människor förstår. INTE det tekniska dokumentnamnet.
+- "jaMeaning"/"nejMeaning": Förklara KONKRET vad som händer i verkligheten.
 
 Svara ENDAST med ett JSON-objekt (ingen annan text):
 {
