@@ -105,8 +105,8 @@ export default function App() {
   return (
     <div>
       {/* Navbar */}
-      <div style={{ background: '#0b0b18', borderBottom: '0.5px solid rgba(255,255,255,0.07)', height: 44 }}>
-        <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 20px' }}>
+      <div style={{ background: '#0b0b18', borderBottom: '0.5px solid rgba(255,255,255,0.07)', height: 48 }}>
+        <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
           <div onClick={handleLogoClick} style={{ fontSize: 18, fontWeight: 500, color: '#fff', letterSpacing: '-0.02em', cursor: 'default', userSelect: 'none' }}>
             Civi<span style={{ color: '#9b7dff' }}>ca</span>
           </div>
@@ -121,7 +121,7 @@ export default function App() {
                   <button key={t} onClick={() => setTab(t)} style={{
                     fontSize: 11, color: tab === t ? '#fff' : 'rgba(255,255,255,0.35)',
                     padding: '0 14px', background: 'none', border: 'none',
-                    borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 44,
+                    borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48,
                     fontWeight: tab === t ? 500 : 400,
                   }}>
                     {t === 'debatter' ? 'Debatter' : 'Omröstningar'}
@@ -129,7 +129,7 @@ export default function App() {
                 ))}
                 <button onClick={toggleTheme} style={{
                   fontSize: 10, color: 'rgba(255,255,255,0.3)', padding: '0 14px',
-                  borderLeft: '0.5px solid rgba(255,255,255,0.07)', background: 'none', border: 'none', height: 44,
+                  borderLeft: '0.5px solid rgba(255,255,255,0.07)', background: 'none', border: 'none', height: 48,
                 }}>
                   {theme === 'dark' ? 'Ljust' : 'Mörkt'}
                 </button>
@@ -142,7 +142,7 @@ export default function App() {
       {/* Ticker */}
       {!showDetail && latestDebate && (
         <div style={{ borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
-          <div className="page-inner" style={{ padding: '6px 20px', fontSize: 10, color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div className="page-inner" style={{ padding: '7px 24px', fontSize: 11, color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 9, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Senaste</span>
             {latestDebate.topic} · {formatDate(latestDebate.date)}
           </div>
@@ -152,12 +152,12 @@ export default function App() {
       {/* Category tabs */}
       {!showDetail && tab === 'debatter' && (
         <div style={{ borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
-          <div className="page-inner" style={{ padding: '0 20px', display: 'flex', overflowX: 'auto' }}>
+          <div className="page-inner" style={{ padding: '0 24px', display: 'flex', overflowX: 'auto' }}>
             {CATEGORIES.map(cat => (
               <button key={cat} onClick={() => setActiveCategory(cat)} style={{
-                fontSize: 10,
+                fontSize: 12,
                 color: activeCategory === cat ? '#fff' : 'rgba(255,255,255,0.3)',
-                padding: '8px 12px', background: 'none', border: 'none',
+                padding: '10px 12px 10px 0', background: 'none', border: 'none',
                 borderBottom: activeCategory === cat ? '2px solid rgba(155,125,255,0.7)' : '2px solid transparent',
                 whiteSpace: 'nowrap',
                 fontWeight: activeCategory === cat ? 500 : 400,
@@ -242,24 +242,24 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       style={{
         display: 'grid',
         gridTemplateColumns: '1fr 240px',
-        minHeight: 200,
+        minHeight: 220,
         cursor: 'pointer',
         borderBottom: '0.5px solid rgba(255,255,255,0.05)',
       }}
     >
       {/* Left — text */}
       <div style={{
-        padding: '28px 24px',
+        padding: '32px 28px',
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
         background: 'rgba(124,92,252,0.06)',
       }}>
-        <div style={{ fontSize: 9, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 10 }}>
+        <div style={{ fontSize: 9, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 12 }}>
           Senaste · {cat.label}
         </div>
-        <div style={{ fontSize: 26, fontWeight: 500, color: '#f0f0fa', lineHeight: 1.2, marginBottom: 10 }}>
+        <div style={{ fontSize: 28, fontWeight: 500, color: '#f0f0fa', lineHeight: 1.2, marginBottom: 12 }}>
           {debate.title}
         </div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
           {formatDate(debate.date)} · {debate.venue} · Interpellationsdebatt
         </div>
       </div>
@@ -275,18 +275,18 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
             display: 'flex', flexDirection: 'column',
             borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.05)' : 'none',
           }}>
-            <div style={{ flex: 1, minHeight: 140, position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.07)' }}>
+            <div style={{ flex: 1, minHeight: 150, position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.07)' }}>
               <img
                 src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
               />
             </div>
-            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', textAlign: 'center', padding: '5px 4px 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', textAlign: 'center', padding: '8px 4px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {p.person.firstName[0]}. {p.person.lastName}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 9 }}>
-              <PartyBadge party={p.person.party} size={20} />
+            <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 16, marginTop: 5 }}>
+              <PartyBadge party={p.person.party} size={22} />
             </div>
           </div>
         ))}
@@ -311,30 +311,30 @@ function SubgridCard({ debate, onClick, isLast }: { debate: Debate; onClick: () 
       }}
     >
       {/* Text */}
-      <div style={{ flex: 1, padding: '14px 14px 10px' }}>
-        <div style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 5 }}>
+      <div style={{ flex: 1, padding: '18px 18px 12px' }}>
+        <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 8 }}>
           {cat.label}
         </div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.82)', fontWeight: 500, lineHeight: 1.3, marginBottom: 6 }}>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.82)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
           {debate.title.length > 80 ? debate.title.slice(0, 80) + '…' : debate.title}
         </div>
-        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)' }}>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', marginTop: 8 }}>
           {formatDate(debate.date)}
         </div>
       </div>
 
       {/* Portraits */}
-      <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.04)', padding: '8px 14px 10px', display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+      <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.04)', padding: '10px 18px 14px', display: 'flex', gap: 10, alignItems: 'flex-end' }}>
         {participants.map((p, i) => (
-          <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 6, overflow: 'hidden', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
+          <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 6, overflow: 'hidden', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
               <img
                 src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
               />
             </div>
-            <PartyBadge party={p.person.party} size={15} />
+            <PartyBadge party={p.person.party} size={16} />
           </div>
         ))}
       </div>
@@ -362,7 +362,7 @@ function FeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: (id: 
       {groups.map(group => (
         <div key={group.date}>
           <div style={{
-            padding: '8px 20px 5px',
+            padding: '10px 24px 6px',
             fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.2)',
             textTransform: 'uppercase', letterSpacing: '0.1em',
             borderTop: '0.5px solid rgba(255,255,255,0.05)',
@@ -387,21 +387,21 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       onClick={onClick}
       style={{
         display: 'grid',
-        gridTemplateColumns: '1fr 180px',
-        minHeight: 76,
+        gridTemplateColumns: '1fr 190px',
+        minHeight: 84,
         borderBottom: '0.5px solid rgba(255,255,255,0.05)',
         cursor: 'pointer',
       }}
     >
       {/* Left — text */}
-      <div style={{ padding: '12px 16px' }}>
-        <div style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: cat.color, marginBottom: 4 }}>
+      <div style={{ padding: '16px 20px' }}>
+        <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: cat.color, marginBottom: 6 }}>
           {cat.label}
         </div>
-        <div style={{ fontSize: 13, color: '#e0e0f0', fontWeight: 500, lineHeight: 1.35, marginBottom: 5 }}>
+        <div style={{ fontSize: 14, color: '#e8e8f8', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
           {debate.title.length > 90 ? debate.title.slice(0, 90) + '…' : debate.title}
         </div>
-        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)' }}>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', marginTop: 6 }}>
           {formatDate(debate.date)} · {debate.venue}
         </div>
       </div>
@@ -415,17 +415,17 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         {participants.map((p, i) => (
           <div key={p.person.id || i} style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
-            paddingBottom: 7,
+            paddingBottom: 10,
             borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none',
           }}>
-            <div style={{ flex: 1, minHeight: 52, width: '100%', position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.07)' }}>
+            <div style={{ flex: 1, minHeight: 56, width: '100%', position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.07)' }}>
               <img
                 src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
               />
             </div>
-            <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', marginTop: 3, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '90%' }}>
+            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', marginTop: 4, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '90%' }}>
               {p.person.firstName[0]}. {p.person.lastName}
             </div>
             <div style={{ marginTop: 3 }}>
