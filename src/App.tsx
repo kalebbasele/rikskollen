@@ -143,7 +143,7 @@ export default function App() {
       {/* Ticker */}
       {!showDetail && latestDebate && (
         <div style={{ borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
-          <div className="page-inner" style={{ padding: '7px 24px', fontSize: 14, color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div className="page-inner" style={{ padding: '7px 24px', fontSize: 14, color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Senaste</span>
             {latestDebate.topic} · {formatDate(latestDebate.date)}
           </div>
@@ -157,7 +157,7 @@ export default function App() {
             {CATEGORIES.map(cat => (
               <button key={cat} onClick={() => setActiveCategory(cat)} style={{
                 fontSize: 15,
-                color: activeCategory === cat ? '#fff' : 'rgba(255,255,255,0.3)',
+                color: activeCategory === cat ? 'var(--text)' : 'var(--text3)',
                 padding: '10px 12px 10px 0', background: 'none', border: 'none',
                 borderBottom: activeCategory === cat ? '2px solid rgba(155,125,255,0.7)' : '2px solid transparent',
                 whiteSpace: 'nowrap',
@@ -263,10 +263,10 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         <div style={{ fontSize: 12, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 12 }}>
           Senaste · {cat.label}
         </div>
-        <div style={{ fontSize: 32, fontWeight: 500, color: '#f0f0fa', lineHeight: 1.2, marginBottom: 12 }}>
+        <div style={{ fontSize: 32, fontWeight: 500, color: 'var(--text)', lineHeight: 1.2, marginBottom: 12 }}>
           {debate.title}
         </div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.6 }}>
           {formatDate(debate.date)} · {debate.venue} · Interpellationsdebatt
         </div>
       </div>
@@ -320,10 +320,10 @@ function SubgridCard({ debate, onClick, isLast: _isLast }: { debate: Debate; onC
         display: 'flex', flexDirection: 'column',
         cursor: 'pointer',
         borderRadius: 14,
-        background: 'rgba(255,255,255,0.04)',
+        background: 'var(--glass-bg)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        border: '0.5px solid rgba(255,255,255,0.09)',
+        border: '0.5px solid var(--glass-border)',
         boxShadow: '0 2px 20px rgba(0,0,0,0.25)',
         overflow: 'hidden',
       }}
@@ -333,16 +333,16 @@ function SubgridCard({ debate, onClick, isLast: _isLast }: { debate: Debate; onC
         <div style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 8 }}>
           {cat.label}
         </div>
-        <div style={{ fontSize: 17, color: 'rgba(255,255,255,0.88)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
+        <div style={{ fontSize: 17, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
           {debate.title.length > 80 ? debate.title.slice(0, 80) + '…' : debate.title}
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', marginTop: 8 }}>
+        <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 8 }}>
           {formatDate(debate.date)}
         </div>
       </div>
 
       {/* Portraits */}
-      <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.06)', padding: '10px 18px 14px', display: 'flex', gap: 10, alignItems: 'flex-end' }}>
+      <div style={{ borderTop: '0.5px solid var(--border)', padding: '10px 18px 14px', display: 'flex', gap: 10, alignItems: 'flex-end' }}>
         {participants.map((p, i) => (
           <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
             <div style={{ width: 68, height: 68, borderRadius: 8, overflow: 'hidden', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
@@ -381,7 +381,7 @@ function FeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: (id: 
         <div key={group.date}>
           <div style={{
             padding: '10px 24px 6px',
-            fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.2)',
+            fontSize: 12, fontWeight: 700, color: 'var(--text3)',
             textTransform: 'uppercase', letterSpacing: '0.1em',
             borderTop: '0.5px solid rgba(255,255,255,0.05)',
           }}>
@@ -411,10 +411,10 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         minHeight: 158,
         cursor: 'pointer',
         borderRadius: 14,
-        background: 'rgba(255,255,255,0.04)',
+        background: 'var(--glass-bg)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        border: '0.5px solid rgba(255,255,255,0.09)',
+        border: '0.5px solid var(--glass-border)',
         boxShadow: '0 2px 20px rgba(0,0,0,0.25)',
         overflow: 'hidden',
       }}
@@ -424,10 +424,10 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         <div style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: cat.color, marginBottom: 7 }}>
           {cat.label}
         </div>
-        <div style={{ fontSize: 18, color: '#e8e8f8', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
+        <div style={{ fontSize: 18, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
           {debate.title.length > 90 ? debate.title.slice(0, 90) + '…' : debate.title}
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', marginTop: 8 }}>
+        <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 8 }}>
           {formatDate(debate.date)} · {debate.venue}
         </div>
       </div>
@@ -436,7 +436,7 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       <div style={{
         display: 'grid',
         gridTemplateColumns: participants.length > 1 ? '1fr 1fr' : '1fr',
-        borderLeft: '0.5px solid rgba(255,255,255,0.05)',
+        borderLeft: '0.5px solid var(--border)',
         height: '100%',
         minHeight: 158,
         padding: 8,
@@ -488,7 +488,7 @@ function formatDateLabel(dateStr: string): string {
 function StatusMessage({ message }: { message: string }) {
   return (
     <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.25)' }}>
-      <p style={{ fontSize: 15 }}>{message}</p>
+      <p style={{ fontSize: 15, color: 'var(--text3)' }}>{message}</p>
     </div>
   )
 }

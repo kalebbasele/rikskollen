@@ -24,6 +24,8 @@
   --footer-bg: rgba(0,0,0,0.2);
   --cta-color: rgba(155,111,255,0.9);
   --logo-accent: #9b6fff;
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.09);
 }
 
 [data-theme="light"] {
@@ -48,6 +50,8 @@
   --footer-bg: #fafafa;
   --cta-color: #6644cc;
   --logo-accent: #b39aff;
+  --glass-bg: rgba(255,255,255,0.82);
+  --glass-border: rgba(0,0,0,0.08);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
