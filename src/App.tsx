@@ -312,10 +312,10 @@ function SidebarVoteItem({ vote }: { vote: Vote }) {
 
   return (
     <div style={{ padding: '10px 0', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
-      <div style={{ fontSize: 12, color: '#d0d0dc', lineHeight: 1.35, marginBottom: 7 }}>
-        {((vote.humanTitle ?? vote.title).length > 80
+      <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8f0', lineHeight: 1.35, marginBottom: 7 }}>
+        {(vote.humanTitle ?? vote.title).length > 80
           ? (vote.humanTitle ?? vote.title).slice(0, 80) + '…'
-          : (vote.humanTitle ?? vote.title))}
+          : (vote.humanTitle ?? vote.title)}
       </div>
       <div style={{ height: 4, borderRadius: 2, overflow: 'hidden', display: 'flex', marginBottom: 5 }}>
         <div style={{ width: `${jaPct}%`, background: '#4a7a5a' }} />

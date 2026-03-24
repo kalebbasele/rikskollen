@@ -24,7 +24,7 @@ export default function VoteCard({ vote }: Props) {
     >
       {/* Header */}
       <div style={{ padding: '14px 14px 10px' }}>
-        <div style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.35, color: '#e0e0ec' }}>
+        <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.35, color: '#e8e8f0' }}>
           {vote.humanTitle ?? (vote.title.length > 80 ? vote.title.slice(0, 80) + '…' : vote.title)}
         </div>
       </div>
