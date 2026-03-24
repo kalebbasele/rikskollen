@@ -242,7 +242,7 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       style={{
         display: 'grid',
         gridTemplateColumns: '1fr 240px',
-        minHeight: 220,
+        minHeight: 258,
         cursor: 'pointer',
         borderBottom: '0.5px solid rgba(255,255,255,0.05)',
       }}
