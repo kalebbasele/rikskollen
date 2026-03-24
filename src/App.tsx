@@ -199,9 +199,9 @@ export default function App() {
             </div>
           </div>
         ) : (
-          <div className="cards-grid" style={{ paddingTop: 16 }}>
+          <div style={{ paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
             {votesLoading
-              ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+              ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
               : votesError
               ? <ErrorMessage message={votesError} />
               : votes.length === 0
@@ -312,15 +312,9 @@ function SidebarVoteItem({ vote }: { vote: Vote }) {
 
   return (
     <div style={{ padding: '10px 0', borderBottom: '0.5px solid rgba(255,255,255,0.05)' }}>
-      <span style={{
-        display: 'block', fontSize: 9, fontWeight: 700, color,
-        textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4,
-      }}>
-        &nbsp;
-      </span>
       <div style={{ fontSize: 12, color: '#d0d0dc', lineHeight: 1.35, marginBottom: 7 }}>
-        {((vote.humanTitle ?? vote.title).length > 70
-          ? (vote.humanTitle ?? vote.title).slice(0, 70) + '…'
+        {((vote.humanTitle ?? vote.title).length > 80
+          ? (vote.humanTitle ?? vote.title).slice(0, 80) + '…'
           : (vote.humanTitle ?? vote.title))}
       </div>
       <div style={{ height: 4, borderRadius: 2, overflow: 'hidden', display: 'flex', marginBottom: 5 }}>
