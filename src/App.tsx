@@ -262,8 +262,7 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
           const party = getParty(p.person.party)
           return (
             <div key={p.person.id || i} style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
-              paddingBottom: 8,
+              position: 'relative',
               borderRight: i === 0 && participants.length > 1 ? '0.5px solid rgba(255,255,255,0.04)' : 'none',
               background: `${party?.color ?? '#334'}18`,
               overflow: 'hidden',
@@ -273,25 +272,28 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
                 alt={p.person.name}
                 loading="lazy"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ width: '100%', height: 70, objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
               />
               <div style={{
-                fontSize: 9, color: 'rgba(255,255,255,0.5)',
-                marginTop: 4, textAlign: 'center',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                maxWidth: '90%',
+                position: 'absolute', bottom: 0, left: 0, right: 0,
+                background: 'rgba(0,0,0,0.6)',
+                padding: '3px 5px',
+                display: 'flex', alignItems: 'center', gap: 4,
               }}>
-                {p.person.firstName[0]}. {p.person.lastName}
-              </div>
-              <div style={{
-                width: 18, height: 18, borderRadius: '50%',
-                background: party?.color ?? '#444',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 7, fontWeight: 800,
-                color: party?.textColor ?? '#fff',
-                marginTop: 3,
-              }}>
-                {p.person.party.slice(0, 2)}
+                <span style={{
+                  fontSize: 9, color: '#fff', fontWeight: 500,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
+                }}>
+                  {p.person.firstName[0]}. {p.person.lastName}
+                </span>
+                <span style={{
+                  fontSize: 7, fontWeight: 800, flexShrink: 0,
+                  padding: '1px 4px', borderRadius: 3,
+                  background: party?.color ?? '#444',
+                  color: party?.textColor ?? '#fff',
+                }}>
+                  {p.person.party}
+                </span>
               </div>
             </div>
           )

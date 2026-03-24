@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import type { Debate } from '../types'
 import { getParty } from '../types'
-import PersonPortrait from './PersonPortrait'
 import { generateDebateSummary } from '../lib/aiClient'
 
 interface Props {
@@ -43,10 +42,6 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
 
   const mainParticipants = debate.participants.slice(0, 2)
   const bannerHeight = 196
-  const portraitWidth = 86
-  const portraitHeight = mainParticipants.length > 0
-    ? Math.floor(bannerHeight / mainParticipants.length)
-    : bannerHeight
 
   return (
     <div style={{ padding: '0 16px' }}>
@@ -103,35 +98,63 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
           </div>
         </div>
 
-        {/* Stacked portraits — fixed pixel heights, no flex stretching */}
+        {/* Side-by-side portraits */}
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
+            display: 'grid',
+            gridTemplateColumns: mainParticipants.length > 1 ? '1fr 1fr' : '1fr',
             flexShrink: 0,
-            width: portraitWidth,
+            width: mainParticipants.length > 1 ? 172 : 86,
             height: bannerHeight,
             overflow: 'hidden',
           }}
         >
-          {mainParticipants.map((p, i) => (
-            <div
-              key={p.person.id || i}
-              style={{
-                height: portraitHeight,
-                flexShrink: 0,
-                borderTop: i > 0 ? '1px solid rgba(255,255,255,0.07)' : 'none',
-                overflow: 'hidden',
-              }}
-            >
-              <PersonPortrait
-                person={p.person}
-                height={portraitHeight}
-                width={portraitWidth}
-                variant="detail"
-              />
-            </div>
-          ))}
+          {mainParticipants.map((p, i) => {
+            const party = getParty(p.person.party)
+            return (
+              <div
+                key={p.person.id || i}
+                style={{
+                  position: 'relative',
+                  overflow: 'hidden',
+                  borderLeft: i > 0 ? '0.5px solid rgba(255,255,255,0.07)' : 'none',
+                  background: `${party?.color ?? '#334'}18`,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                }}
+              >
+                <img
+                  src={p.person.photoUrl}
+                  alt={p.person.name}
+                  loading="lazy"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  style={{ width: '100%', flex: 1, objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+                />
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  background: 'rgba(0,0,0,0.6)',
+                  padding: '3px 5px',
+                  display: 'flex', alignItems: 'center', gap: 4,
+                }}>
+                  <span style={{
+                    fontSize: 9, color: '#fff', fontWeight: 500,
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
+                  }}>
+                    {p.person.firstName[0]}. {p.person.lastName}
+                  </span>
+                  <span style={{
+                    fontSize: 7, fontWeight: 800, flexShrink: 0,
+                    padding: '1px 4px', borderRadius: 3,
+                    background: party?.color ?? '#444',
+                    color: party?.textColor ?? '#fff',
+                  }}>
+                    {p.person.party}
+                  </span>
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
 
