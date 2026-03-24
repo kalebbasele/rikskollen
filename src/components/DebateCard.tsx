@@ -18,7 +18,6 @@ export default function DebateCard({ debate, onClick }: Props) {
         borderRadius: 'var(--radius)',
         overflow: 'hidden',
         cursor: 'pointer',
-        marginBottom: 10,
         background: 'var(--card-bg)',
         transition: 'border-color .2s',
       }}

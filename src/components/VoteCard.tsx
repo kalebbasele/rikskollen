@@ -20,7 +20,6 @@ export default function VoteCard({ vote }: Props) {
         border: '1px solid var(--border)',
         borderRadius: 'var(--radius)',
         overflow: 'hidden',
-        marginBottom: 12,
       }}
     >
       {/* Header */}

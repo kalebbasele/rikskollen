@@ -1,7 +1,9 @@
 import type { Debate, Vote } from '../types'
 
 const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY ?? ''
-const BACKEND = 'http://localhost:3001'
+const BACKEND = import.meta.env.DEV
+  ? 'http://localhost:3001'
+  : 'https://web-production-1e2f2.up.railway.app'
 
 // ── Debate summaries — hämtas från server-cache ────────────────────────────
 

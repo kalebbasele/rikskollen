@@ -90,11 +90,9 @@ export default function App() {
       <div style={{
         background: 'var(--top-bg)',
         borderBottom: theme === 'dark' ? '1px solid rgba(124,92,252,0.4)' : 'none',
-        padding: '0 16px',
         height: 44,
-        display: 'flex',
-        alignItems: 'center',
       }}>
+      <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 20px' }}>
         <div
           onClick={handleLogoClick}
           style={{ fontSize: 18, fontWeight: 500, color: '#fff', letterSpacing: '-0.02em', cursor: 'default', userSelect: 'none' }}
@@ -146,27 +144,31 @@ export default function App() {
           )}
         </div>
       </div>
+      </div>
 
       {/* Ticker */}
       {!showDetail && latestDebate && (
         <div style={{
           background: 'var(--ticker-bg)',
           borderBottom: '0.5px solid var(--ticker-border)',
-          padding: '6px 16px',
-          fontSize: 10,
-          color: theme === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.45)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
         }}>
-          <span style={{
-            fontSize: 9,
-            fontWeight: 700,
-            color: 'var(--ticker-label)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-          }}>Senaste</span>
-          {latestDebate.topic} · {formatDate(latestDebate.date)}
+          <div className="page-inner" style={{
+            padding: '6px 20px',
+            fontSize: 10,
+            color: theme === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.45)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+          }}>
+            <span style={{
+              fontSize: 9,
+              fontWeight: 700,
+              color: 'var(--ticker-label)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+            }}>Senaste</span>
+            {latestDebate.topic} · {formatDate(latestDebate.date)}
+          </div>
         </div>
       )}
 
@@ -175,42 +177,43 @@ export default function App() {
         <div style={{
           background: theme === 'dark' ? 'rgba(255,255,255,0.02)' : '#fff',
           borderBottom: theme === 'dark' ? '0.5px solid rgba(255,255,255,0.06)' : '0.5px solid #ddd',
-          padding: '0 16px',
-          display: 'flex',
-          overflowX: 'auto',
         }}>
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              style={{
-                fontSize: 10,
-                color: activeCategory === cat ? 'var(--cat-active)' : 'var(--text3)',
-                padding: '8px 12px',
-                background: 'none',
-                border: 'none',
-                borderBottom: activeCategory === cat ? `2px solid var(--cat-active-border)` : '2px solid transparent',
-                whiteSpace: 'nowrap',
-                fontWeight: activeCategory === cat ? 500 : 400,
-              }}
-            >
-              {cat}
-            </button>
-          ))}
+          <div className="page-inner" style={{ padding: '0 20px', display: 'flex', overflowX: 'auto' }}>
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                style={{
+                  fontSize: 10,
+                  color: activeCategory === cat ? 'var(--cat-active)' : 'var(--text3)',
+                  padding: '8px 12px',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: activeCategory === cat ? `2px solid var(--cat-active-border)` : '2px solid transparent',
+                  whiteSpace: 'nowrap',
+                  fontWeight: activeCategory === cat ? 500 : 400,
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
       {/* Content */}
-      <div style={{ padding: showDetail ? 0 : '14px 16px 24px' }}>
+      <div className="page-inner" style={{ padding: showDetail ? '16px 20px 40px' : '16px 20px 40px' }}>
         {showDetail ? (
-          <DebateDetail
-            debate={selectedDebate!}
-            onUpdate={(updated: Debate) => updateDebate(updated)}
-          />
+          <div className="detail-wrapper">
+            <DebateDetail
+              debate={selectedDebate!}
+              onUpdate={(updated: Debate) => updateDebate(updated)}
+            />
+          </div>
         ) : tab === 'debatter' ? (
-          <>
+          <div className="cards-grid">
             {debatesLoading
-              ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+              ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
               : debatesError
               ? <ErrorMessage message={debatesError} />
               : filteredDebates.length === 0
@@ -223,18 +226,18 @@ export default function App() {
                   />
                 ))
             }
-          </>
+          </div>
         ) : (
-          <>
+          <div className="cards-grid">
             {votesLoading
-              ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+              ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
               : votesError
               ? <ErrorMessage message={votesError} />
               : filteredVotes.length === 0
               ? <EmptyState message="Inga omröstningar." />
               : filteredVotes.map(vote => <VoteCard key={vote.id} vote={vote} />)
             }
-          </>
+          </div>
         )}
       </div>
     </div>

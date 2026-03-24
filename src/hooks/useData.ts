@@ -3,6 +3,22 @@ import type { Debate, Vote } from '../types'
 import { fetchDebates, fetchVotes } from '../lib/riksdagenApi'
 import { generateVoteSummary } from '../lib/aiClient'
 
+const CACHE_TTL = 5 * 60 * 1000
+
+function getCached<T>(key: string): T | null {
+  try {
+    const raw = sessionStorage.getItem(key)
+    if (!raw) return null
+    const { data, ts } = JSON.parse(raw)
+    if (Date.now() - ts > CACHE_TTL) return null
+    return data as T
+  } catch { return null }
+}
+
+function setCache<T>(key: string, data: T) {
+  try { sessionStorage.setItem(key, JSON.stringify({ data, ts: Date.now() })) } catch {}
+}
+
 // ── Debates ───────────────────────────────────────────────────────────────────
 
 export function useDebates() {
@@ -12,9 +28,21 @@ export function useDebates() {
 
   useEffect(() => {
     let cancelled = false
+    const cached = getCached<Debate[]>('civica_debates')
+    if (cached) {
+      setDebates(cached)
+      setLoading(false)
+      return
+    }
     setLoading(true)
     fetchDebates()
-      .then(data => { if (!cancelled) { setDebates(data); setLoading(false) } })
+      .then(data => {
+        if (!cancelled) {
+          setCache('civica_debates', data)
+          setDebates(data)
+          setLoading(false)
+        }
+      })
       .catch(() => { if (!cancelled) { setError('Kunde inte ladda debatter.'); setLoading(false) } })
     return () => { cancelled = true }
   }, [])
