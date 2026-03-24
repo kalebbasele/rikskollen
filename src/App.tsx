@@ -288,7 +288,7 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
               display: 'flex', flexDirection: 'column', alignItems: 'center',
             }}>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                {p.person.firstName[0]}. {p.person.lastName}
+                {p.person.name}
               </div>
               <div style={{ marginTop: 3 }}>
                 <PartyBadge party={p.person.party} size={20} />
@@ -333,7 +333,7 @@ function SubgridCard({ debate, onClick, isLast }: { debate: Debate; onClick: () 
       <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.04)', padding: '10px 18px 14px', display: 'flex', gap: 10, alignItems: 'flex-end' }}>
         {participants.map((p, i) => (
           <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
-            <div style={{ width: 38, height: 38, borderRadius: 6, overflow: 'hidden', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
+            <div style={{ width: 52, height: 52, borderRadius: 8, overflow: 'hidden', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
               <img
                 src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
@@ -437,7 +437,7 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
               display: 'flex', flexDirection: 'column', alignItems: 'center',
             }}>
               <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                {p.person.firstName[0]}. {p.person.lastName}
+                {p.person.name}
               </div>
               <div style={{ marginTop: 2 }}>
                 <PartyBadge party={p.person.party} size={16} />

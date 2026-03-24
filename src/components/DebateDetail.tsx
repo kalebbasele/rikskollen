@@ -141,7 +141,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                     fontSize: 9, color: '#fff', fontWeight: 500,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
                   }}>
-                    {p.person.firstName[0]}. {p.person.lastName}
+                    {p.person.name}
                   </span>
                   <span style={{
                     fontSize: 7, fontWeight: 800, flexShrink: 0,
