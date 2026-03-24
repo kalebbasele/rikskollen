@@ -279,7 +279,7 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
             <img
               src={p.person.photoUrl} alt={p.person.name} loading="lazy"
               onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', borderRadius: 6 }}
             />
             <div style={{
               position: 'absolute', bottom: 0, left: 0, right: 0,
@@ -428,7 +428,7 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
             <img
               src={p.person.photoUrl} alt={p.person.name} loading="lazy"
               onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', borderRadius: 6 }}
             />
             <div style={{
               position: 'absolute', bottom: 0, left: 0, right: 0,
