@@ -93,7 +93,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
               marginBottom: 7,
             }}
           >
-            {debate.topicEmoji} {debate.topic.length > 45 ? debate.topic.slice(0, 45) + '…' : debate.topic}
+            {debate.topic.length > 45 ? debate.topic.slice(0, 45) + '…' : debate.topic}
           </div>
           <div style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.25, color: '#fff' }}>
             {debate.title}

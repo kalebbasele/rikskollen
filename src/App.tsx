@@ -246,7 +246,7 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
             textTransform: 'uppercase', letterSpacing: '0.07em',
             marginBottom: 6,
           }}>
-            {debate.topicEmoji} {debate.topic.length > 35 ? debate.topic.slice(0, 35) + '…' : debate.topic}
+            {debate.topic.length > 35 ? debate.topic.slice(0, 35) + '…' : debate.topic}
           </span>
           <div style={{ fontSize: 15, fontWeight: 500, color: '#e0e0ec', lineHeight: 1.35 }}>
             {debate.title.length > 100 ? debate.title.slice(0, 100) + '…' : debate.title}
@@ -296,9 +296,7 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
             </div>
           )
         }) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)' }}>
-            <span style={{ fontSize: 22 }}>🏛️</span>
-          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.02)' }} />
         )}
       </div>
     </div>
@@ -316,7 +314,7 @@ function SidebarVoteItem({ vote }: { vote: Vote }) {
         display: 'block', fontSize: 9, fontWeight: 700, color,
         textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4,
       }}>
-        {vote.topicEmoji}
+        &nbsp;
       </span>
       <div style={{ fontSize: 12, color: '#d0d0dc', lineHeight: 1.35, marginBottom: 7 }}>
         {((vote.humanTitle ?? vote.title).length > 70

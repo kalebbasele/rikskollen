@@ -8,22 +8,8 @@ export function personPhotoUrl(id: string): string {
   return `https://data.riksdagen.se/filarkiv/bilder/ledamot/${id}_192.jpg`
 }
 
-export function guessEmoji(title: string): string {
-  const t = title.toLowerCase()
-  if (t.match(/gräns|migration|asyl|utvisning/)) return '🛂'
-  if (t.match(/energi|kärnkraft|el |vindkraft/)) return '⚡'
-  if (t.match(/vård|sjukvård|hälso|äldreomsorg/)) return '🏥'
-  if (t.match(/skola|utbildning|lärare|förskola/)) return '📚'
-  if (t.match(/polis|brott|kriminal|straff/)) return '🚔'
-  if (t.match(/försvar|nato|militär/)) return '🛡️'
-  if (t.match(/ekonomi|budget|skatt|finansi|moms/)) return '💰'
-  if (t.match(/klimat|miljö|utsläpp/)) return '🌱'
-  if (t.match(/bostad|hyres/)) return '🏗️'
-  if (t.match(/arbete|arbetsmarknad|lön/)) return '💼'
-  if (t.match(/iran|ukraina|utrik|bistånd/)) return '🌍'
-  if (t.match(/eu |europa/)) return '🇪🇺'
-  if (t.match(/pension|socialförsäkring/)) return '👴'
-  return '🏛️'
+export function guessEmoji(_title: string): string {
+  return ''
 }
 
 export async function fetchDebates(): Promise<Debate[]> {
