@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Debate, Vote } from '../types'
-import { fetchDebates, fetchVotes, fetchVoteDetail } from '../lib/riksdagenApi'
+import { fetchDebates, fetchVotes } from '../lib/riksdagenApi'
 import { generateVoteSummary } from '../lib/aiClient'
 
-const DEBATE_TTL   = 30 * 60 * 1000    // 30 min — refresh debate list
-const SUMMARY_TTL  = 8 * 60 * 60 * 1000 // 8 h   — summaries don't change
-const VOTES_TTL    = 8 * 60 * 60 * 1000 // 8 h   — votes rarely change
+const DEBATE_TTL  = 30 * 60 * 1000     // 30 min
+const SUMMARY_TTL = 8 * 60 * 60 * 1000 // 8 h
+const VOTES_TTL   = 8 * 60 * 60 * 1000 // 8 h
 
 function getLocal<T>(key: string, ttl: number): T | null {
   try {
@@ -21,7 +21,7 @@ function setLocal<T>(key: string, data: T) {
   try { localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() })) } catch {}
 }
 
-// ── Summaries cache (separate long-lived store) ───────────────────────────────
+// ── Summaries (separate long-lived store) ────────────────────────────────────
 
 type SummaryEntry = Pick<Debate, 'ingress' | 'leftBloc' | 'rightBloc'>
 
@@ -44,17 +44,11 @@ export function useDebates() {
 
   useEffect(() => {
     let cancelled = false
-    const cached = getLocal<Debate[]>('civica_debates', DEBATE_TTL)
     const summaries = getSummaryCache()
 
+    const cached = getLocal<Debate[]>('civica_debates', DEBATE_TTL)
     if (cached) {
-      // Merge any saved summaries into cached debates
-      const merged = cached.map(d =>
-        d.dokId && summaries[d.dokId]
-          ? { ...d, ...summaries[d.dokId] }
-          : d
-      )
-      setDebates(merged)
+      setDebates(cached.map(d => d.dokId && summaries[d.dokId] ? { ...d, ...summaries[d.dokId] } : d))
       setLoading(false)
       return
     }
@@ -63,14 +57,8 @@ export function useDebates() {
     fetchDebates()
       .then(data => {
         if (!cancelled) {
-          // Merge saved summaries into freshly fetched debates
-          const merged = data.map(d =>
-            d.dokId && summaries[d.dokId]
-              ? { ...d, ...summaries[d.dokId] }
-              : d
-          )
           setLocal('civica_debates', data)
-          setDebates(merged)
+          setDebates(data.map(d => d.dokId && summaries[d.dokId] ? { ...d, ...summaries[d.dokId] } : d))
           setLoading(false)
         }
       })
@@ -80,13 +68,8 @@ export function useDebates() {
 
   function updateDebate(updated: Debate) {
     setDebates(prev => prev.map(d => d.id === updated.id ? updated : d))
-    // Persist summary to long-lived cache
     if (updated.ingress && updated.dokId) {
-      saveSummary(updated.dokId, {
-        ingress: updated.ingress,
-        leftBloc: updated.leftBloc,
-        rightBloc: updated.rightBloc,
-      })
+      saveSummary(updated.dokId, { ingress: updated.ingress, leftBloc: updated.leftBloc, rightBloc: updated.rightBloc })
     }
   }
 
@@ -100,7 +83,6 @@ export function useVotes() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const summaryQueue = useRef<Set<string>>(new Set())
-  const enrichCount = useRef(0)
 
   useEffect(() => {
     let cancelled = false
@@ -110,64 +92,37 @@ export function useVotes() {
     if (cached && cached.length > 0) {
       setVotes(cached)
       setLoading(false)
-
-      // Silently check if a new vote has arrived
+      // Background check for new votes
       fetchVotes().then(fresh => {
         if (cancelled) return
         const cachedIds = new Set(cached.map(v => v.id))
-        const hasNew = fresh.some(v => !cachedIds.has(v.id))
-        if (hasNew) loadFull(cancelled)
+        if (fresh.some(v => !cachedIds.has(v.id))) loadAndCache()
       }).catch(() => {})
       return
     }
 
     setLoading(true)
-    loadFull(cancelled)
+    loadAndCache()
     return () => { cancelled = true }
 
-    function loadFull(isCancelled: boolean) {
-      enrichCount.current = 0
+    function loadAndCache() {
       fetchVotes()
         .then(data => {
-          if (isCancelled) return
+          if (cancelled) return
           setVotes(data)
           setLoading(false)
-
-          const total = data.length
-
-          data.forEach(vote => {
-            fetchVoteDetail(vote.id)
-              .then(detail => {
-                if (isCancelled) return
-                setVotes(prev => {
-                  const next = prev.map(v =>
-                    v.id === vote.id
-                      ? { ...v, title: detail.title, date: detail.date || v.date, partyVotes: detail.partyVotes, dokId: detail.dokId ?? v.dokId }
-                      : v
-                  )
-                  enrichCount.current += 1
-                  if (enrichCount.current === total) scheduleAI(next, isCancelled)
-                  return next
-                })
-              })
-              .catch(() => {
-                enrichCount.current += 1
-                if (enrichCount.current === total) {
-                  setVotes(current => { scheduleAI(current, isCancelled); return current })
-                }
-              })
-          })
+          generateSummaries(data)
         })
-        .catch(() => { if (!isCancelled) { setError('Kunde inte ladda omröstningar.'); setLoading(false) } })
+        .catch(() => { if (!cancelled) { setError('Kunde inte ladda omröstningar.'); setLoading(false) } })
     }
 
-    function scheduleAI(current: Vote[], isCancelled: boolean) {
-      const toSummarize = current.filter(v => !v.jaMeaning && !summaryQueue.current.has(v.id))
-      if (toSummarize.length === 0) return
+    function generateSummaries(data: Vote[]) {
+      const toSummarize = data.filter(v => !v.jaMeaning && !summaryQueue.current.has(v.id))
+      if (toSummarize.length === 0) { setLocal('civica_votes', data); return }
       toSummarize.forEach(v => summaryQueue.current.add(v.id))
       Promise.allSettled(toSummarize.map(vote => generateVoteSummary(vote)))
         .then(results => {
-          if (isCancelled) return
+          if (cancelled) return
           setVotes(prev => {
             const next = prev.map(v => {
               const i = toSummarize.findIndex(s => s.id === v.id)
