@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Debate, Vote } from '../types'
 import { fetchDebates, fetchVotes, fetchVoteDetail } from '../lib/riksdagenApi'
-import { generateDebateSummary, generateVoteSummary } from '../lib/aiClient'
+import { generateVoteSummary } from '../lib/aiClient'
 
 const CACHE_TTL = 5 * 60 * 1000
 
@@ -41,18 +41,6 @@ export function useDebates() {
           setCache('civica_debates', data)
           setDebates(data)
           setLoading(false)
-          // Pre-fetch summaries for top 3 debates in background so they're cached when user clicks
-          data.slice(0, 3).forEach(debate => {
-            if (!debate.ingress && debate.dokId) {
-              generateDebateSummary(debate, '').then(summary => {
-                if (cancelled) return
-                setDebates(prev => prev.map(d => d.id === debate.id
-                  ? { ...d, ingress: summary.ingress, leftBloc: summary.leftBloc, rightBloc: summary.rightBloc }
-                  : d
-                ))
-              }).catch(() => {})
-            }
-          })
         }
       })
       .catch(() => { if (!cancelled) { setError('Kunde inte ladda debatter.'); setLoading(false) } })
