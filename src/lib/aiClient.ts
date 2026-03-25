@@ -20,15 +20,13 @@ async function callClaude(prompt: string): Promise<string> {
   return data.content?.[0]?.text ?? ''
 }
 
-// Fetch document text from dokumentstatus (primary source — same as Lovable)
+// Fetch plain text of the interpellation document (reliable — same URL pattern as dokument_url_text in API)
 async function fetchDocumentText(dokId: string): Promise<string> {
   try {
-    const res = await fetch(`${BACKEND}/api/dokumentstatus/${dokId}.json`)
+    const res = await fetch(`${BACKEND}/api/dokument/${dokId}.text`)
     if (!res.ok) throw new Error()
-    const data = await res.json()
-    const html: string = data?.dokumentstatus?.dokument?.html ?? data?.dokumentstatus?.dokument?.text ?? ''
-    if (!html) return ''
-    const clean = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    const text = await res.text()
+    const clean = text.replace(/\s+/g, ' ').trim()
     if (clean.length > 100) return clean.slice(0, 6000)
   } catch {}
   return ''
