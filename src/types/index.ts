@@ -13,7 +13,7 @@ export const PARTIES: PartyInfo[] = [
   { id: 'V',  color: '#DA291C', bloc: 'left' },
   { id: 'MP', color: '#83CF39', bloc: 'left' },
   { id: 'M',  color: '#1B2D6B', bloc: 'right' },
-  { id: 'SD', color: '#dddd00', bloc: 'right' },
+  { id: 'SD', color: '#dddd00', textColor: '#111', bloc: 'right' },
   { id: 'KD', color: '#231977', bloc: 'right' },
   { id: 'C',  color: '#009933', bloc: 'right' },
   { id: 'L',  color: '#006AB3', bloc: 'right' },

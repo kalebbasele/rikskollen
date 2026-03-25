@@ -5,9 +5,10 @@ import { getParty } from './types'
 import DebateDetail from './components/DebateDetail'
 import VoteCard from './components/VoteCard'
 import SkeletonCard from './components/SkeletonCard'
+import Valkompass from './components/Valkompass'
 import { useIsMobile } from './hooks/useIsMobile'
 
-type Tab = 'debatter' | 'omrostningar'
+type Tab = 'debatter' | 'omrostningar' | 'valkompass'
 
 const CATEGORIES = ['Alla', 'Migration', 'Ekonomi', 'Klimat', 'Vård', 'Försvar', 'Utbildning', 'Utrikespolitik']
 
@@ -102,14 +103,14 @@ export default function App() {
               </button>
             ) : (
               <>
-                {(['debatter', 'omrostningar'] as Tab[]).map(t => (
+                {(['debatter', 'omrostningar', 'valkompass'] as Tab[]).map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
                     fontSize: 15, color: tab === t ? '#fff' : 'rgba(255,255,255,0.35)',
                     padding: '0 14px', background: 'none', border: 'none',
                     borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48,
                     fontWeight: tab === t ? 500 : 400,
                   }}>
-                    {t === 'debatter' ? 'Debatter' : 'Omröstningar'}
+                    {t === 'debatter' ? 'Debatter' : t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
                   </button>
                 ))}
                 <button onClick={toggleTheme} style={{
@@ -197,6 +198,12 @@ export default function App() {
               )}
             </>
           )}
+        </div>
+      ) : tab === 'valkompass' ? (
+        <div className="page-inner" style={{ padding: isMobile ? '16px 12px 60px' : '24px 20px 60px' }}>
+          <div style={{ maxWidth: 680, margin: '0 auto' }}>
+            <Valkompass />
+          </div>
         </div>
       ) : (
         <div className="page-inner" style={{ padding: '16px 20px 60px' }}>
