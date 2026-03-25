@@ -3,8 +3,9 @@ import type { Debate, Vote } from '../types'
 import { fetchDebates, fetchVotes, fetchVoteDetail } from '../lib/riksdagenApi'
 import { generateVoteSummary } from '../lib/aiClient'
 
-const DEBATE_TTL = 5 * 60 * 1000       // 5 min — debates change often
-const VOTES_TTL  = 8 * 60 * 60 * 1000  // 8 h   — votes rarely change
+const DEBATE_TTL   = 30 * 60 * 1000    // 30 min — refresh debate list
+const SUMMARY_TTL  = 8 * 60 * 60 * 1000 // 8 h   — summaries don't change
+const VOTES_TTL    = 8 * 60 * 60 * 1000 // 8 h   — votes rarely change
 
 function getLocal<T>(key: string, ttl: number): T | null {
   try {
@@ -20,6 +21,20 @@ function setLocal<T>(key: string, data: T) {
   try { localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() })) } catch {}
 }
 
+// ── Summaries cache (separate long-lived store) ───────────────────────────────
+
+type SummaryEntry = Pick<Debate, 'ingress' | 'leftBloc' | 'rightBloc'>
+
+function getSummaryCache(): Record<string, SummaryEntry> {
+  return getLocal<Record<string, SummaryEntry>>('civica_summaries', SUMMARY_TTL) ?? {}
+}
+
+export function saveSummary(dokId: string, entry: SummaryEntry) {
+  const cache = getSummaryCache()
+  cache[dokId] = entry
+  setLocal('civica_summaries', cache)
+}
+
 // ── Debates ───────────────────────────────────────────────────────────────────
 
 export function useDebates() {
@@ -30,17 +45,32 @@ export function useDebates() {
   useEffect(() => {
     let cancelled = false
     const cached = getLocal<Debate[]>('civica_debates', DEBATE_TTL)
+    const summaries = getSummaryCache()
+
     if (cached) {
-      setDebates(cached)
+      // Merge any saved summaries into cached debates
+      const merged = cached.map(d =>
+        d.dokId && summaries[d.dokId]
+          ? { ...d, ...summaries[d.dokId] }
+          : d
+      )
+      setDebates(merged)
       setLoading(false)
       return
     }
+
     setLoading(true)
     fetchDebates()
       .then(data => {
         if (!cancelled) {
+          // Merge saved summaries into freshly fetched debates
+          const merged = data.map(d =>
+            d.dokId && summaries[d.dokId]
+              ? { ...d, ...summaries[d.dokId] }
+              : d
+          )
           setLocal('civica_debates', data)
-          setDebates(data)
+          setDebates(merged)
           setLoading(false)
         }
       })
@@ -50,6 +80,14 @@ export function useDebates() {
 
   function updateDebate(updated: Debate) {
     setDebates(prev => prev.map(d => d.id === updated.id ? updated : d))
+    // Persist summary to long-lived cache
+    if (updated.ingress && updated.dokId) {
+      saveSummary(updated.dokId, {
+        ingress: updated.ingress,
+        leftBloc: updated.leftBloc,
+        rightBloc: updated.rightBloc,
+      })
+    }
   }
 
   return { debates, loading, error, updateDebate }
@@ -73,15 +111,12 @@ export function useVotes() {
       setVotes(cached)
       setLoading(false)
 
-      // Silently check in background if a new vote has arrived (just the list, cheap)
+      // Silently check if a new vote has arrived
       fetchVotes().then(fresh => {
         if (cancelled) return
         const cachedIds = new Set(cached.map(v => v.id))
         const hasNew = fresh.some(v => !cachedIds.has(v.id))
-        if (hasNew) {
-          // New votes found — do a full refresh
-          loadFull(cancelled)
-        }
+        if (hasNew) loadFull(cancelled)
       }).catch(() => {})
       return
     }
@@ -100,7 +135,6 @@ export function useVotes() {
 
           const total = data.length
 
-          // Enrich each vote with full detail (title, partyVotes) in background
           data.forEach(vote => {
             fetchVoteDetail(vote.id)
               .then(detail => {
@@ -112,7 +146,6 @@ export function useVotes() {
                       : v
                   )
                   enrichCount.current += 1
-                  // Once all details are in, generate AI summaries
                   if (enrichCount.current === total) scheduleAI(next, isCancelled)
                   return next
                 })
@@ -142,7 +175,6 @@ export function useVotes() {
               const s = (results[i] as PromiseFulfilledResult<Awaited<ReturnType<typeof generateVoteSummary>>>).value
               return { ...v, humanTitle: s.humanTitle, jaMeaning: s.jaMeaning, nejMeaning: s.nejMeaning, consequence: s.consequence, topicEmoji: s.topicEmoji || v.topicEmoji }
             })
-            // Save fully enriched votes to localStorage
             setLocal('civica_votes', next)
             return next
           })
