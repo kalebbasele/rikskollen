@@ -23,7 +23,7 @@ function cleanName(raw: string): string {
 
 export async function fetchDebates(): Promise<Debate[]> {
   const res = await fetch(
-    `${BACKEND}/api/dokumentlista/?doktyp=ip&utformat=json&a=20&sort=datum&sortorder=desc`
+    `${BACKEND}/api/dokumentlista/?doktyp=ip&utformat=json&antal=30&sort=debattdag&sortorder=desc`
   )
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   const data = await res.json()
