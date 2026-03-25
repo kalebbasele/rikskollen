@@ -103,28 +103,26 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                 />
                 <div style={{
                   position: 'absolute', bottom: 0, left: 0, right: 0,
-                  height: '25%',
+                  height: '18%',
                   background: `linear-gradient(to top, ${glow}bb 0%, transparent 100%)`,
                 }} />
-                {/* Badge — top left */}
-                <div style={{ position: 'absolute', top: 6, left: 6 }}>
+                {/* Name + badge — bottom row */}
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  padding: '4px 6px 6px',
+                  display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4,
+                }}>
+                  <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>
+                    {name}
+                  </span>
                   <div style={{
                     width: isMobile ? 15 : 18, height: isMobile ? 15 : 18, borderRadius: 4,
                     background: party?.color ?? '#444',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: isMobile ? 7 : 8, fontWeight: 800, color: party?.textColor ?? '#fff',
+                    fontSize: isMobile ? 7 : 8, fontWeight: 800, color: party?.textColor ?? '#fff', flexShrink: 0,
                   }}>
                     {p.person.party.slice(0, 2)}
                   </div>
-                </div>
-                {/* Name — bottom left */}
-                <div style={{
-                  position: 'absolute', bottom: 0, left: 0, right: 0,
-                  padding: '4px 6px 6px',
-                }}>
-                  <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-                    {name}
-                  </span>
                 </div>
               </div>
             )

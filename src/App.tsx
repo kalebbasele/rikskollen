@@ -307,21 +307,19 @@ function HeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: () =
               {/* Party glow overlay at bottom */}
               <div style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0,
-                height: '25%',
+                height: '18%',
                 background: `linear-gradient(to top, ${glow}bb 0%, transparent 100%)`,
               }} />
-              {/* Badge — top left */}
-              <div style={{ position: 'absolute', top: 6, left: 6 }}>
-                <PartyBadge party={p.person.party} size={isMobile ? 15 : 18} radius={4} />
-              </div>
-              {/* Name — bottom left */}
+              {/* Name + badge — bottom row */}
               <div style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0,
                 padding: '4px 6px 6px',
+                display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4,
               }}>
-                <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>
                   {shortName}
                 </span>
+                <PartyBadge party={p.person.party} size={isMobile ? 15 : 18} radius={4} />
               </div>
             </div>
           )
