@@ -226,8 +226,8 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                         fontWeight: 800,
                         padding: '2px 5px',
                         borderRadius: 4,
-                        background: `${party?.color ?? '#888'}22`,
-                        color: party?.textColor ?? party?.color ?? '#888',
+                        background: party?.color ?? '#888',
+                        color: '#fff',
                       }}
                     >
                       {p}
@@ -287,8 +287,8 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                         fontWeight: 800,
                         padding: '2px 5px',
                         borderRadius: 4,
-                        background: `${party?.color ?? '#888'}22`,
-                        color: party?.textColor ?? party?.color ?? '#888',
+                        background: party?.color ?? '#888',
+                        color: '#fff',
                       }}
                     >
                       {p}

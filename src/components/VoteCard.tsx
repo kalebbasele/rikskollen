@@ -99,8 +99,8 @@ export default function VoteCard({ vote }: Props) {
                     <span style={{
                       fontSize: 10, fontWeight: 800,
                       minWidth: 26, padding: '2px 5px', borderRadius: 4, textAlign: 'center',
-                      background: `${party?.color ?? '#888'}22`,
-                      color: party?.textColor ?? party?.color ?? '#888',
+                      background: party?.color ?? '#888',
+                      color: '#fff',
                     }}>
                       {pv.party}
                     </span>
