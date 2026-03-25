@@ -20,38 +20,15 @@ async function callClaude(prompt: string): Promise<string> {
   return data.content?.[0]?.text ?? ''
 }
 
-// Fetch plain text of the interpellation document (reliable — same URL pattern as dokument_url_text in API)
+// Fetch interpellation document text — strips XML/HTML tags from the response
 async function fetchDocumentText(dokId: string): Promise<string> {
   try {
     const res = await fetch(`${BACKEND}/api/dokument/${dokId}.text`)
     if (!res.ok) throw new Error()
-    const text = await res.text()
-    const clean = text.replace(/\s+/g, ' ').trim()
-    if (clean.length > 100) return clean.slice(0, 6000)
-  } catch {}
-  return ''
-}
-
-// Fetch all speeches for a debate from riksdagen's anforandelista API
-async function fetchSpeeches(dokId: string): Promise<string> {
-  try {
-    const res = await fetch(`${BACKEND}/api/anforandelista/?dok_id=${dokId}&utformat=json`)
-    if (!res.ok) throw new Error()
-    const data = await res.json()
-    const raw = data?.anforandelista?.anforande ?? []
-    const arr: any[] = Array.isArray(raw) ? raw : [raw]
-    const text = arr
-      .filter((a: any) => a.anf_text || a.anf_ffstycke)
-      .map((a: any) => {
-        const body = (a.anf_text ?? a.anf_ffstycke ?? '')
-          .replace(/<[^>]+>/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-          .slice(0, 1000)
-        return `${a.talare ?? 'Talare'} (${a.partibet ?? ''}): ${body}`
-      })
-      .join('\n\n')
-    if (text.length > 100) return text.slice(0, 4000)
+    const raw = await res.text()
+    // Strip all XML/HTML tags, collapse whitespace
+    const clean = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    if (clean.length > 100) return clean.slice(0, 7000)
   } catch {}
   return ''
 }
@@ -63,84 +40,53 @@ export async function generateDebateSummary(
   _protocol: string
 ): Promise<{ ingress: string; leftBloc: Debate['leftBloc']; rightBloc: Debate['rightBloc'] }> {
 
-  // Fetch text from dokumentstatus (primary) + anforandelista speeches (supplement)
-  const [docText, speechText] = await Promise.all([
-    fetchDocumentText(debate.dokId ?? ''),
-    fetchSpeeches(debate.dokId ?? ''),
-  ])
-  const combinedText = [docText, speechText].filter(Boolean).join('\n\n---\n\n')
+  const docText = await fetchDocumentText(debate.dokId ?? '')
 
-  if (combinedText) {
-    const participants = debate.participants
-      .map(p => `${p.person.name} (${p.person.party})`)
-      .join(', ')
+  const participants = debate.participants
+    .map(p => `${p.person.name} (${p.person.party})`)
+    .join(', ')
 
-    const prompt = `Du är en politisk journalist. Sammanfatta denna riksdagsdebatt på svenska, baserat på texten nedan.
+  const contentSection = docText
+    ? `Interpellationstext:\n${docText}`
+    : '(Interpellationstext ej tillgänglig — basera sammanfattningen på titel och deltagarlista)'
+
+  const prompt = `Du är en politisk journalist. Sammanfatta denna riksdagsdebatt på svenska.
 
 Debatt: ${debate.title}
 Datum: ${debate.date}
 Talare: ${participants}
 
-Debatttext:
-${combinedText}
+${contentSection}
 
 Svara ENDAST med ett JSON-objekt utan kommentarer:
 {
-  "ingress": "[2-3 meningar som neutralt och konkret sammanfattar vad debatten handlade om och vad som sades]",
+  "ingress": "[2-3 meningar som neutralt och konkret sammanfattar vad interpellationen handlade om och de viktigaste ståndpunkterna]",
   "vansterblocket": {
     "parties": ["S", "V", "MP"],
-    "summary": "[Vänsterblockets ståndpunkt i debatten, 1-2 meningar]",
-    "keyArg": "[Deras starkaste argument, 1 mening]"
+    "summary": "[Vänsterblockets ståndpunkt, 1-2 meningar — skriv 'Ej representerat' om inget vänsterparti deltog]",
+    "keyArg": "[Deras starkaste argument, 1 mening — eller '-' om ej representerat]"
   },
   "hogerblocket": {
     "parties": ["M", "SD", "KD", "C", "L"],
-    "summary": "[Högerblockets ståndpunkt i debatten, 1-2 meningar]",
-    "keyArg": "[Deras starkaste argument, 1 mening]"
+    "summary": "[Högerblockets ståndpunkt, 1-2 meningar — skriv 'Ej representerat' om inget högerparti deltog]",
+    "keyArg": "[Deras starkaste argument, 1 mening — eller '-' om ej representerat]"
   }
 }`
 
-    try {
-      const raw = await callClaude(prompt)
-      const clean = raw.replace(/```json|```/g, '').trim()
-      const parsed = JSON.parse(clean)
-      return {
-        ingress: parsed.ingress ?? '',
-        leftBloc: {
-          parties: parsed.vansterblocket?.parties ?? [],
-          summary: parsed.vansterblocket?.summary ?? '',
-          keyArg: parsed.vansterblocket?.keyArg ?? '',
-        },
-        rightBloc: {
-          parties: parsed.hogerblocket?.parties ?? [],
-          summary: parsed.hogerblocket?.summary ?? '',
-          keyArg: parsed.hogerblocket?.keyArg ?? '',
-        },
-      }
-    } catch {
-      // JSON parse failed — fall through to /summary endpoint
-    }
-  }
-
-  // Fallback: use cached backend /summary endpoint
-  const titleParam = encodeURIComponent(debate.title ?? '')
-  const dateParam = encodeURIComponent(debate.date ?? '')
-  const res = await fetch(
-    `${BACKEND}/summary/${debate.dokId}?title=${titleParam}&date=${dateParam}`,
-    { headers: { 'x-api-key': ANTHROPIC_KEY } }
-  )
-  if (!res.ok) throw new Error(`Summary fetch failed: ${res.status}`)
-  const data = await res.json()
+  const raw = await callClaude(prompt)
+  const clean = raw.replace(/```json|```/g, '').trim()
+  const parsed = JSON.parse(clean)
   return {
-    ingress: data.ingress ?? '',
+    ingress: parsed.ingress ?? '',
     leftBloc: {
-      parties: data.vansterblocket?.parties ?? [],
-      summary: data.vansterblocket?.summary ?? '',
-      keyArg: data.vansterblocket?.keyArg ?? '',
+      parties: parsed.vansterblocket?.parties ?? [],
+      summary: parsed.vansterblocket?.summary ?? '',
+      keyArg: parsed.vansterblocket?.keyArg ?? '',
     },
     rightBloc: {
-      parties: data.hogerblocket?.parties ?? [],
-      summary: data.hogerblocket?.summary ?? '',
-      keyArg: data.hogerblocket?.keyArg ?? '',
+      parties: parsed.hogerblocket?.parties ?? [],
+      summary: parsed.hogerblocket?.summary ?? '',
+      keyArg: parsed.hogerblocket?.keyArg ?? '',
     },
   }
 }
