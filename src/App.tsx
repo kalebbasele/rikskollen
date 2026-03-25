@@ -316,10 +316,10 @@ function HeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: () =
                 padding: '6px 8px 8px',
                 display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4,
               }}>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
                   {shortName}
                 </span>
-                <PartyBadge party={p.person.party} size={20} radius={5} />
+                <PartyBadge party={p.person.party} size={isMobile ? 15 : 20} radius={4} />
               </div>
             </div>
           )

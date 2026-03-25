@@ -111,14 +111,14 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                   padding: '6px 8px 8px',
                   display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4,
                 }}>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                  <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
                     {name}
                   </span>
                   <div style={{
-                    width: 20, height: 20, borderRadius: 5,
+                    width: isMobile ? 15 : 20, height: isMobile ? 15 : 20, borderRadius: 4,
                     background: party?.color ?? '#444',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 9, fontWeight: 800, color: party?.textColor ?? '#fff', flexShrink: 0,
+                    fontSize: isMobile ? 7 : 9, fontWeight: 800, color: party?.textColor ?? '#fff', flexShrink: 0,
                   }}>
                     {p.person.party.slice(0, 2)}
                   </div>
