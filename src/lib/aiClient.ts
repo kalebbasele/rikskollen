@@ -1,9 +1,7 @@
 import type { Debate, Vote } from '../types'
 
 const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY ?? ''
-const BACKEND = import.meta.env.DEV
-  ? 'http://localhost:3001'
-  : 'https://web-production-1e2f2.up.railway.app'
+const BACKEND = 'https://web-production-1e2f2.up.railway.app'
 
 async function callClaude(prompt: string): Promise<string> {
   const res = await fetch(`${BACKEND}/ai`, {

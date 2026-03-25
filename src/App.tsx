@@ -39,12 +39,12 @@ function matchesCategory(debate: Debate, cat: string): boolean {
   return (map[cat] ?? []).some(k => text.includes(k))
 }
 
-function PartyBadge({ party, size = 20, radius }: { party: string; size?: number; radius?: number }) {
+function PartyBadge({ party, size = 20, radius = 5 }: { party: string; size?: number; radius?: number }) {
   const p = getParty(party)
   return (
     <div style={{
       width: size, height: size,
-      borderRadius: radius !== undefined ? radius : '50%',
+      borderRadius: radius,
       background: p?.color ?? '#333',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: Math.round(size * 0.36), fontWeight: 800,
@@ -235,21 +235,21 @@ export default function App() {
 
 function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) {
   const cat = getCategory(debate.topic + debate.title)
-  const participants = debate.participants.slice(0, 4)
-  const cols = participants.length <= 2 ? participants.length : 2
+  const participants = debate.participants
 
   return (
     <div
       onClick={onClick}
       style={{
         display: 'grid',
-        gridTemplateColumns: '1fr 270px',
-        minHeight: 290,
+        gridTemplateColumns: `1fr ${Math.max(participants.length, 1) * 120 + 8}px`,
+        minHeight: 240,
         cursor: 'pointer',
         margin: '16px 16px 8px',
         borderRadius: 16,
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
+        background: 'linear-gradient(135deg, rgba(124,92,252,0.12) 0%, rgba(13,27,42,0.9) 100%)',
         border: '0.5px solid rgba(255,255,255,0.1)',
         boxShadow: '0 4px 32px rgba(0,0,0,0.35)',
         overflow: 'hidden',
@@ -257,52 +257,66 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
     >
       {/* Left — text */}
       <div style={{
-        padding: '32px 28px',
+        padding: '32px 28px 28px',
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-        background: 'rgba(124,92,252,0.06)',
       }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 14 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 12 }}>
           Senaste · {cat.label}
         </div>
-        <div style={{ fontSize: 36, fontWeight: 500, color: 'var(--text)', lineHeight: 1.2, marginBottom: 14 }}>
+        <div style={{ fontSize: 32, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2, marginBottom: 12 }}>
           {debate.title}
         </div>
-        <div style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 14, color: 'var(--text2)' }}>
           {formatDate(debate.date)} · {debate.venue} · Interpellationsdebatt
         </div>
       </div>
 
-      {/* Right — portraits grid (up to 4, 2×2) */}
+      {/* Right — individual portrait boxes with gaps */}
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(${cols}, 1fr)`,
-        borderLeft: '0.5px solid rgba(255,255,255,0.06)',
-        height: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'stretch',
+        gap: 8,
         padding: 8,
-        gap: 6,
       }}>
-        {participants.map((p, i) => (
-          <div key={p.person.id || i} style={{
-            position: 'relative', overflow: 'hidden', borderRadius: 8,
-          }}>
-            <img
-              src={p.person.photoUrl} alt={p.person.name} loading="lazy"
-              onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', borderRadius: 6 }}
-            />
-            <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.0) 30%, rgba(0,0,0,0.85) 100%)',
-              padding: '6px 8px 8px',
-              display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6,
+        {participants.map((p, i) => {
+          const party = getParty(p.person.party)
+          const glow = party?.color ?? '#334466'
+          const shortName = abbrevName(p.person)
+          return (
+            <div key={p.person.id || i} style={{
+              position: 'relative',
+              flex: 1,
+              borderRadius: 10,
+              overflow: 'hidden',
+              background: `linear-gradient(180deg, #0d1520 0%, ${glow}33 100%)`,
+              minHeight: 0,
             }}>
-              <PartyBadge party={p.person.party} size={24} radius={6} />
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
-                {p.person.name}
+              <img
+                src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
+              />
+              {/* Party glow overlay at bottom */}
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0,
+                height: '25%',
+                background: `linear-gradient(to top, ${glow}bb 0%, transparent 100%)`,
+              }} />
+              {/* Name + badge stacked */}
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0,
+                padding: '6px 8px 8px',
+                display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4,
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
+                  {shortName}
+                </span>
+                <PartyBadge party={p.person.party} size={20} radius={5} />
               </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
@@ -312,7 +326,9 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
 
 function SubgridCard({ debate, onClick, isLast: _isLast }: { debate: Debate; onClick: () => void; isLast: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
-  const participants = debate.participants.slice(0, 3)
+  const participants = debate.participants
+  const firstParty = getParty(participants[0]?.person.party)
+  const accentColor = firstParty?.color ?? '#7c5cfc'
 
   return (
     <div
@@ -321,41 +337,50 @@ function SubgridCard({ debate, onClick, isLast: _isLast }: { debate: Debate; onC
         display: 'flex', flexDirection: 'column',
         cursor: 'pointer',
         borderRadius: 14,
-        background: 'var(--glass-bg)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        border: '0.5px solid var(--glass-border)',
-        boxShadow: '0 2px 20px rgba(0,0,0,0.25)',
+        background: `linear-gradient(160deg, ${accentColor}12 0%, rgba(13,21,36,0.92) 60%)`,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '0.5px solid rgba(255,255,255,0.1)',
+        boxShadow: `0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)`,
         overflow: 'hidden',
       }}
     >
       {/* Text */}
-      <div style={{ flex: 1, padding: '20px 20px 14px' }}>
-        <div style={{ fontSize: 14, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 10 }}>
+      <div style={{ flex: 1, padding: '18px 18px 12px' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 8 }}>
           {cat.label}
         </div>
-        <div style={{ fontSize: 19, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
-          {debate.title.length > 80 ? debate.title.slice(0, 80) + '…' : debate.title}
+        <div style={{ fontSize: 17, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4 }}>
+          {debate.title.length > 75 ? debate.title.slice(0, 75) + '…' : debate.title}
         </div>
-        <div style={{ fontSize: 14, color: 'var(--text3)', marginTop: 10 }}>
-          {formatDate(debate.date)}
+        <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 8 }}>
+          {formatDateShort(debate.date)}
         </div>
       </div>
 
-      {/* Portraits */}
-      <div style={{ borderTop: '0.5px solid var(--border)', padding: '12px 20px 16px', display: 'flex', gap: 10, alignItems: 'flex-end' }}>
-        {participants.map((p, i) => (
-          <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
-            <div style={{ width: 76, height: 76, borderRadius: 8, overflow: 'hidden', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
-              <img
-                src={p.person.photoUrl} alt={p.person.name} loading="lazy"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
-              />
+      {/* Portraits with party glow */}
+      <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.07)', padding: '10px 18px 14px', display: 'flex', gap: 8 }}>
+        {participants.map((p, i) => {
+          const party = getParty(p.person.party)
+          const glow = party?.color ?? '#334466'
+          return (
+            <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+              <div style={{
+                width: 52, height: 52, borderRadius: 10, overflow: 'hidden', flexShrink: 0,
+                background: `linear-gradient(180deg, #0d1520 0%, ${glow}44 100%)`,
+                boxShadow: `0 0 12px ${glow}44`,
+                position: 'relative',
+              }}>
+                <img
+                  src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+                  onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
+                />
+              </div>
+              <PartyBadge party={p.person.party} size={20} />
             </div>
-            <PartyBadge party={p.person.party} size={18} />
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
@@ -381,14 +406,14 @@ function FeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: (id: 
       {groups.map(group => (
         <div key={group.date}>
           <div style={{
-            padding: '10px 24px 6px',
-            fontSize: 13, fontWeight: 700, color: 'var(--text3)',
-            textTransform: 'uppercase', letterSpacing: '0.1em',
+            padding: '14px 20px 6px',
+            fontSize: 11, fontWeight: 700, color: 'var(--text3)',
+            textTransform: 'uppercase', letterSpacing: '0.12em',
             borderTop: '0.5px solid rgba(255,255,255,0.05)',
           }}>
             {formatDateLabel(group.date)}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '0 16px 8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '0 16px 8px' }}>
             {group.debates.map(d => (
               <FeedCard key={d.id} debate={d} onClick={() => onSelect(d.id)} />
             ))}
@@ -401,77 +426,46 @@ function FeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: (id: 
 
 function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) {
   const cat = getCategory(debate.topic + debate.title)
-  const participants = debate.participants.slice(0, 4)
-  const cols = participants.length <= 2 ? participants.length : 2
+  const firstParty = getParty(debate.participants[0]?.person.party)
+  const accentColor = firstParty?.color ?? '#7c5cfc'
 
   return (
     <div
       onClick={onClick}
       style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 210px',
-        minHeight: 175,
         cursor: 'pointer',
-        borderRadius: 14,
-        background: 'var(--glass-bg)',
+        padding: '14px 20px',
+        borderRadius: 10,
+        background: `linear-gradient(135deg, ${accentColor}0d 0%, rgba(13,21,36,0.88) 100%)`,
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
-        border: '0.5px solid var(--glass-border)',
-        boxShadow: '0 2px 20px rgba(0,0,0,0.25)',
-        overflow: 'hidden',
+        border: '0.5px solid rgba(255,255,255,0.09)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 4,
       }}
     >
-      {/* Left — text */}
-      <div style={{ padding: '20px 24px' }}>
-        <div style={{ fontSize: 14, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.09em', color: cat.color, marginBottom: 8 }}>
-          {cat.label}
-        </div>
-        <div style={{ fontSize: 20, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4, marginBottom: 0 }}>
-          {debate.title.length > 90 ? debate.title.slice(0, 90) + '…' : debate.title}
-        </div>
-        <div style={{ fontSize: 14, color: 'var(--text3)', marginTop: 10 }}>
-          {formatDate(debate.date)} · {debate.venue}
-        </div>
+      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color }}>
+        {cat.label}
       </div>
-
-      {/* Right — portraits grid (up to 4, 2×2) */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(${cols}, 1fr)`,
-        borderLeft: '0.5px solid var(--border)',
-        height: '100%',
-        minHeight: 175,
-        padding: 8,
-        gap: 6,
-      }}>
-        {participants.map((p, i) => (
-          <div key={p.person.id || i} style={{
-            position: 'relative', overflow: 'hidden', borderRadius: 8,
-          }}>
-            <img
-              src={p.person.photoUrl} alt={p.person.name} loading="lazy"
-              onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', borderRadius: 6 }}
-            />
-            <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.0) 30%, rgba(0,0,0,0.85) 100%)',
-              padding: '6px 8px 8px',
-              display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 6,
-            }}>
-              <PartyBadge party={p.person.party} size={24} radius={6} />
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
-                {p.person.name}
-              </div>
-            </div>
-          </div>
-        ))}
+      <div style={{ fontSize: 17, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4 }}>
+        {debate.title}
+      </div>
+      <div style={{ fontSize: 13, color: 'var(--text3)' }}>
+        {debate.venue}
       </div>
     </div>
   )
 }
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
+
+function abbrevName(person: { firstName?: string; lastName?: string; name: string }): string {
+  const first = person.firstName?.[0] ?? person.name[0] ?? ''
+  const last = person.lastName || person.name.split(' ').slice(-1)[0]
+  return first ? `${first}.${last}` : last
+}
 
 function formatDate(dateStr: string): string {
   if (!dateStr) return ''
@@ -480,10 +474,17 @@ function formatDate(dateStr: string): string {
   } catch { return dateStr }
 }
 
+function formatDateShort(dateStr: string): string {
+  if (!dateStr) return ''
+  try {
+    return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long' })
+  } catch { return dateStr }
+}
+
 function formatDateLabel(dateStr: string): string {
   if (!dateStr) return ''
   try {
-    return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long' }).toUpperCase()
+    return new Date(dateStr).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()
   } catch { return dateStr }
 }
 

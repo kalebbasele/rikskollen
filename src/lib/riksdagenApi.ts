@@ -1,8 +1,6 @@
 import type { Debate, Vote, Person, PartyVote } from '../types'
 
-const BACKEND = import.meta.env.DEV
-  ? 'http://localhost:3001'
-  : 'https://web-production-1e2f2.up.railway.app'
+const BACKEND = 'https://web-production-1e2f2.up.railway.app'
 
 export function personPhotoUrl(id: string): string {
   return `https://data.riksdagen.se/filarkiv/bilder/ledamot/${id}_max.jpg`
@@ -53,7 +51,7 @@ export async function fetchDebates(): Promise<Debate[]> {
       if (a.intressent_id && !anforMap.has(a.intressent_id)) {
         anforMap.set(a.intressent_id, {
           name: cleanName(a.talare ?? ''),
-          party: a.partibet ?? '',
+          party: a.parti || a.partibet || '',
         })
       }
     }
@@ -63,7 +61,7 @@ export async function fetchDebates(): Promise<Debate[]> {
       const fromAnf = anforMap.get(id)
       // Use anforande name if available (strips ministerial titles), else fall back
       const name = fromAnf?.name || cleanName(i.namn ?? 'Okänd')
-      const party = i.partibet ?? fromAnf?.party ?? ''
+      const party = i.partibet || i.parti || fromAnf?.party || ''
       return {
         person: {
           id, name,
@@ -86,7 +84,15 @@ export async function fetchDebates(): Promise<Debate[]> {
       participants.push(makeParticipant(undertecknare, 'undertecknare'))
     }
 
-    // 2. All unique speakers from anforanden in debate order
+    // 2. Besvaradav (the minister who answers) — add before anforanden so reliable
+    //    party info from dokintressent wins over any duplicate from anforanden
+    const besvaradav = intressenter.find((i: any) => i.roll === 'besvaradav')
+    if (besvaradav?.intressent_id && !seen.has(besvaradav.intressent_id)) {
+      seen.add(besvaradav.intressent_id)
+      participants.push(makeParticipant(besvaradav, 'besvaradav'))
+    }
+
+    // 3. All unique speakers from anforanden in debate order
     //    Cross-reference with dokintressent when possible for reliable IDs
     for (const a of anforanden) {
       const id = a.intressent_id
@@ -103,7 +109,7 @@ export async function fetchDebates(): Promise<Debate[]> {
             id, name,
             firstName: name.split(' ')[0],
             lastName: name.split(' ').slice(1).join(' '),
-            party: a.partibet ?? '',
+            party: a.parti || a.partibet || '',
             photoUrl: personPhotoUrl(id),
           },
           role: 'talare',
@@ -111,14 +117,16 @@ export async function fetchDebates(): Promise<Debate[]> {
       }
     }
 
-    // 3. Besvaradav from dokintressent (in case they didn't appear in anforanden)
-    const besvaradav = intressenter.find((i: any) => i.roll === 'besvaradav')
-    if (besvaradav?.intressent_id && !seen.has(besvaradav.intressent_id)) {
-      seen.add(besvaradav.intressent_id)
-      participants.push(makeParticipant(besvaradav, 'besvaradav'))
-    }
-
     if (participants.length === 0) continue
+
+    // Deduplicate by name (same person can appear with multiple IDs)
+    const seenNames = new Set<string>()
+    const uniqueParticipants = participants.filter(p => {
+      const key = p.person.name.toLowerCase().trim()
+      if (seenNames.has(key)) return false
+      seenNames.add(key)
+      return true
+    })
 
     const debattdag = dok.debattdag || anforanden[0]?.anf_datumtid?.slice(0, 10) || dok.datum || ''
     const title = dok.titel ?? 'Debatt'
@@ -128,7 +136,7 @@ export async function fetchDebates(): Promise<Debate[]> {
       topicEmoji: guessEmoji(title),
       date: debattdag, venue: 'Riksdagens kammare',
       dokId: dok.dok_id,
-      participants,
+      participants: uniqueParticipants,
     })
   }
   return debates.sort((a, b) => (b.date > a.date ? 1 : -1))
