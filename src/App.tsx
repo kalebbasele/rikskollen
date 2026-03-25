@@ -47,7 +47,7 @@ function PartyBadge({ party, size = 20, radius = 5 }: { party: string; size?: nu
       borderRadius: radius,
       background: p?.color ?? '#333',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: Math.round(size * 0.36), fontWeight: 800,
+      fontSize: Math.round(size * 0.52), fontWeight: 800,
       color: p?.textColor ?? '#fff',
       flexShrink: 0,
     }}>

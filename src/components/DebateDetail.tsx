@@ -119,7 +119,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                     width: isMobile ? 15 : 18, height: isMobile ? 15 : 18, borderRadius: 4,
                     background: party?.color ?? '#444',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: isMobile ? 7 : 8, fontWeight: 800, color: party?.textColor ?? '#fff', flexShrink: 0,
+                    fontSize: isMobile ? 8 : 10, fontWeight: 800, color: '#fff', flexShrink: 0,
                   }}>
                     {p.person.party.slice(0, 2)}
                   </div>
