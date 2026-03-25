@@ -308,7 +308,7 @@ function HeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: () =
               <div style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0,
                 height: '18%',
-                background: `linear-gradient(to top, ${glow}bb 0%, transparent 100%)`,
+                background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)`,
               }} />
               {/* Name + badge — bottom row */}
               <div style={{
