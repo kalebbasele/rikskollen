@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Debate, Vote } from '../types'
-import { fetchDebates, fetchVotes } from '../lib/riksdagenApi'
+import { fetchDebates, fetchVotes, fetchVoteDetail } from '../lib/riksdagenApi'
 import { generateVoteSummary } from '../lib/aiClient'
 
 const CACHE_TTL = 5 * 60 * 1000
@@ -64,32 +64,44 @@ export function useVotes() {
 
   useEffect(() => {
     let cancelled = false
-    const cached = getCached<Vote[]>('civica_votes')
-    if (cached) {
-      setVotes(cached)
-      setLoading(false)
-      return
-    }
     setLoading(true)
     fetchVotes()
       .then(async data => {
         if (cancelled) return
-        setCache('civica_votes', data)
         setVotes(data)
         setLoading(false)
-        // Generate all AI summaries in parallel
-        const toSummarize = data.filter(v => !v.jaMeaning && !summaryQueue.current.has(v.id))
-        toSummarize.forEach(v => summaryQueue.current.add(v.id))
-        Promise.allSettled(toSummarize.map(vote => generateVoteSummary(vote)))
-          .then(results => {
-            if (cancelled) return
-            setVotes(prev => prev.map(v => {
-              const i = toSummarize.findIndex(s => s.id === v.id)
-              if (i === -1 || results[i].status !== 'fulfilled') return v
-              const s = (results[i] as PromiseFulfilledResult<Awaited<ReturnType<typeof generateVoteSummary>>>).value
-              return { ...v, humanTitle: s.humanTitle, jaMeaning: s.jaMeaning, nejMeaning: s.nejMeaning, consequence: s.consequence, topicEmoji: s.topicEmoji || v.topicEmoji }
-            }))
+
+        // Enrich each vote with full detail (title, partyVotes) in background
+        data.forEach(vote => {
+          fetchVoteDetail(vote.id)
+            .then(detail => {
+              if (cancelled) return
+              setVotes(prev => prev.map(v =>
+                v.id === vote.id ? { ...v, title: detail.title, date: detail.date || v.date, partyVotes: detail.partyVotes, dokId: detail.dokId ?? v.dokId } : v
+              ))
+            })
+            .catch(() => {})
+        })
+
+        // Generate AI summaries after a short delay (let details load first)
+        setTimeout(() => {
+          if (cancelled) return
+          setVotes(current => {
+            const toSummarize = current.filter(v => !v.jaMeaning && !summaryQueue.current.has(v.id))
+            toSummarize.forEach(v => summaryQueue.current.add(v.id))
+            Promise.allSettled(toSummarize.map(vote => generateVoteSummary(vote)))
+              .then(results => {
+                if (cancelled) return
+                setVotes(prev => prev.map(v => {
+                  const i = toSummarize.findIndex(s => s.id === v.id)
+                  if (i === -1 || results[i].status !== 'fulfilled') return v
+                  const s = (results[i] as PromiseFulfilledResult<Awaited<ReturnType<typeof generateVoteSummary>>>).value
+                  return { ...v, humanTitle: s.humanTitle, jaMeaning: s.jaMeaning, nejMeaning: s.nejMeaning, consequence: s.consequence, topicEmoji: s.topicEmoji || v.topicEmoji }
+                }))
+              })
+            return current
           })
+        }, 3000)
       })
       .catch(() => { if (!cancelled) { setError('Kunde inte ladda omröstningar.'); setLoading(false) } })
     return () => { cancelled = true }

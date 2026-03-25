@@ -157,3 +157,9 @@ export async function fetchVotes(): Promise<Vote[]> {
   const data: any[] = await res.json()
   return data.map(v => ({ ...v, topicEmoji: guessEmoji(v.title) }))
 }
+
+export async function fetchVoteDetail(id: string): Promise<{ title: string; date: string; partyVotes: Vote['partyVotes']; dokId: string | null }> {
+  const res = await fetch(`${BACKEND}/vote/${encodeURIComponent(id)}`)
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  return res.json()
+}
