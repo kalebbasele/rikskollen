@@ -20,6 +20,20 @@ async function callClaude(prompt: string): Promise<string> {
   return data.content?.[0]?.text ?? ''
 }
 
+// Fetch document text from dokumentstatus (primary source — same as Lovable)
+async function fetchDocumentText(dokId: string): Promise<string> {
+  try {
+    const res = await fetch(`${BACKEND}/api/dokumentstatus/${dokId}.json`)
+    if (!res.ok) throw new Error()
+    const data = await res.json()
+    const html: string = data?.dokumentstatus?.dokument?.html ?? data?.dokumentstatus?.dokument?.text ?? ''
+    if (!html) return ''
+    const clean = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    if (clean.length > 100) return clean.slice(0, 6000)
+  } catch {}
+  return ''
+}
+
 // Fetch all speeches for a debate from riksdagen's anforandelista API
 async function fetchSpeeches(dokId: string): Promise<string> {
   try {
@@ -39,7 +53,7 @@ async function fetchSpeeches(dokId: string): Promise<string> {
         return `${a.talare ?? 'Talare'} (${a.partibet ?? ''}): ${body}`
       })
       .join('\n\n')
-    if (text.length > 100) return text.slice(0, 8000)
+    if (text.length > 100) return text.slice(0, 4000)
   } catch {}
   return ''
 }
@@ -51,22 +65,26 @@ export async function generateDebateSummary(
   _protocol: string
 ): Promise<{ ingress: string; leftBloc: Debate['leftBloc']; rightBloc: Debate['rightBloc'] }> {
 
-  // Fetch actual speech texts from anforandelista (most reliable source)
-  const speechText = await fetchSpeeches(debate.dokId ?? '')
+  // Fetch text from dokumentstatus (primary) + anforandelista speeches (supplement)
+  const [docText, speechText] = await Promise.all([
+    fetchDocumentText(debate.dokId ?? ''),
+    fetchSpeeches(debate.dokId ?? ''),
+  ])
+  const combinedText = [docText, speechText].filter(Boolean).join('\n\n---\n\n')
 
-  if (speechText) {
+  if (combinedText) {
     const participants = debate.participants
       .map(p => `${p.person.name} (${p.person.party})`)
       .join(', ')
 
-    const prompt = `Du är en politisk journalist. Sammanfatta denna riksdagsdebatt på svenska, baserat på de faktiska anförandena nedan.
+    const prompt = `Du är en politisk journalist. Sammanfatta denna riksdagsdebatt på svenska, baserat på texten nedan.
 
 Debatt: ${debate.title}
 Datum: ${debate.date}
 Talare: ${participants}
 
-Anföranden:
-${speechText}
+Debatttext:
+${combinedText}
 
 Svara ENDAST med ett JSON-objekt utan kommentarer:
 {
@@ -83,21 +101,25 @@ Svara ENDAST med ett JSON-objekt utan kommentarer:
   }
 }`
 
-    const raw = await callClaude(prompt)
-    const clean = raw.replace(/```json|```/g, '').trim()
-    const parsed = JSON.parse(clean)
-    return {
-      ingress: parsed.ingress ?? '',
-      leftBloc: {
-        parties: parsed.vansterblocket?.parties ?? [],
-        summary: parsed.vansterblocket?.summary ?? '',
-        keyArg: parsed.vansterblocket?.keyArg ?? '',
-      },
-      rightBloc: {
-        parties: parsed.hogerblocket?.parties ?? [],
-        summary: parsed.hogerblocket?.summary ?? '',
-        keyArg: parsed.hogerblocket?.keyArg ?? '',
-      },
+    try {
+      const raw = await callClaude(prompt)
+      const clean = raw.replace(/```json|```/g, '').trim()
+      const parsed = JSON.parse(clean)
+      return {
+        ingress: parsed.ingress ?? '',
+        leftBloc: {
+          parties: parsed.vansterblocket?.parties ?? [],
+          summary: parsed.vansterblocket?.summary ?? '',
+          keyArg: parsed.vansterblocket?.keyArg ?? '',
+        },
+        rightBloc: {
+          parties: parsed.hogerblocket?.parties ?? [],
+          summary: parsed.hogerblocket?.summary ?? '',
+          keyArg: parsed.hogerblocket?.keyArg ?? '',
+        },
+      }
+    } catch {
+      // JSON parse failed — fall through to /summary endpoint
     }
   }
 
