@@ -20,19 +20,6 @@ async function callClaude(prompt: string): Promise<string> {
   return data.content?.[0]?.text ?? ''
 }
 
-// Fetch interpellation document text — strips XML/HTML tags from the response
-async function fetchDocumentText(dokId: string): Promise<string> {
-  try {
-    const res = await fetch(`${BACKEND}/api/dokument/${dokId}.text`)
-    if (!res.ok) throw new Error()
-    const raw = await res.text()
-    // Strip all XML/HTML tags, collapse whitespace
-    const clean = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-    if (clean.length > 100) return clean.slice(0, 7000)
-  } catch {}
-  return ''
-}
-
 // ── Debate summaries ──────────────────────────────────────────────────────────
 
 export async function generateDebateSummary(
@@ -40,53 +27,26 @@ export async function generateDebateSummary(
   _protocol: string
 ): Promise<{ ingress: string; leftBloc: Debate['leftBloc']; rightBloc: Debate['rightBloc'] }> {
 
-  const docText = await fetchDocumentText(debate.dokId ?? '')
-
-  const participants = debate.participants
-    .map(p => `${p.person.name} (${p.person.party})`)
-    .join(', ')
-
-  const contentSection = docText
-    ? `Interpellationstext:\n${docText}`
-    : '(Interpellationstext ej tillgänglig — basera sammanfattningen på titel och deltagarlista)'
-
-  const prompt = `Du är en politisk journalist. Sammanfatta denna riksdagsdebatt på svenska.
-
-Debatt: ${debate.title}
-Datum: ${debate.date}
-Talare: ${participants}
-
-${contentSection}
-
-Svara ENDAST med ett JSON-objekt utan kommentarer:
-{
-  "ingress": "[2-3 meningar som neutralt och konkret sammanfattar vad interpellationen handlade om och de viktigaste ståndpunkterna]",
-  "vansterblocket": {
-    "parties": ["S", "V", "MP"],
-    "summary": "[Vänsterblockets ståndpunkt, 1-2 meningar — skriv 'Ej representerat' om inget vänsterparti deltog]",
-    "keyArg": "[Deras starkaste argument, 1 mening — eller '-' om ej representerat]"
-  },
-  "hogerblocket": {
-    "parties": ["M", "SD", "KD", "C", "L"],
-    "summary": "[Högerblockets ståndpunkt, 1-2 meningar — skriv 'Ej representerat' om inget högerparti deltog]",
-    "keyArg": "[Deras starkaste argument, 1 mening — eller '-' om ej representerat]"
-  }
-}`
-
-  const raw = await callClaude(prompt)
-  const clean = raw.replace(/```json|```/g, '').trim()
-  const parsed = JSON.parse(clean)
+  // Backend /summary endpoint fetches real speech text via 4 strategies and caches results
+  const titleParam = encodeURIComponent(debate.title ?? '')
+  const dateParam = encodeURIComponent(debate.date ?? '')
+  const res = await fetch(
+    `${BACKEND}/summary/${debate.dokId}?title=${titleParam}&date=${dateParam}`,
+    { headers: { 'x-api-key': ANTHROPIC_KEY } }
+  )
+  if (!res.ok) throw new Error(`Summary fetch failed: ${res.status}`)
+  const data = await res.json()
   return {
-    ingress: parsed.ingress ?? '',
+    ingress: data.ingress ?? '',
     leftBloc: {
-      parties: parsed.vansterblocket?.parties ?? [],
-      summary: parsed.vansterblocket?.summary ?? '',
-      keyArg: parsed.vansterblocket?.keyArg ?? '',
+      parties: data.vansterblocket?.parties ?? [],
+      summary: data.vansterblocket?.summary ?? '',
+      keyArg: data.vansterblocket?.keyArg ?? '',
     },
     rightBloc: {
-      parties: parsed.hogerblocket?.parties ?? [],
-      summary: parsed.hogerblocket?.summary ?? '',
-      keyArg: parsed.hogerblocket?.keyArg ?? '',
+      parties: data.hogerblocket?.parties ?? [],
+      summary: data.hogerblocket?.summary ?? '',
+      keyArg: data.hogerblocket?.keyArg ?? '',
     },
   }
 }
