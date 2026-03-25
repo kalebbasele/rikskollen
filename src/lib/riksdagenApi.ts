@@ -151,15 +151,52 @@ export async function fetchDebateProtocol(dokId: string): Promise<string> {
   return ''
 }
 
+const RIKSDAGEN = 'https://data.riksdagen.se'
+
 export async function fetchVotes(): Promise<Vote[]> {
-  const res = await fetch(`${BACKEND}/votes`)
+  const res = await fetch(`${RIKSDAGEN}/voteringlista/?sz=8&utformat=json&gruppering=votering_id`)
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  const data: any[] = await res.json()
-  return data.map(v => ({ ...v, topicEmoji: guessEmoji(v.title) }))
+  const data = await res.json()
+  const items = data?.voteringlista?.votering ?? []
+  const arr: any[] = Array.isArray(items) ? items : [items]
+  return arr.slice(0, 6).map(item => ({
+    id: item.votering_id,
+    title: item.beteckning || item.votering_id || 'Omröstning',
+    date: item.datum || '',
+    totalJa: parseInt(item.Ja) || 0,
+    totalNej: parseInt(item.Nej) || 0,
+    totalAvstar: parseInt(item['Avstår']) || 0,
+    totalFranvarande: parseInt(item['Frånvarande']) || 0,
+    partyVotes: [] as Vote['partyVotes'],
+    dokId: undefined,
+    outcome: (parseInt(item.Ja) || 0) >= (parseInt(item.Nej) || 0) ? 'ja' : 'nej',
+    topicEmoji: '',
+  }))
 }
 
 export async function fetchVoteDetail(id: string): Promise<{ title: string; date: string; partyVotes: Vote['partyVotes']; dokId: string | null }> {
-  const res = await fetch(`${BACKEND}/vote/${encodeURIComponent(id)}`)
+  const res = await fetch(`${RIKSDAGEN}/votering/${encodeURIComponent(id)}/json`)
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return res.json()
+  const d = await res.json()
+  const doc = d?.votering?.dokument ?? {}
+  const voteRows = d?.votering?.dokvotering?.votering ?? []
+  const vArr: any[] = Array.isArray(voteRows) ? voteRows : [voteRows]
+  const partyMap: Record<string, PartyVote> = {}
+  for (const v of vArr) {
+    const party = v.parti ?? 'Okänt'
+    if (!partyMap[party]) partyMap[party] = { party, ja: 0, nej: 0, avstar: 0, franvarande: 0 }
+    const rost = (v.rost ?? '').toLowerCase()
+    if (rost === 'ja') partyMap[party].ja++
+    else if (rost === 'nej') partyMap[party].nej++
+    else if (rost === 'avstår') partyMap[party].avstar++
+    else partyMap[party].franvarande++
+  }
+  const firstVote = vArr[0] ?? {}
+  const punkt = firstVote.punkt ?? ''
+  return {
+    title: doc.titel ? `${doc.titel}${punkt ? ` (punkt ${punkt})` : ''}` : (firstVote.beteckning || id),
+    date: (doc.datum ?? firstVote.datum ?? '').slice(0, 10),
+    partyVotes: (Object.values(partyMap) as PartyVote[]).filter((p: PartyVote) => p.party !== '-').sort((a, b) => b.ja - a.ja),
+    dokId: doc.dok_id ?? firstVote.dok_id ?? null,
+  }
 }
