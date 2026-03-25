@@ -64,10 +64,17 @@ export function useVotes() {
 
   useEffect(() => {
     let cancelled = false
+    const cached = getCached<Vote[]>('civica_votes')
+    if (cached) {
+      setVotes(cached)
+      setLoading(false)
+      return
+    }
     setLoading(true)
     fetchVotes()
       .then(async data => {
         if (cancelled) return
+        setCache('civica_votes', data)
         setVotes(data)
         setLoading(false)
         // Generate all AI summaries in parallel
