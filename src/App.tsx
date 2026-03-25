@@ -1,11 +1,10 @@
-import React, { useState, useMemo, useRef } from 'react'
+import React, { useState, useMemo } from 'react'
 import type { ActiveFilters, Debate, Vote } from './types'
 import { useDebates, useVotes } from './hooks/useData'
 import { getParty } from './types'
 import DebateDetail from './components/DebateDetail'
 import VoteCard from './components/VoteCard'
 import SkeletonCard from './components/SkeletonCard'
-import AdminPage from './components/AdminPage'
 import { useIsMobile } from './hooks/useIsMobile'
 
 type Tab = 'debatter' | 'omrostningar'
@@ -62,19 +61,7 @@ export default function App() {
   const [selectedDebateId, setSelectedDebateId] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState('Alla')
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
-  const [showAdmin, setShowAdmin] = useState(false)
   const isMobile = useIsMobile()
-
-  const clickCount = useRef(0)
-  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  function handleLogoClick() {
-    clickCount.current += 1
-    if (clickTimer.current) clearTimeout(clickTimer.current)
-    clickTimer.current = setTimeout(() => {
-      if (clickCount.current >= 3) setShowAdmin(true)
-      clickCount.current = 0
-    }, 400)
-  }
 
   const { debates, loading: debatesLoading, error: debatesError, updateDebate } = useDebates()
   const { votes, loading: votesLoading, error: votesError } = useVotes()
@@ -95,14 +82,9 @@ export default function App() {
 
   const latestDebate = debates[0]
 
-  if (showAdmin) {
-    return (
-      <AdminPage
-        debates={debates}
-        onUpdate={(updated: Debate) => updateDebate(updated)}
-        onClose={() => setShowAdmin(false)}
-      />
-    )
+  function goHome() {
+    setSelectedDebateId(null)
+    setTab('debatter')
   }
 
   return (
@@ -110,7 +92,7 @@ export default function App() {
       {/* Navbar */}
       <div style={{ background: '#0b0b18', borderBottom: '0.5px solid rgba(255,255,255,0.07)', height: 48 }}>
         <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
-          <div onClick={handleLogoClick} style={{ fontSize: 22, fontWeight: 500, color: '#fff', letterSpacing: '-0.02em', cursor: 'default', userSelect: 'none' }}>
+          <div onClick={goHome} style={{ fontSize: 22, fontWeight: 500, color: '#fff', letterSpacing: '-0.02em', cursor: 'pointer', userSelect: 'none' }}>
             Civi<span style={{ color: '#9b7dff' }}>ca</span>
           </div>
           <div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center' }}>
