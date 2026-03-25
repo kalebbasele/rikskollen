@@ -106,22 +106,25 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                   height: '25%',
                   background: `linear-gradient(to top, ${glow}bb 0%, transparent 100%)`,
                 }} />
-                <div style={{
-                  position: 'absolute', bottom: 0, left: 0, right: 0,
-                  padding: '6px 8px 8px',
-                  display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4,
-                }}>
-                  <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
-                    {name}
-                  </span>
+                {/* Badge — top left */}
+                <div style={{ position: 'absolute', top: 6, left: 6 }}>
                   <div style={{
-                    width: isMobile ? 15 : 20, height: isMobile ? 15 : 20, borderRadius: 4,
+                    width: isMobile ? 15 : 18, height: isMobile ? 15 : 18, borderRadius: 4,
                     background: party?.color ?? '#444',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: isMobile ? 7 : 9, fontWeight: 800, color: party?.textColor ?? '#fff', flexShrink: 0,
+                    fontSize: isMobile ? 7 : 8, fontWeight: 800, color: party?.textColor ?? '#fff',
                   }}>
                     {p.person.party.slice(0, 2)}
                   </div>
+                </div>
+                {/* Name — bottom left */}
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  padding: '4px 6px 6px',
+                }}>
+                  <span style={{ fontSize: isMobile ? 10 : 11, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                    {name}
+                  </span>
                 </div>
               </div>
             )
