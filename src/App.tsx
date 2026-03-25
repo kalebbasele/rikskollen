@@ -6,6 +6,7 @@ import DebateDetail from './components/DebateDetail'
 import VoteCard from './components/VoteCard'
 import SkeletonCard from './components/SkeletonCard'
 import AdminPage from './components/AdminPage'
+import { useIsMobile } from './hooks/useIsMobile'
 
 type Tab = 'debatter' | 'omrostningar'
 
@@ -62,6 +63,7 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState('Alla')
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [showAdmin, setShowAdmin] = useState(false)
+  const isMobile = useIsMobile()
 
   const clickCount = useRef(0)
   const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -172,7 +174,7 @@ export default function App() {
 
       {/* Content */}
       {showDetail ? (
-        <div className="page-inner" style={{ padding: '20px 20px 60px' }}>
+        <div className="page-inner" style={{ padding: isMobile ? '12px 0 60px' : '20px 20px 60px' }}>
           <div style={{ maxWidth: 860, margin: '0 auto' }}>
             <DebateDetail debate={selectedDebate!} onUpdate={(updated: Debate) => updateDebate(updated)} />
           </div>
@@ -190,25 +192,26 @@ export default function App() {
           ) : (
             <>
               {/* Hero — first debate */}
-              <HeroCard debate={filteredDebates[0]} onClick={() => setSelectedDebateId(filteredDebates[0].id)} />
+              <HeroCard debate={filteredDebates[0]} onClick={() => setSelectedDebateId(filteredDebates[0].id)} isMobile={isMobile} />
 
               {/* Subgrid — debates 2–4 */}
               {filteredDebates.length > 1 && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, padding: '16px 16px 8px' }}>
-                  {filteredDebates.slice(1, 4).map((d, i, arr) => (
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? 8 : 12, padding: isMobile ? '8px 12px 6px' : '16px 16px 8px' }}>
+                  {filteredDebates.slice(1, isMobile ? 3 : 4).map((d, i, arr) => (
                     <SubgridCard
                       key={d.id}
                       debate={d}
                       onClick={() => setSelectedDebateId(d.id)}
                       isLast={i === arr.length - 1}
+                      isMobile={isMobile}
                     />
                   ))}
                 </div>
               )}
 
               {/* Feed — debates 5+ grouped by date */}
-              {filteredDebates.length > 4 && (
-                <FeedSection debates={filteredDebates.slice(4)} onSelect={(id) => setSelectedDebateId(id)} />
+              {filteredDebates.length > (isMobile ? 3 : 4) && (
+                <FeedSection debates={filteredDebates.slice(isMobile ? 3 : 4)} onSelect={(id) => setSelectedDebateId(id)} />
               )}
             </>
           )}
@@ -233,19 +236,20 @@ export default function App() {
 
 // ── Hero card (debate[0]) ─────────────────────────────────────────────────────
 
-function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) {
+function HeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: () => void; isMobile: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
   const participants = debate.participants
+  const n = Math.max(participants.length, 1)
 
   return (
     <div
       onClick={onClick}
       style={{
         display: 'grid',
-        gridTemplateColumns: `1fr ${Math.max(participants.length, 1) * 120 + 8}px`,
-        minHeight: 240,
+        gridTemplateColumns: isMobile ? '1fr' : `1fr ${n * 120 + 8}px`,
+        minHeight: isMobile ? 'auto' : 240,
         cursor: 'pointer',
-        margin: '16px 16px 8px',
+        margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
         borderRadius: 16,
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
@@ -255,29 +259,31 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
         overflow: 'hidden',
       }}
     >
-      {/* Left — text */}
+      {/* Text */}
       <div style={{
-        padding: '32px 28px 28px',
+        padding: isMobile ? '20px 16px 14px' : '32px 28px 28px',
         display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
       }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 12 }}>
+        <div style={{ fontSize: isMobile ? 11 : 13, fontWeight: 700, color: '#9b7dff', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>
           Senaste · {cat.label}
         </div>
-        <div style={{ fontSize: 32, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2, marginBottom: 12 }}>
+        <div style={{ fontSize: isMobile ? 22 : 32, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2, marginBottom: 8 }}>
           {debate.title}
         </div>
-        <div style={{ fontSize: 14, color: 'var(--text2)' }}>
+        <div style={{ fontSize: isMobile ? 12 : 14, color: 'var(--text2)' }}>
           {formatDate(debate.date)} · {debate.venue} · Interpellationsdebatt
         </div>
       </div>
 
-      {/* Right — individual portrait boxes with gaps */}
+      {/* Portrait boxes — horizontal scroll on mobile */}
       <div style={{
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'stretch',
-        gap: 8,
-        padding: 8,
+        gap: isMobile ? 6 : 8,
+        padding: isMobile ? '0 10px 10px' : 8,
+        overflowX: isMobile ? 'auto' : 'visible',
+        minHeight: isMobile ? 130 : 'auto',
       }}>
         {participants.map((p, i) => {
           const party = getParty(p.person.party)
@@ -286,11 +292,12 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
           return (
             <div key={p.person.id || i} style={{
               position: 'relative',
-              flex: 1,
+              flex: isMobile ? '0 0 90px' : 1,
+              width: isMobile ? 90 : undefined,
               borderRadius: 10,
               overflow: 'hidden',
               background: `linear-gradient(180deg, #0d1520 0%, ${glow}33 100%)`,
-              minHeight: 0,
+              minHeight: isMobile ? 120 : 0,
             }}>
               <img
                 src={p.person.photoUrl} alt={p.person.name} loading="lazy"
@@ -324,51 +331,58 @@ function HeroCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
 
 // ── Subgrid card (debates 2–4) ────────────────────────────────────────────────
 
-function SubgridCard({ debate, onClick, isLast: _isLast }: { debate: Debate; onClick: () => void; isLast: boolean }) {
+function SubgridCard({ debate, onClick, isLast: _isLast, isMobile }: { debate: Debate; onClick: () => void; isLast: boolean; isMobile: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
   const participants = debate.participants
   const firstParty = getParty(participants[0]?.person.party)
   const accentColor = firstParty?.color ?? '#7c5cfc'
 
+  const cardStyle: React.CSSProperties = {
+    display: 'flex', flexDirection: isMobile ? 'row' : 'column',
+    cursor: 'pointer',
+    borderRadius: 14,
+    background: `linear-gradient(160deg, ${accentColor}12 0%, rgba(13,21,36,0.92) 60%)`,
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    border: '0.5px solid rgba(255,255,255,0.1)',
+    boxShadow: `0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)`,
+    overflow: 'hidden',
+  }
+
   return (
-    <div
-      onClick={onClick}
-      style={{
-        display: 'flex', flexDirection: 'column',
-        cursor: 'pointer',
-        borderRadius: 14,
-        background: `linear-gradient(160deg, ${accentColor}12 0%, rgba(13,21,36,0.92) 60%)`,
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '0.5px solid rgba(255,255,255,0.1)',
-        boxShadow: `0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)`,
-        overflow: 'hidden',
-      }}
-    >
+    <div onClick={onClick} style={cardStyle}>
       {/* Text */}
-      <div style={{ flex: 1, padding: '18px 18px 12px' }}>
-        <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 8 }}>
+      <div style={{ flex: 1, padding: isMobile ? '14px 14px' : '18px 18px 12px', minWidth: 0 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: cat.color, marginBottom: 6 }}>
           {cat.label}
         </div>
-        <div style={{ fontSize: 17, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4 }}>
-          {debate.title.length > 75 ? debate.title.slice(0, 75) + '…' : debate.title}
+        <div style={{ fontSize: isMobile ? 15 : 17, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4 }}>
+          {debate.title.length > (isMobile ? 60 : 75) ? debate.title.slice(0, isMobile ? 60 : 75) + '…' : debate.title}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 8 }}>
+        <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6 }}>
           {formatDateShort(debate.date)}
         </div>
       </div>
 
-      {/* Portraits with party glow */}
-      <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.07)', padding: '10px 18px 14px', display: 'flex', gap: 8 }}>
-        {participants.map((p, i) => {
+      {/* Portraits */}
+      <div style={{
+        borderTop: isMobile ? 'none' : '0.5px solid rgba(255,255,255,0.07)',
+        borderLeft: isMobile ? '0.5px solid rgba(255,255,255,0.07)' : 'none',
+        padding: isMobile ? '10px 12px' : '10px 18px 14px',
+        display: 'flex', gap: 6,
+        alignItems: 'center',
+        flexShrink: 0,
+      }}>
+        {participants.slice(0, isMobile ? 2 : participants.length).map((p, i) => {
           const party = getParty(p.person.party)
           const glow = party?.color ?? '#334466'
+          const sz = isMobile ? 44 : 52
           return (
-            <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+            <div key={p.person.id || i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
               <div style={{
-                width: 52, height: 52, borderRadius: 10, overflow: 'hidden', flexShrink: 0,
+                width: sz, height: sz, borderRadius: 8, overflow: 'hidden', flexShrink: 0,
                 background: `linear-gradient(180deg, #0d1520 0%, ${glow}44 100%)`,
-                boxShadow: `0 0 12px ${glow}44`,
+                boxShadow: `0 0 10px ${glow}44`,
                 position: 'relative',
               }}>
                 <img
@@ -377,7 +391,7 @@ function SubgridCard({ debate, onClick, isLast: _isLast }: { debate: Debate; onC
                   style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
                 />
               </div>
-              <PartyBadge party={p.person.party} size={20} />
+              <PartyBadge party={p.person.party} size={18} />
             </div>
           )
         })}

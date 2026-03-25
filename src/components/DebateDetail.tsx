@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import type { Debate } from '../types'
 import { getParty } from '../types'
 import { generateDebateSummary } from '../lib/aiClient'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 interface Props {
   debate: Debate
@@ -10,6 +11,7 @@ interface Props {
 
 export default function DebateDetail({ debate, onUpdate }: Props) {
   const [loadingAI, setLoadingAI] = useState(false)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     if (!debate.ingress && !debate.aiLoading && !debate.aiError && debate.dokId) {
@@ -49,8 +51,8 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: `1fr ${n * 120 + 8}px`,
-          minHeight: 200,
+          gridTemplateColumns: isMobile ? '1fr' : `1fr ${n * 120 + 8}px`,
+          minHeight: isMobile ? 'auto' : 200,
           borderRadius: 16,
           overflow: 'hidden',
           backdropFilter: 'blur(20px)',
@@ -61,15 +63,15 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
           marginBottom: 15,
         }}
       >
-        {/* Left — text */}
+        {/* Text */}
         <div style={{
-          padding: '28px 22px',
+          padding: isMobile ? '18px 16px 14px' : '28px 22px',
           display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
         }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent2)', marginBottom: 8 }}>
             {debate.topic.length > 45 ? debate.topic.slice(0, 45) + '…' : debate.topic}
           </div>
-          <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1.25, color: '#fff', marginBottom: 8 }}>
+          <div style={{ fontSize: isMobile ? 17 : 20, fontWeight: 700, lineHeight: 1.25, color: '#fff', marginBottom: 8 }}>
             {debate.title}
           </div>
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
@@ -78,7 +80,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
         </div>
 
         {/* Right — portrait boxes with gaps */}
-        <div style={{ display: 'flex', flexDirection: 'row', gap: 8, padding: 8, alignItems: 'stretch' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: isMobile ? 6 : 8, padding: isMobile ? '0 10px 10px' : 8, alignItems: 'stretch', overflowX: isMobile ? 'auto' : 'visible', minHeight: isMobile ? 120 : 'auto' }}>
           {allParticipants.map((p, i) => {
             const party = getParty(p.person.party)
             const glow = party?.color ?? '#334466'
@@ -87,7 +89,11 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
             const name = first ? `${first}.${last}` : last
             return (
               <div key={p.person.id || i} style={{
-                position: 'relative', flex: 1, borderRadius: 10, overflow: 'hidden',
+                position: 'relative',
+                flex: isMobile ? '0 0 90px' : 1,
+                width: isMobile ? 90 : undefined,
+                minHeight: isMobile ? 110 : 0,
+                borderRadius: 10, overflow: 'hidden',
                 background: `linear-gradient(180deg, #0d1520 0%, ${glow}33 100%)`,
               }}>
                 <img
@@ -186,7 +192,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
           >
             Vad tycker blocken?
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 15 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10, marginBottom: 15 }}>
             {/* Left bloc */}
             <div
               style={{
