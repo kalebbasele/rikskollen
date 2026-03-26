@@ -487,7 +487,11 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
       display: 'grid',
       gridTemplateColumns: isMobile ? '1fr' : '1fr 280px',
       minHeight: 230, cursor: 'pointer',
-      borderBottom: '1px solid #f0f0f8', background: '#fff', overflow: 'hidden',
+      margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
+      borderRadius: 16, overflow: 'hidden',
+      background: '#fff',
+      boxShadow: '0 2px 16px rgba(0,0,0,0.07)',
+      border: '1px solid #f0f0f8',
     }}>
       {/* Left text */}
       <div style={{ padding: isMobile ? '24px 20px 20px' : '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
@@ -542,17 +546,21 @@ function LightSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSe
     <div style={{
       display: 'grid',
       gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-      borderBottom: '1px solid #f0f0f8', background: '#fff',
+      gap: isMobile ? 8 : 12,
+      padding: isMobile ? '0 12px 8px' : '0 16px 8px',
     }}>
       {debates.map((debate, i) => {
         const cat = getCategory(debate.topic + debate.title)
         const participants = debate.participants
         return (
           <div key={debate.id} onClick={() => onSelect(debate.id)} style={{
-            borderRight: i < debates.length - 1 ? '1px solid #f0f0f8' : 'none',
-            borderTop: isMobile && i > 0 ? '1px solid #f0f0f8' : 'none',
-            padding: '22px 22px 0',
+            padding: '18px 18px 0',
             display: 'flex', flexDirection: 'column', cursor: 'pointer',
+            background: '#fff',
+            borderRadius: 14,
+            border: '1px solid #f0f0f8',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+            overflow: 'hidden',
           }}>
             <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.lightColor, marginBottom: 8 }}>
               {cat.label}
@@ -598,10 +606,12 @@ function LightFeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: 
     <>
       {groups.map(group => (
         <div key={group.date}>
-          <div style={{ padding: '10px 28px 6px', fontSize: 10, fontWeight: 700, color: '#ddd', textTransform: 'uppercase', letterSpacing: '0.1em', background: '#fafafd', borderTop: '1px solid #f7f7fb' }}>
+          <div style={{ padding: '14px 20px 6px', fontSize: 10, fontWeight: 700, color: '#ccc', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             {formatDateLabel(group.date)}
           </div>
-          {group.debates.map(d => <LightFeedRow key={d.id} debate={d} onClick={() => onSelect(d.id)} />)}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '0 16px 8px' }}>
+            {group.debates.map(d => <LightFeedRow key={d.id} debate={d} onClick={() => onSelect(d.id)} />)}
+          </div>
         </div>
       ))}
     </>
@@ -614,8 +624,10 @@ function LightFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void
   return (
     <div onClick={onClick} style={{
       display: 'grid', gridTemplateColumns: '1fr 200px',
-      minHeight: 80, borderBottom: '1px solid #f5f5fa',
-      background: '#fff', cursor: 'pointer',
+      minHeight: 80, background: '#fff', cursor: 'pointer',
+      borderRadius: 10, overflow: 'hidden',
+      border: '1px solid #f0f0f8',
+      boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
     }}>
       {/* Left */}
       <div style={{ padding: '16px 22px' }}>
