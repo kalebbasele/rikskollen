@@ -1,6 +1,7 @@
 import type { Debate, Vote, Person, PartyVote } from '../types'
 
 const BACKEND = 'https://web-production-1e2f2.up.railway.app'
+const RD = 'https://data.riksdagen.se'
 
 export function personPhotoUrl(id: string): string {
   return `https://data.riksdagen.se/filarkiv/bilder/ledamot/${id}_max.jpg`
@@ -12,8 +13,8 @@ export function guessEmoji(_title: string): string {
 
 function cleanName(raw: string): string {
   return raw
-    .replace(/\s*\([^)]+\)\s*$/, '')        // strip "(KD)" suffix
-    .replace(/^.*minister\s+/i, '')           // strip "Gymnasie-, högskole- och forskningsminister " etc
+    .replace(/\s*\([^)]+\)\s*$/, '')
+    .replace(/^.*minister\s+/i, '')
     .replace(/^Statssekreterare\s+/i, '')
     .replace(/^Talman\s+/i, '')
     .trim()
@@ -45,7 +46,6 @@ export async function fetchDebates(): Promise<Debate[]> {
       return Array.isArray(a) ? a : [a]
     })()
 
-    // Build a name+party lookup from anforanden (more accurate names than dokintressent)
     const anforMap = new Map<string, { name: string; party: string }>()
     for (const a of anforanden) {
       if (a.intressent_id && !anforMap.has(a.intressent_id)) {
@@ -59,7 +59,6 @@ export async function fetchDebates(): Promise<Debate[]> {
     const makeParticipant = (i: any, role: string): { person: Person; role: string } => {
       const id = i.intressent_id ?? ''
       const fromAnf = anforMap.get(id)
-      // Use anforande name if available (strips ministerial titles), else fall back
       const name = fromAnf?.name || cleanName(i.namn ?? 'Okänd')
       const party = i.partibet || i.parti || fromAnf?.party || ''
       return {
@@ -77,28 +76,22 @@ export async function fetchDebates(): Promise<Debate[]> {
     const seen = new Set<string>()
     const participants: { person: Person; role: string }[] = []
 
-    // 1. Undertecknare (the MP who asked) — reliable ID from dokintressent
     const undertecknare = intressenter.find((i: any) => i.roll === 'undertecknare')
     if (undertecknare?.intressent_id) {
       seen.add(undertecknare.intressent_id)
       participants.push(makeParticipant(undertecknare, 'undertecknare'))
     }
 
-    // 2. Besvaradav (the minister who answers) — add before anforanden so reliable
-    //    party info from dokintressent wins over any duplicate from anforanden
     const besvaradav = intressenter.find((i: any) => i.roll === 'besvaradav')
     if (besvaradav?.intressent_id && !seen.has(besvaradav.intressent_id)) {
       seen.add(besvaradav.intressent_id)
       participants.push(makeParticipant(besvaradav, 'besvaradav'))
     }
 
-    // 3. All unique speakers from anforanden in debate order
-    //    Cross-reference with dokintressent when possible for reliable IDs
     for (const a of anforanden) {
       const id = a.intressent_id
       if (!id || seen.has(id)) continue
       seen.add(id)
-
       const fromDokIntressent = intressenter.find((i: any) => i.intressent_id === id)
       if (fromDokIntressent) {
         participants.push(makeParticipant(fromDokIntressent, 'talare'))
@@ -119,7 +112,6 @@ export async function fetchDebates(): Promise<Debate[]> {
 
     if (participants.length === 0) continue
 
-    // Deduplicate by name (same person can appear with multiple IDs)
     const seenNames = new Set<string>()
     const uniqueParticipants = participants.filter(p => {
       const key = p.person.name.toLowerCase().trim()
@@ -151,9 +143,85 @@ export async function fetchDebateProtocol(dokId: string): Promise<string> {
   return ''
 }
 
-export async function fetchVotes(): Promise<Vote[]> {
-  const res = await fetch(`${BACKEND}/votes`)
+// ── Votes — direct to data.riksdagen.se (no Railway) ─────────────────────────
+
+async function parsePartyVotes(voteringId: string): Promise<{ partyVotes: PartyVote[]; title: string; date: string; dokId?: string }> {
+  // Use the lightweight party-aggregated endpoint instead of the huge per-MP JSON
+  const res = await fetch(
+    `${RD}/voteringlista/?votering_id=${encodeURIComponent(voteringId)}&utformat=json&antal=500`
+  )
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  const data: any[] = await res.json()
-  return data.map(v => ({ ...v, topicEmoji: v.topicEmoji || '' }))
+  const data = await res.json()
+  const rows: any[] = (() => {
+    const r = data?.voteringlista?.votering
+    if (!r) return []
+    return Array.isArray(r) ? r : [r]
+  })()
+
+  const partyMap: Record<string, PartyVote> = {}
+  let title = ''
+  let date = ''
+  let dokId = ''
+
+  for (const r of rows) {
+    const party = r.parti ?? r.partibet ?? ''
+    if (!party || party === '-') continue
+    if (!partyMap[party]) partyMap[party] = { party, ja: 0, nej: 0, avstar: 0, franvarande: 0 }
+    const rost = (r.rost ?? '').toLowerCase()
+    if (rost === 'ja') partyMap[party].ja++
+    else if (rost === 'nej') partyMap[party].nej++
+    else if (rost === 'avstår') partyMap[party].avstar++
+    else partyMap[party].franvarande++
+
+    if (!title && r.rubrik) title = r.rubrik
+    if (!date && r.datum) date = r.datum.slice(0, 10)
+    if (!dokId && r.dok_id) dokId = r.dok_id
+  }
+
+  return {
+    partyVotes: (Object.values(partyMap) as PartyVote[])
+      .filter(p => p.party !== '-')
+      .sort((a, b) => b.ja - a.ja),
+    title,
+    date,
+    dokId,
+  }
+}
+
+export async function fetchVotes(): Promise<Vote[]> {
+  // Step 1: fetch the list (instant, ~300ms)
+  const listRes = await fetch(
+    `${RD}/voteringlista/?sz=6&utformat=json&gruppering=votering_id`
+  )
+  if (!listRes.ok) throw new Error(`HTTP ${listRes.status}`)
+  const listData = await listRes.json()
+  const items: any[] = (() => {
+    const r = listData?.voteringlista?.votering
+    if (!r) return []
+    return Array.isArray(r) ? r : [r]
+  })()
+
+  const top = items.slice(0, 4)
+
+  // Step 2: fetch party breakdown for each vote in parallel
+  const details = await Promise.allSettled(
+    top.map(item => parsePartyVotes(item.votering_id))
+  )
+
+  return top.map((item, i) => {
+    const det = details[i].status === 'fulfilled' ? details[i].value : null
+    return {
+      id: item.votering_id,
+      title: det?.title || item.beteckning || item.votering_id || 'Omröstning',
+      date: det?.date || item.datum || '',
+      totalJa: parseInt(item.Ja) || 0,
+      totalNej: parseInt(item.Nej) || 0,
+      totalAvstar: parseInt(item['Avstår']) || 0,
+      totalFranvarande: parseInt(item['Frånvarande']) || 0,
+      partyVotes: det?.partyVotes ?? [],
+      dokId: det?.dokId,
+      outcome: ((parseInt(item.Ja) || 0) >= (parseInt(item.Nej) || 0) ? 'ja' : 'nej') as 'ja' | 'nej',
+      topicEmoji: '',
+    }
+  })
 }
