@@ -93,7 +93,8 @@ export default function App() {
     return (
       <div style={{ background: '#f7f7fb', minHeight: '100vh' }}>
         {/* Navbar */}
-        <div style={{ background: '#fff', borderBottom: '1px solid #f0f0f8', height: 56, display: 'flex', alignItems: 'center', padding: '0 24px' }}>
+        <div style={{ background: '#fff', borderBottom: '1px solid #f0f0f8', height: 56 }}>
+          <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
           <div onClick={goHome} style={{ fontSize: 20, fontWeight: 700, color: '#111', letterSpacing: '-0.03em', cursor: 'pointer', userSelect: 'none' }}>
             Civi<span style={{ color: '#5b3fd4' }}>ca</span>
           </div>
@@ -123,6 +124,7 @@ export default function App() {
               </>
             )}
           </div>
+          </div>
         </div>
 
         {/* Content */}
@@ -131,7 +133,7 @@ export default function App() {
             <DebateDetail debate={selectedDebate!} onUpdate={(updated: Debate) => updateDebate(updated)} />
           </div>
         ) : tab === 'debatter' ? (
-          <div style={{ background: '#fff' }}>
+          <div className="page-inner" style={{ background: '#fff' }}>
             {debatesLoading ? (
               <div style={{ padding: 20 }}>{Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}</div>
             ) : debatesError ? (
@@ -173,11 +175,11 @@ export default function App() {
             )}
           </div>
         ) : tab === 'valkompass' ? (
-          <div style={{ padding: isMobile ? '16px 12px 60px' : '24px 20px 60px' }}>
+          <div className="page-inner" style={{ padding: isMobile ? '16px 12px 60px' : '24px 20px 60px' }}>
             <div style={{ maxWidth: 680, margin: '0 auto' }}><Valkompass /></div>
           </div>
         ) : (
-          <div style={{ padding: '16px 20px 60px' }}>
+          <div className="page-inner" style={{ padding: '16px 20px 60px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {votesLoading
                 ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
