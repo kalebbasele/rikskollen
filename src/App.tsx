@@ -508,7 +508,6 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
         gap: 8, padding: 8,
         borderLeft: isMobile ? 'none' : '1px solid #f0f0f8',
         borderTop: isMobile ? '1px solid #f0f0f8' : 'none',
-        background: '#f4f3fb',
         minHeight: isMobile ? 180 : 'auto',
       }}>
         {participants.slice(0, 2).map((p, i) => {
@@ -518,9 +517,9 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
           return (
             <div key={p.person.id || i} style={{
               position: 'relative', flex: 1,
-              borderRadius: 12, overflow: 'hidden',
-              background: '#ede8ff', minHeight: 180,
-              boxShadow: '0 2px 12px rgba(91,63,212,0.13)',
+              borderRadius: 10, overflow: 'hidden',
+              background: '#e8e6f0', minHeight: 180,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             }}>
               <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
@@ -570,7 +569,7 @@ function LightSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSe
                 const sz = 48
                 return (
                   <div key={p.person.id || pi} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <div style={{ width: sz, height: sz, borderRadius: 10, overflow: 'hidden', background: '#ede8ff', position: 'relative', boxShadow: '0 2px 8px rgba(91,63,212,0.12)' }}>
+                    <div style={{ width: sz, height: sz, borderRadius: 10, overflow: 'hidden', background: '#e8e6f0', position: 'relative', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>
                       <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                         onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
@@ -633,7 +632,7 @@ function LightFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void
       {/* Right portraits */}
       <div style={{
         display: 'flex', flexDirection: 'row', gap: 6, padding: 6,
-        borderLeft: '1px solid #f0f0f8', background: '#f4f3fb', alignItems: 'stretch',
+        borderLeft: '1px solid #f0f0f8', alignItems: 'stretch',
       }}>
         {participants.map((p, i) => {
           const party = getParty(p.person.party)
@@ -643,8 +642,8 @@ function LightFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void
             <div key={p.person.id || i} style={{
               position: 'relative', flex: 1,
               borderRadius: 8, overflow: 'hidden',
-              background: '#ede8ff',
-              boxShadow: '0 1px 6px rgba(91,63,212,0.10)',
+              background: '#e8e6f0',
+              boxShadow: '0 1px 5px rgba(0,0,0,0.07)',
             }}>
               <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
