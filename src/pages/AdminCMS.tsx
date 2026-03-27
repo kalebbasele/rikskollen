@@ -219,14 +219,19 @@ export default function AdminCMS() {
 
   async function loadAll() {
     setLoading(true)
-    const [dRes, vRes] = await Promise.all([
-      fetch(`${BACKEND}/admin/debates`, { headers: adminHeaders() }),
-      fetch(`${BACKEND}/admin/votes`, { headers: adminHeaders() }),
-    ])
-    const [d, v] = await Promise.all([dRes.json(), vRes.json()])
-    setDebates(Array.isArray(d) ? d : [])
-    setVotes(Array.isArray(v) ? v : [])
-    setLoading(false)
+    try {
+      const [dRes, vRes] = await Promise.all([
+        fetch(`${BACKEND}/admin/debates`, { headers: adminHeaders() }),
+        fetch(`${BACKEND}/admin/votes`, { headers: adminHeaders() }),
+      ])
+      const [d, v] = await Promise.all([dRes.json(), vRes.json()])
+      setDebates(Array.isArray(d) ? d : [])
+      setVotes(Array.isArray(v) ? v : [])
+    } catch(e) {
+      console.error('loadAll failed:', e)
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function approveDebate(id: string) {
