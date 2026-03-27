@@ -620,54 +620,22 @@ function LightFeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: 
 
 function LightFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void }) {
   const cat = getCategory(debate.topic + debate.title)
-  const participants = debate.participants.slice(0, 2)
   return (
     <div onClick={onClick} style={{
-      display: 'grid', gridTemplateColumns: '1fr 200px',
       minHeight: 80, background: '#fff', cursor: 'pointer',
       borderRadius: 10, overflow: 'hidden',
       border: '1px solid #f0f0f8',
       boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
+      padding: '16px 22px',
     }}>
-      {/* Left */}
-      <div style={{ padding: '16px 22px' }}>
-        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.lightColor, marginBottom: 5 }}>
-          {cat.label}
-        </div>
-        <div style={{ fontSize: 14, color: '#111', fontWeight: 500, lineHeight: 1.4 }}>
-          {debate.title.length > 90 ? debate.title.slice(0, 90) + '…' : debate.title}
-        </div>
-        <div style={{ fontSize: 11, color: '#ccc', marginTop: 4 }}>
-          {formatDateShort(debate.date)} · {debate.venue}
-        </div>
+      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.lightColor, marginBottom: 5 }}>
+        {cat.label}
       </div>
-      {/* Right portraits */}
-      <div style={{
-        display: 'flex', flexDirection: 'row', gap: 6, padding: 6,
-        borderLeft: '1px solid #f0f0f8', alignItems: 'stretch',
-      }}>
-        {participants.map((p, i) => {
-          const party = getParty(p.person.party)
-          const glow = party?.color ?? '#5b3fd4'
-          const shortName = abbrevName(p.person)
-          return (
-            <div key={p.person.id || i} style={{
-              position: 'relative', flex: 1,
-              borderRadius: 8, overflow: 'hidden',
-              background: '#e8e6f0',
-              boxShadow: '0 1px 5px rgba(0,0,0,0.07)',
-            }}>
-              <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '18%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 6px 6px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <span style={{ fontSize: 9, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>
-                <PartyBadge party={p.person.party} size={14} radius={3} />
-              </div>
-            </div>
-          )
-        })}
+      <div style={{ fontSize: 14, color: '#111', fontWeight: 500, lineHeight: 1.4 }}>
+        {debate.title.length > 90 ? debate.title.slice(0, 90) + '…' : debate.title}
+      </div>
+      <div style={{ fontSize: 11, color: '#ccc', marginTop: 4 }}>
+        {formatDateShort(debate.date)} · {debate.venue}
       </div>
     </div>
   )
