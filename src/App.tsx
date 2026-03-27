@@ -57,9 +57,17 @@ function PartyBadge({ party, size = 20, radius = 5 }: { party: string; size?: nu
   )
 }
 
+function readUrl(): { tab: Tab; debateId: string | null } {
+  const p = new URLSearchParams(window.location.search)
+  const tab = (p.get('tab') as Tab) || 'debatter'
+  const debateId = p.get('debate') || null
+  return { tab, debateId }
+}
+
 export default function App() {
-  const [tab, setTab] = useState<Tab>('debatter')
-  const [selectedDebateId, setSelectedDebateId] = useState<string | null>(null)
+  const initial = readUrl()
+  const [tab, setTabState] = useState<Tab>(initial.tab)
+  const [selectedDebateId, setSelectedDebateId] = useState<string | null>(initial.debateId)
   const [activeCategory, setActiveCategory] = useState('Alla')
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const isMobile = useIsMobile()
@@ -75,6 +83,29 @@ export default function App() {
   const selectedDebate = selectedDebateId ? debates.find(d => d.id === selectedDebateId) : null
   const showDetail = !!selectedDebate
 
+  // Sync URL → state when browser back/forward is pressed
+  React.useEffect(() => {
+    function onPop() {
+      const { tab, debateId } = readUrl()
+      setTabState(tab)
+      setSelectedDebateId(debateId)
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  function setTab(t: Tab) {
+    setTabState(t)
+    setSelectedDebateId(null)
+    const url = t === 'debatter' ? '/' : `/?tab=${t}`
+    history.pushState({}, '', url)
+  }
+
+  function openDebate(id: string) {
+    setSelectedDebateId(id)
+    history.pushState({}, '', `/?debate=${id}`)
+  }
+
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark'
     setTheme(next)
@@ -85,7 +116,8 @@ export default function App() {
 
   function goHome() {
     setSelectedDebateId(null)
-    setTab('debatter')
+    setTabState('debatter')
+    history.pushState({}, '', '/')
   }
 
   // ── Light theme ────────────────────────────────────────────────────────────
@@ -100,7 +132,7 @@ export default function App() {
           </div>
           <div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: 4 }}>
             {showDetail ? (
-              <button onClick={() => setSelectedDebateId(null)} style={{ fontSize: 14, fontWeight: 600, color: '#5b3fd4', background: 'none', border: 'none', cursor: 'pointer' }}>
+              <button onClick={() => history.back()} style={{ fontSize: 14, fontWeight: 600, color: '#5b3fd4', background: 'none', border: 'none', cursor: 'pointer' }}>
                 ← Tillbaka
               </button>
             ) : (
@@ -162,14 +194,14 @@ export default function App() {
                   ))}
                 </div>
 
-                <LightHeroCard debate={filteredDebates[0]} onClick={() => setSelectedDebateId(filteredDebates[0].id)} isMobile={isMobile} />
+                <LightHeroCard debate={filteredDebates[0]} onClick={() => openDebate(filteredDebates[0].id)} isMobile={isMobile} />
 
                 {filteredDebates.length > 1 && (
-                  <LightSubgrid debates={filteredDebates.slice(1, isMobile ? 3 : 4)} onSelect={id => setSelectedDebateId(id)} isMobile={isMobile} />
+                  <LightSubgrid debates={filteredDebates.slice(1, isMobile ? 3 : 4)} onSelect={id => openDebate(id)} isMobile={isMobile} />
                 )}
 
                 {filteredDebates.length > (isMobile ? 3 : 4) && (
-                  <LightFeedSection debates={filteredDebates.slice(isMobile ? 3 : 4)} onSelect={id => setSelectedDebateId(id)} />
+                  <LightFeedSection debates={filteredDebates.slice(isMobile ? 3 : 4)} onSelect={id => openDebate(id)} />
                 )}
               </>
             )}
@@ -205,7 +237,7 @@ export default function App() {
           </div>
           <div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center' }}>
             {showDetail ? (
-              <button onClick={() => setSelectedDebateId(null)} style={{ fontSize: 15, fontWeight: 600, color: '#9b7dff', background: 'none', border: 'none' }}>
+              <button onClick={() => history.back()} style={{ fontSize: 15, fontWeight: 600, color: '#9b7dff', background: 'none', border: 'none' }}>
                 Tillbaka
               </button>
             ) : (
@@ -279,16 +311,16 @@ export default function App() {
             <StatusMessage message="Inga debatter matchar." />
           ) : (
             <>
-              <HeroCard debate={filteredDebates[0]} onClick={() => setSelectedDebateId(filteredDebates[0].id)} isMobile={isMobile} />
+              <HeroCard debate={filteredDebates[0]} onClick={() => openDebate(filteredDebates[0].id)} isMobile={isMobile} />
               {filteredDebates.length > 1 && (
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? 8 : 12, padding: isMobile ? '8px 12px 6px' : '16px 16px 8px' }}>
                   {filteredDebates.slice(1, isMobile ? 3 : 4).map((d, i, arr) => (
-                    <SubgridCard key={d.id} debate={d} onClick={() => setSelectedDebateId(d.id)} isLast={i === arr.length - 1} isMobile={isMobile} />
+                    <SubgridCard key={d.id} debate={d} onClick={() => openDebate(d.id)} isLast={i === arr.length - 1} isMobile={isMobile} />
                   ))}
                 </div>
               )}
               {filteredDebates.length > (isMobile ? 3 : 4) && (
-                <FeedSection debates={filteredDebates.slice(isMobile ? 3 : 4)} onSelect={id => setSelectedDebateId(id)} />
+                <FeedSection debates={filteredDebates.slice(isMobile ? 3 : 4)} onSelect={id => openDebate(id)} />
               )}
             </>
           )}
