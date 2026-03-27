@@ -194,6 +194,8 @@ export default function App() {
                   ))}
                 </div>
 
+                <LightIntroSection isMobile={isMobile} />
+
                 <LightHeroCard debate={filteredDebates[0]} onClick={() => openDebate(filteredDebates[0].id)} isMobile={isMobile} />
 
                 {filteredDebates.length > 1 && (
@@ -505,6 +507,211 @@ function FeedCard({ debate, onClick }: { debate: Debate; onClick: () => void }) 
       <div style={{ fontSize: 17, color: 'var(--text)', fontWeight: 500, lineHeight: 1.4 }}>{debate.title}</div>
       <div style={{ fontSize: 13, color: 'var(--text3)' }}>{debate.venue}</div>
     </div>
+  )
+}
+
+// ── Light intro section ───────────────────────────────────────────────────────
+
+function LightIntroSection({ isMobile }: { isMobile: boolean }) {
+  const [visible, setVisible] = React.useState(false)
+  const [wordIdx, setWordIdx] = React.useState(0)
+  const words = ['Debatter', 'Omröstningar', 'Politik']
+
+  React.useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 60)
+    return () => clearTimeout(t)
+  }, [])
+
+  React.useEffect(() => {
+    const iv = setInterval(() => setWordIdx(i => (i + 1) % words.length), 2200)
+    return () => clearInterval(iv)
+  }, [])
+
+  return (
+    <>
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(22px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes wordSlide {
+          0%   { opacity: 0; transform: translateY(12px); }
+          15%  { opacity: 1; transform: translateY(0); }
+          85%  { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(-12px); }
+        }
+        @keyframes floatA { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-8px)} }
+        @keyframes floatB { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-5px)} }
+        @keyframes floatC { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-11px)} }
+      `}</style>
+
+      <div style={{
+        margin: isMobile ? '0 12px 8px' : '0 16px 8px',
+        borderRadius: 20,
+        background: 'linear-gradient(135deg, #f0ecff 0%, #fff 60%)',
+        border: '1px solid #ede8ff',
+        overflow: 'hidden',
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr' : '1fr 320px',
+        minHeight: isMobile ? 'auto' : 220,
+      }}>
+
+        {/* Left — text */}
+        <div style={{
+          padding: isMobile ? '36px 28px 28px' : '48px 44px',
+          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          opacity: visible ? 1 : 0,
+          animation: visible ? 'fadeUp 0.6s ease both' : 'none',
+        }}>
+          <div style={{
+            display: 'inline-flex', alignSelf: 'flex-start',
+            background: '#ede8ff', color: '#5b3fd4',
+            fontSize: 11, fontWeight: 700, borderRadius: 24,
+            padding: '5px 14px', marginBottom: 18, letterSpacing: '0.06em',
+          }}>
+            RIKSDAGEN · LIVE
+          </div>
+
+          <div style={{
+            fontSize: isMobile ? 28 : 38,
+            fontWeight: 800,
+            color: '#0a0a14',
+            lineHeight: 1.1,
+            letterSpacing: '-0.03em',
+            marginBottom: 16,
+          }}>
+            <span style={{ display: 'block' }}>Vad händer i</span>
+            <span style={{
+              display: 'inline-block',
+              color: '#5b3fd4',
+              minWidth: 200,
+              height: isMobile ? 36 : 46,
+              overflow: 'hidden',
+              verticalAlign: 'bottom',
+              position: 'relative',
+            }}>
+              <span key={wordIdx} style={{
+                position: 'absolute',
+                animation: 'wordSlide 2.2s ease forwards',
+                fontSize: isMobile ? 28 : 38,
+                fontWeight: 800,
+              }}>
+                {words[wordIdx]}
+              </span>
+            </span>
+            <span style={{ display: 'block' }}>just nu?</span>
+          </div>
+
+          <p style={{
+            fontSize: isMobile ? 14 : 15,
+            color: '#666',
+            lineHeight: 1.65,
+            maxWidth: 380,
+            marginBottom: 24,
+            animation: visible ? 'fadeUp 0.6s 0.15s ease both' : 'none',
+            opacity: visible ? 1 : 0,
+          }}>
+            Civica samlar riksdagens senaste debatter och omröstningar — utan krångel.
+          </p>
+
+          <div style={{
+            display: 'flex', gap: 8, flexWrap: 'wrap',
+            animation: visible ? 'fadeUp 0.6s 0.28s ease both' : 'none',
+            opacity: visible ? 1 : 0,
+          }}>
+            {[
+              { icon: '🗣️', text: 'Debatter' },
+              { icon: '🗳️', text: 'Omröstningar' },
+              { icon: '⚖️', text: 'Valkompassen' },
+            ].map(chip => (
+              <div key={chip.text} style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: '#fff', border: '1px solid #ede8ff',
+                borderRadius: 24, padding: '7px 14px',
+                fontSize: 13, fontWeight: 600, color: '#333',
+                boxShadow: '0 1px 4px rgba(91,63,212,0.07)',
+              }}>
+                <span>{chip.icon}</span>
+                <span>{chip.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right — floating visual */}
+        {!isMobile && (
+          <div style={{
+            position: 'relative', overflow: 'hidden',
+            background: 'linear-gradient(160deg, #ede8ff 0%, #f8f5ff 100%)',
+            borderLeft: '1px solid #e8e2ff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            minHeight: 220,
+          }}>
+            {/* Decorative blob */}
+            <div style={{
+              position: 'absolute', width: 260, height: 260, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(91,63,212,0.12) 0%, transparent 70%)',
+              top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+            }} />
+
+            {/* Floating mini cards */}
+            <div style={{ position: 'relative', width: 240, height: 180 }}>
+              {/* Card 1 */}
+              <div style={{
+                position: 'absolute', top: 0, left: 20,
+                background: '#fff', borderRadius: 14, padding: '14px 16px',
+                boxShadow: '0 8px 32px rgba(91,63,212,0.14)',
+                border: '1px solid #ede8ff', width: 180,
+                animation: 'floatA 3.5s ease-in-out infinite',
+              }}>
+                <div style={{ fontSize: 9, fontWeight: 700, color: '#5b3fd4', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Migration</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#111', lineHeight: 1.4 }}>Gränskontroller och asylregler</div>
+                <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
+                  {['M','SD','S'].map(p => {
+                    const party = getParty(p)
+                    return <div key={p} style={{ width: 20, height: 20, borderRadius: 5, background: party?.color ?? '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: party?.textColor ?? '#fff' }}>{p.slice(0,2)}</div>
+                  })}
+                </div>
+              </div>
+
+              {/* Card 2 */}
+              <div style={{
+                position: 'absolute', bottom: 0, right: 0,
+                background: '#5b3fd4', borderRadius: 14, padding: '14px 16px',
+                boxShadow: '0 8px 28px rgba(91,63,212,0.28)',
+                width: 150,
+                animation: 'floatB 4.2s ease-in-out infinite',
+              }}>
+                <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Omröstning</div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+                  <div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>174</div>
+                    <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>JA</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>125</div>
+                    <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>NEJ</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 3 — small dot */}
+              <div style={{
+                position: 'absolute', top: 60, right: 10,
+                width: 48, height: 48, borderRadius: 12,
+                background: '#fff', border: '1px solid #ede8ff',
+                boxShadow: '0 4px 16px rgba(91,63,212,0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 22,
+                animation: 'floatC 2.9s ease-in-out infinite',
+              }}>
+                🗳️
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   )
 }
 
