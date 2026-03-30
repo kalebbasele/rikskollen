@@ -262,7 +262,7 @@ export default function App() {
               <LightStatusMessage message="Inga debatter matchar." />
             ) : (
               <>
-                <IntroSection isMobile={isMobile} dark={false} />
+                <IntroSection isMobile={isMobile} dark={false} onNavigate={(t) => setTab(t as Tab)} />
 
                 <LightHeroCard debate={filteredDebates[0]} onClick={() => openDebate(filteredDebates[0].id)} isMobile={isMobile} />
 
@@ -424,7 +424,7 @@ export default function App() {
             <DarkStatusMessage message="Inga debatter matchar." />
           ) : (
             <>
-              <IntroSection isMobile={isMobile} dark={true} />
+              <IntroSection isMobile={isMobile} dark={true} onNavigate={(t) => setTab(t as Tab)} />
 
               <DarkHeroCard debate={filteredDebates[0]} onClick={() => openDebate(filteredDebates[0].id)} isMobile={isMobile} />
 
@@ -798,7 +798,13 @@ const DEFAULT_INTRO = {
 
 let introSettingsCache: typeof DEFAULT_INTRO | null = null
 
-function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) {
+const CHIP_TABS: Record<string, string> = {
+  'Debatter': 'debatter',
+  'Omröstningar': 'omrostningar',
+  'Valkompassen': 'valkompass',
+}
+
+function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark: boolean; onNavigate: (tab: string) => void }) {
   const [visible, setVisible] = React.useState(false)
   const [wordIdx, setWordIdx] = React.useState(0)
   const [intro, setIntro] = React.useState(introSettingsCache ?? DEFAULT_INTRO)
@@ -945,12 +951,13 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
             opacity: visible ? 1 : 0,
           }}>
             {intro.chips.map(chip => (
-              <div key={chip.text} style={{
+              <div key={chip.text} onClick={() => { const t = CHIP_TABS[chip.text]; if (t) onNavigate(t) }} style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 background: p.chipBg, border: p.chipBorder,
                 borderRadius: 24, padding: '7px 14px',
                 fontSize: 13, fontWeight: 600, color: p.chipColor,
                 boxShadow: p.chipShadow,
+                cursor: CHIP_TABS[chip.text] ? 'pointer' : 'default',
               }}>
                 <span>{chip.icon}</span>
                 <span>{chip.text}</span>
