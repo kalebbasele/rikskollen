@@ -142,7 +142,7 @@ export default function App() {
       <>
       <div style={{ background: '#f7f7fb', minHeight: '100vh' }}>
         {/* Navbar */}
-        <div style={{ background: '#fff', borderBottom: '1px solid #f0f0f8', height: 56 }}>
+        <div style={{ position: 'sticky', top: 0, zIndex: 100, background: '#fff', borderBottom: '1px solid #f0f0f8', height: 56 }}>
           <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
           <div onClick={goHome} style={{ fontSize: 20, fontWeight: 700, color: '#111', letterSpacing: '-0.03em', cursor: 'pointer', userSelect: 'none' }}>
             Civi<span style={{ color: '#5b3fd4' }}>ca</span>
@@ -304,7 +304,7 @@ export default function App() {
     <>
     <div style={{ background: '#0d0a2e', minHeight: '100vh' }}>
       {/* Navbar */}
-      <div style={{ background: '#0b0b18', borderBottom: '1px solid rgba(255,255,255,0.07)', height: 56 }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 100, background: '#0b0b18', borderBottom: '1px solid rgba(255,255,255,0.07)', height: 56 }}>
         <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
           <div onClick={goHome} style={{ fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', cursor: 'pointer', userSelect: 'none' }}>
             Civi<span style={{ color: '#9b7dff' }}>ca</span>
@@ -891,7 +891,6 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
       `}</style>
 
       <div style={{
-        position: 'sticky', top: 0, zIndex: 50,
         margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
         borderRadius: 20, overflow: 'hidden',
         background: p.wrapBg, border: p.wrapBorder,
