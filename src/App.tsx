@@ -891,6 +891,7 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
       `}</style>
 
       <div style={{
+        position: 'sticky', top: 0, zIndex: 50,
         margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
         borderRadius: 20, overflow: 'hidden',
         background: p.wrapBg, border: p.wrapBorder,
@@ -938,32 +939,13 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
 
           <p style={{
             fontSize: isMobile ? 14 : 15, color: p.textSub,
-            lineHeight: 1.65, maxWidth: 380, marginBottom: 24,
+            lineHeight: 1.65, maxWidth: 380, marginBottom: 0,
             animation: visible ? 'fadeUp 0.6s 0.15s ease both' : 'none',
             opacity: visible ? 1 : 0,
           }}>
             {intro.subtitle}
           </p>
 
-          <div style={{
-            display: 'flex', gap: 8, flexWrap: 'wrap',
-            animation: visible ? 'fadeUp 0.6s 0.28s ease both' : 'none',
-            opacity: visible ? 1 : 0,
-          }}>
-            {intro.chips.map(chip => (
-              <div key={chip.text} onClick={() => { const t = CHIP_TABS[chip.text]; if (t) onNavigate(t) }} style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                background: p.chipBg, border: p.chipBorder,
-                borderRadius: 24, padding: '7px 14px',
-                fontSize: 13, fontWeight: 600, color: p.chipColor,
-                boxShadow: p.chipShadow,
-                cursor: CHIP_TABS[chip.text] ? 'pointer' : 'default',
-              }}>
-                <span>{chip.icon}</span>
-                <span>{chip.text}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Right — floating visual */}
