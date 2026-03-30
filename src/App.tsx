@@ -952,11 +952,16 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
             <span>{intro.headingPre} </span>
             <span style={{
               display: 'inline-block', color: p.accent,
-              minWidth: isMobile ? 180 : 240, height: isMobile ? 36 : 46,
-              overflow: 'hidden', verticalAlign: 'bottom', position: 'relative',
+              position: 'relative', overflow: 'hidden',
+              height: isMobile ? 36 : 46, verticalAlign: 'bottom',
             }}>
+              {/* Ghost sizer — invisible, sets container width to match current word */}
+              <span style={{ visibility: 'hidden', whiteSpace: 'nowrap', fontSize: isMobile ? 28 : 38, fontWeight: 800 }}>
+                {words[wordIdx]}
+              </span>
+              {/* Animated word */}
               <span key={wordIdx} style={{
-                position: 'absolute', whiteSpace: 'nowrap',
+                position: 'absolute', left: 0, top: 0, whiteSpace: 'nowrap',
                 animation: 'wordSlide 2.2s ease forwards',
                 fontSize: isMobile ? 28 : 38, fontWeight: 800,
               }}>
