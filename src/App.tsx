@@ -68,7 +68,7 @@ export default function App() {
   const initial = readUrl()
   const [tab, setTabState] = useState<Tab>(initial.tab)
   const [selectedDebateId, setSelectedDebateId] = useState<string | null>(initial.debateId)
-  const [activeCategory, setActiveCategory] = useState('Alla')
+  const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set(['Alla']))
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [showCatDropdown, setShowCatDropdown] = useState(false)
   const isMobile = useIsMobile()
@@ -76,9 +76,22 @@ export default function App() {
   const { debates, loading: debatesLoading, error: debatesError, updateDebate } = useDebates()
   const { votes, loading: votesLoading, error: votesError } = useVotes()
 
+  function toggleCategory(cat: string) {
+    if (cat === 'Alla') { setActiveCategories(new Set(['Alla'])); return }
+    setActiveCategories(prev => {
+      const next = new Set(prev)
+      next.delete('Alla')
+      if (next.has(cat)) { next.delete(cat); if (next.size === 0) next.add('Alla') }
+      else next.add(cat)
+      return next
+    })
+  }
+
   const filteredDebates = useMemo(() =>
-    debates.filter(d => matchesCategory(d, activeCategory)),
-    [debates, activeCategory]
+    activeCategories.has('Alla')
+      ? debates
+      : debates.filter(d => [...activeCategories].some(cat => matchesCategory(d, cat))),
+    [debates, activeCategories]
   )
 
   const selectedDebate = selectedDebateId ? debates.find(d => d.id === selectedDebateId) : null
@@ -156,25 +169,39 @@ export default function App() {
                     Debatter
                   </button>
                   {showCatDropdown && (
-                    <div style={{
-                      position: 'absolute', top: 'calc(100% + 6px)', right: 0,
-                      background: '#fff', borderRadius: 14,
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.12)', border: '1px solid #f0f0f8',
-                      padding: '10px 10px', display: 'flex', flexDirection: 'column', gap: 2,
-                      minWidth: 170, zIndex: 100,
-                    }}>
-                      {CATEGORIES.map(cat => (
-                        <button key={cat} onClick={() => { setActiveCategory(cat); setTab('debatter') }} style={{
-                          fontSize: 13, textAlign: 'left',
-                          color: activeCategory === cat ? '#5b3fd4' : '#555',
-                          padding: '7px 12px', borderRadius: 8,
-                          background: activeCategory === cat ? '#f0eeff' : 'none',
-                          border: 'none', cursor: 'pointer',
-                          fontWeight: activeCategory === cat ? 600 : 400,
-                        }}>
-                          {cat}
-                        </button>
-                      ))}
+                    <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
+                      <div style={{
+                        background: '#fff', borderRadius: 14,
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.12)', border: '1px solid #f0f0f8',
+                        padding: '8px', display: 'flex', flexDirection: 'column', gap: 1,
+                        minWidth: 190,
+                      }}>
+                        {CATEGORIES.map(cat => {
+                          const checked = activeCategories.has(cat)
+                          return (
+                            <button key={cat} onClick={() => { toggleCategory(cat); setTab('debatter') }} style={{
+                              fontSize: 13, textAlign: 'left',
+                              color: checked ? '#5b3fd4' : '#555',
+                              padding: '7px 12px', borderRadius: 8,
+                              background: checked ? '#f0eeff' : 'none',
+                              border: 'none', cursor: 'pointer',
+                              fontWeight: checked ? 600 : 400,
+                              display: 'flex', alignItems: 'center', gap: 9,
+                            }}>
+                              <span style={{
+                                width: 16, height: 16, borderRadius: 4, flexShrink: 0,
+                                border: checked ? 'none' : '1.5px solid #ddd',
+                                background: checked ? '#5b3fd4' : 'transparent',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 10, color: '#fff',
+                              }}>
+                                {checked ? '✓' : ''}
+                              </span>
+                              {cat}
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -283,25 +310,39 @@ export default function App() {
                     Debatter
                   </button>
                   {showCatDropdown && (
-                    <div style={{
-                      position: 'absolute', top: 'calc(100% + 6px)', right: 0,
-                      background: '#1a1535', borderRadius: 14,
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.5)', border: '1px solid rgba(155,125,255,0.15)',
-                      padding: '10px 10px', display: 'flex', flexDirection: 'column', gap: 2,
-                      minWidth: 170, zIndex: 100,
-                    }}>
-                      {CATEGORIES.map(cat => (
-                        <button key={cat} onClick={() => { setActiveCategory(cat); setTab('debatter') }} style={{
-                          fontSize: 13, textAlign: 'left',
-                          color: activeCategory === cat ? '#9b7dff' : 'rgba(255,255,255,0.55)',
-                          padding: '7px 12px', borderRadius: 8,
-                          background: activeCategory === cat ? 'rgba(155,125,255,0.15)' : 'none',
-                          border: 'none', cursor: 'pointer',
-                          fontWeight: activeCategory === cat ? 600 : 400,
-                        }}>
-                          {cat}
-                        </button>
-                      ))}
+                    <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
+                      <div style={{
+                        background: '#1a1535', borderRadius: 14,
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.5)', border: '1px solid rgba(155,125,255,0.15)',
+                        padding: '8px', display: 'flex', flexDirection: 'column', gap: 1,
+                        minWidth: 190,
+                      }}>
+                        {CATEGORIES.map(cat => {
+                          const checked = activeCategories.has(cat)
+                          return (
+                            <button key={cat} onClick={() => { toggleCategory(cat); setTab('debatter') }} style={{
+                              fontSize: 13, textAlign: 'left',
+                              color: checked ? '#9b7dff' : 'rgba(255,255,255,0.55)',
+                              padding: '7px 12px', borderRadius: 8,
+                              background: checked ? 'rgba(155,125,255,0.15)' : 'none',
+                              border: 'none', cursor: 'pointer',
+                              fontWeight: checked ? 600 : 400,
+                              display: 'flex', alignItems: 'center', gap: 9,
+                            }}>
+                              <span style={{
+                                width: 16, height: 16, borderRadius: 4, flexShrink: 0,
+                                border: checked ? 'none' : '1.5px solid rgba(255,255,255,0.2)',
+                                background: checked ? '#9b7dff' : 'transparent',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 10, color: '#fff',
+                              }}>
+                                {checked ? '✓' : ''}
+                              </span>
+                              {cat}
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>
