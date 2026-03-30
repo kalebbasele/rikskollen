@@ -71,6 +71,8 @@ export default function App() {
   const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set(['Alla']))
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [showCatDropdown, setShowCatDropdown] = useState(false)
+  const [showOmDropdown, setShowOmDropdown] = useState(false)
+  const [infoPage, setInfoPage] = useState<InfoPageKey | null>(null)
   const isMobile = useIsMobile()
 
   const { debates, loading: debatesLoading, error: debatesError, updateDebate } = useDebates()
@@ -137,6 +139,7 @@ export default function App() {
   // ── Light theme ────────────────────────────────────────────────────────────
   if (theme === 'light') {
     return (
+      <>
       <div style={{ background: '#f7f7fb', minHeight: '100vh' }}>
         {/* Navbar */}
         <div style={{ background: '#fff', borderBottom: '1px solid #f0f0f8', height: 56 }}>
@@ -218,6 +221,23 @@ export default function App() {
                     {t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
                   </button>
                 ))}
+                {/* Om Civica dropdown */}
+                <div style={{ position: 'relative' }} onMouseEnter={() => setShowOmDropdown(true)} onMouseLeave={() => setShowOmDropdown(false)}>
+                  <button style={{ fontSize: 14, color: '#aaa', padding: '7px 16px', background: 'none', border: 'none', borderRadius: 24, cursor: 'pointer' }}>
+                    Om Civica
+                  </button>
+                  {showOmDropdown && (
+                    <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
+                      <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', border: '1px solid #f0f0f8', padding: '8px', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 230 }}>
+                        {OM_LINKS.map(l => (
+                          <button key={l.key} onClick={() => setInfoPage(l.key)} style={{ fontSize: 13, textAlign: 'left', color: '#555', padding: '8px 14px', borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer' }}>
+                            {l.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <button onClick={toggleTheme} style={{ fontSize: 13, color: '#bbb', padding: '7px 12px', background: 'none', border: 'none', cursor: 'pointer' }}>
                   Mörkt
                 </button>
@@ -272,12 +292,16 @@ export default function App() {
             </div>
           </div>
         )}
+        <SiteFooter dark={false} onOpen={setInfoPage} />
       </div>
+      {infoPage && <InfoOverlay page={infoPage} dark={false} onClose={() => setInfoPage(null)} />}
+      </>
     )
   }
 
   // ── Dark theme ─────────────────────────────────────────────────────────────
   return (
+    <>
     <div style={{ background: '#0d0a2e', minHeight: '100vh' }}>
       {/* Navbar */}
       <div style={{ background: '#0b0b18', borderBottom: '1px solid rgba(255,255,255,0.07)', height: 56 }}>
@@ -359,6 +383,23 @@ export default function App() {
                     {t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
                   </button>
                 ))}
+                {/* Om Civica dropdown */}
+                <div style={{ position: 'relative' }} onMouseEnter={() => setShowOmDropdown(true)} onMouseLeave={() => setShowOmDropdown(false)}>
+                  <button style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', padding: '7px 16px', background: 'none', border: 'none', borderRadius: 24, cursor: 'pointer' }}>
+                    Om Civica
+                  </button>
+                  {showOmDropdown && (
+                    <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
+                      <div style={{ background: '#1a1535', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.5)', border: '1px solid rgba(155,125,255,0.15)', padding: '8px', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 230 }}>
+                        {OM_LINKS.map(l => (
+                          <button key={l.key} onClick={() => setInfoPage(l.key)} style={{ fontSize: 13, textAlign: 'left', color: 'rgba(255,255,255,0.6)', padding: '8px 14px', borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer' }}>
+                            {l.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <button onClick={toggleTheme} style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', padding: '7px 12px', background: 'none', border: 'none', cursor: 'pointer' }}>
                   Ljust
                 </button>
@@ -413,6 +454,154 @@ export default function App() {
           </div>
         </div>
       )}
+      <SiteFooter dark={true} onOpen={setInfoPage} />
+    </div>
+    {infoPage && <InfoOverlay page={infoPage} dark={true} onClose={() => setInfoPage(null)} />}
+    </>
+  )
+}
+
+// ── Footer & info pages ───────────────────────────────────────────────────────
+
+type InfoPageKey = 'om' | 'kontakt' | 'gdpr' | 'cookies'
+
+const OM_LINKS: { key: InfoPageKey; label: string }[] = [
+  { key: 'om',      label: 'Om Civica' },
+  { key: 'kontakt', label: 'Kontakt' },
+  { key: 'gdpr',    label: 'Hur vi behandlar dina personuppgifter' },
+  { key: 'cookies', label: 'Hantera Cookies' },
+]
+
+const INFO_CONTENT: Record<InfoPageKey, { title: string; body: React.ReactNode }> = {
+  om: {
+    title: 'Om Civica',
+    body: (
+      <>
+        <p>Civica är en oberoende plattform som gör riksdagens arbete tillgängligt för alla. Vi samlar debatter, omröstningar och politiska beslut på ett ställe — utan partipolitisk vinkling.</p>
+        <p>Vår mission är att stärka den demokratiska delaktigheten genom att göra information om Sveriges folkvalda lättillgänglig, begriplig och engagerande.</p>
+        <p>All data hämtas direkt från <strong>Riksdagens öppna API</strong> och presenteras i realtid. Vi lägger inte till egna åsikter — vi lyfter fram vad som faktiskt sägs och beslutas i riksdagen.</p>
+        <p>Civica är byggt för dig som vill hålla koll på svensk politik utan att behöva sålla genom långa protokoll och pressmeddelanden.</p>
+      </>
+    ),
+  },
+  kontakt: {
+    title: 'Kontakt',
+    body: (
+      <>
+        <p>Har du frågor, feedback eller vill samarbeta? Hör gärna av dig!</p>
+        <p><strong>E-post:</strong> hej@civica.se</p>
+        <p>Vi svarar normalt inom 1–3 vardagar.</p>
+        <p>Hittar du ett fel eller saknar du en funktion? Vi tar gärna emot konstruktiv feedback och försöker kontinuerligt förbättra tjänsten.</p>
+      </>
+    ),
+  },
+  gdpr: {
+    title: 'Hur vi behandlar dina personuppgifter',
+    body: (
+      <>
+        <p>Civica värnar om din integritet. Vi strävar efter att samla in så lite personuppgifter som möjligt.</p>
+        <h4>Vad vi lagrar</h4>
+        <p>Vi lagrar <strong>inga personuppgifter</strong> om vanliga besökare. Sajten kräver inte inloggning och vi spårar inte enskilda användare.</p>
+        <p>Debatter och omröstningar hämtas från Riksdagens öppna API och lagras tillfälligt i vår databas för snabbare åtkomst.</p>
+        <h4>Om du kontaktar oss</h4>
+        <p>Om du skickar e-post till oss behandlar vi de uppgifter du lämnar (namn, e-postadress och ditt ärende) för att kunna svara dig. Dessa raderas när ärendet är avslutat.</p>
+        <h4>Dina rättigheter</h4>
+        <p>Enligt GDPR har du rätt att begära information om, rättelse av eller radering av personuppgifter som rör dig. Kontakta oss på hej@civica.se.</p>
+        <p>Personuppgiftsansvarig: Civica · hej@civica.se</p>
+      </>
+    ),
+  },
+  cookies: {
+    title: 'Hantera Cookies',
+    body: (
+      <>
+        <p>Civica använder minimalt med cookies och inga spårningscookies för marknadsföring.</p>
+        <h4>Cookies vi använder</h4>
+        <p><strong>Nödvändiga cookies:</strong> Vi lagrar ditt temval (ljust/mörkt) lokalt i din webbläsare. Ingen data skickas till externa parter.</p>
+        <p><strong>Inga analyticscookies:</strong> Vi använder inte Google Analytics eller liknande tjänster.</p>
+        <p><strong>Inga tredjepartscookies:</strong> Vi delar inte din data med annonsörer.</p>
+        <h4>Hur du hanterar cookies</h4>
+        <p>Du kan när som helst rensa cookies i din webbläsares inställningar. Sajten fungerar fullt ut även utan cookies — du förlorar bara ditt sparade temval.</p>
+        <p>För mer information, se din webbläsares hjälpsida om cookiehantering.</p>
+      </>
+    ),
+  },
+}
+
+function SiteFooter({ dark, onOpen }: { dark: boolean; onOpen: (p: InfoPageKey) => void }) {
+  const border = dark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #f0f0f0'
+  const bg = dark ? '#08061e' : '#f3f3fa'
+  const logoColor = dark ? '#fff' : '#111'
+  const accent = dark ? '#9b7dff' : '#5b3fd4'
+  const textColor = dark ? 'rgba(255,255,255,0.35)' : '#aaa'
+  const linkColor = dark ? 'rgba(255,255,255,0.5)' : '#888'
+  return (
+    <div style={{ borderTop: border, background: bg, padding: '32px 24px 28px' }}>
+      <div className="page-inner" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: logoColor, letterSpacing: '-0.03em' }}>
+            Civi<span style={{ color: accent }}>ca</span>
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {OM_LINKS.map(l => (
+              <button key={l.key} onClick={() => onOpen(l.key)} style={{
+                fontSize: 13, color: linkColor, background: 'none', border: 'none',
+                cursor: 'pointer', padding: '4px 10px', borderRadius: 6,
+              }}>
+                {l.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{ fontSize: 12, color: textColor }}>
+          © {new Date().getFullYear()} Civica. Data från Riksdagens öppna API.
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function InfoOverlay({ page, dark, onClose }: { page: InfoPageKey; dark: boolean; onClose: () => void }) {
+  const { title, body } = INFO_CONTENT[page]
+  const bg = dark ? '#0d0a2e' : '#fff'
+  const border = dark ? '1px solid rgba(155,125,255,0.12)' : '1px solid #f0f0f8'
+  const headingColor = dark ? '#fff' : '#111'
+  const textColor = dark ? 'rgba(255,255,255,0.65)' : '#444'
+  const h4Color = dark ? '#fff' : '#111'
+  const accent = dark ? '#9b7dff' : '#5b3fd4'
+  const overlayBg = dark ? 'rgba(5,3,20,0.85)' : 'rgba(0,0,0,0.35)'
+
+  React.useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  return (
+    <div onClick={onClose} style={{
+      position: 'fixed', inset: 0, zIndex: 1000,
+      background: overlayBg, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '24px 16px',
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: bg, border, borderRadius: 20,
+        maxWidth: 620, width: '100%', maxHeight: '80vh',
+        overflowY: 'auto', padding: '36px 36px 40px',
+        boxShadow: dark ? '0 24px 80px rgba(0,0,0,0.7)' : '0 24px 80px rgba(0,0,0,0.15)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
+          <div style={{ fontSize: 24, fontWeight: 700, color: headingColor, letterSpacing: '-0.02em' }}>{title}</div>
+          <button onClick={onClose} style={{ fontSize: 20, color: textColor, background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>✕</button>
+        </div>
+        <div style={{ fontSize: 15, color: textColor, lineHeight: 1.75 }}>
+          <style>{`
+            .info-body p { margin: 0 0 14px; }
+            .info-body h4 { font-size: 14px; font-weight: 700; color: ${h4Color}; margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+            .info-body strong { color: ${accent}; font-weight: 600; }
+          `}</style>
+          <div className="info-body">{body}</div>
+        </div>
+      </div>
     </div>
   )
 }
