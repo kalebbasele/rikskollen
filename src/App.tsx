@@ -247,6 +247,21 @@ export default function App() {
           </div>
         </div>
 
+        {/* Sticky tab strip */}
+        {!showDetail && (
+          <div style={{ position: 'sticky', top: 56, zIndex: 90, background: '#fff', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'center', gap: 10, padding: '10px 16px' }}>
+            {([['debatter','Debatter'],['omrostningar','Omröstningar'],['valkompass','Valkompass']] as [Tab,string][]).map(([t, label]) => (
+              <button key={t} onClick={() => setTab(t)} style={{
+                fontSize: 14, fontWeight: 600,
+                color: tab === t ? '#fff' : '#888',
+                background: tab === t ? '#111' : 'rgba(0,0,0,0.05)',
+                border: 'none', borderRadius: 24, padding: '8px 22px',
+                cursor: 'pointer',
+              }}>{label}</button>
+            ))}
+          </div>
+        )}
+
         {/* Content */}
         {showDetail ? (
           <div style={{ padding: isMobile ? '12px 0 60px' : '20px 20px 60px', maxWidth: 860, margin: '0 auto' }}>
@@ -408,6 +423,21 @@ export default function App() {
           </div>
         </div>
       </div>
+
+      {/* Sticky tab strip */}
+      {!showDetail && (
+        <div style={{ position: 'sticky', top: 56, zIndex: 90, background: '#0b0b18', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'center', gap: 10, padding: '10px 16px' }}>
+          {([['debatter','Debatter'],['omrostningar','Omröstningar'],['valkompass','Valkompass']] as [Tab,string][]).map(([t, label]) => (
+            <button key={t} onClick={() => setTab(t)} style={{
+              fontSize: 14, fontWeight: 600,
+              color: tab === t ? '#0b0b18' : 'rgba(255,255,255,0.5)',
+              background: tab === t ? '#fff' : 'rgba(255,255,255,0.07)',
+              border: 'none', borderRadius: 24, padding: '8px 22px',
+              cursor: 'pointer',
+            }}>{label}</button>
+          ))}
+        </div>
+      )}
 
       {/* Content */}
       {showDetail ? (
