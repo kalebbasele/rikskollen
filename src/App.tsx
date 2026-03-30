@@ -186,8 +186,9 @@ export default function App() {
                               background: checked ? '#f0eeff' : 'none',
                               border: 'none', cursor: 'pointer',
                               fontWeight: checked ? 600 : 400,
-                              display: 'flex', alignItems: 'center', gap: 9,
+                              display: 'flex', alignItems: 'center', gap: 9, justifyContent: 'space-between',
                             }}>
+                              {cat}
                               <span style={{
                                 width: 16, height: 16, borderRadius: 4, flexShrink: 0,
                                 border: checked ? 'none' : '1.5px solid #ddd',
@@ -197,7 +198,6 @@ export default function App() {
                               }}>
                                 {checked ? '✓' : ''}
                               </span>
-                              {cat}
                             </button>
                           )
                         })}
@@ -327,8 +327,9 @@ export default function App() {
                               background: checked ? 'rgba(155,125,255,0.15)' : 'none',
                               border: 'none', cursor: 'pointer',
                               fontWeight: checked ? 600 : 400,
-                              display: 'flex', alignItems: 'center', gap: 9,
+                              display: 'flex', alignItems: 'center', gap: 9, justifyContent: 'space-between',
                             }}>
+                              {cat}
                               <span style={{
                                 width: 16, height: 16, borderRadius: 4, flexShrink: 0,
                                 border: checked ? 'none' : '1.5px solid rgba(255,255,255,0.2)',
@@ -338,7 +339,6 @@ export default function App() {
                               }}>
                                 {checked ? '✓' : ''}
                               </span>
-                              {cat}
                             </button>
                           )
                         })}
