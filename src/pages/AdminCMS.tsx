@@ -10,7 +10,7 @@ function adminHeaders() {
   return { 'Content-Type': 'application/json', 'x-admin-key': getAdminKey() }
 }
 
-type Tab = 'debatter' | 'omrostningar'
+type Tab = 'debatter' | 'omrostningar' | 'intro'
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 
@@ -199,6 +199,92 @@ function Btn({ color, onClick, children, disabled }: { color: string; onClick: (
   )
 }
 
+// ── Intro section editor ──────────────────────────────────────────────────────
+
+const DEFAULT_INTRO = {
+  badge: 'RIKSDAGEN · LIVE',
+  headingPre: 'Vad händer i',
+  words: ['Debatter', 'Omröstningar', 'Politik'],
+  headingPost: 'just nu?',
+  subtitle: 'Civica samlar riksdagens senaste debatter och omröstningar — utan krångel.',
+  chips: [
+    { icon: '🗣️', text: 'Debatter' },
+    { icon: '🗳️', text: 'Omröstningar' },
+    { icon: '⚖️', text: 'Valkompassen' },
+  ],
+}
+
+function IntroEditor() {
+  const [data, setData] = useState(DEFAULT_INTRO)
+  const [wordsRaw, setWordsRaw] = useState(DEFAULT_INTRO.words.join(', '))
+  const [chipsRaw, setChipsRaw] = useState(DEFAULT_INTRO.chips.map(c => `${c.icon} ${c.text}`).join('\n'))
+  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+
+  useEffect(() => {
+    fetch(`${BACKEND}/api/public/intro-settings`)
+      .then(r => r.json())
+      .then(d => {
+        setData(d)
+        setWordsRaw(d.words?.join(', ') ?? '')
+        setChipsRaw(d.chips?.map((c: any) => `${c.icon} ${c.text}`).join('\n') ?? '')
+      })
+      .catch(() => {})
+  }, [])
+
+  function parseChips(raw: string) {
+    return raw.split('\n').map(line => line.trim()).filter(Boolean).map(line => {
+      const match = line.match(/^(\S+)\s+(.+)$/)
+      return match ? { icon: match[1], text: match[2] } : { icon: '', text: line }
+    })
+  }
+
+  async function save() {
+    setStatus('saving')
+    const payload = {
+      ...data,
+      words: wordsRaw.split(',').map(w => w.trim()).filter(Boolean),
+      chips: parseChips(chipsRaw),
+    }
+    try {
+      const res = await fetch(`${BACKEND}/admin/intro-settings`, {
+        method: 'PUT', headers: adminHeaders(), body: JSON.stringify(payload),
+      })
+      if (res.ok) setStatus('saved')
+      else setStatus('error')
+    } catch { setStatus('error') }
+    setTimeout(() => setStatus('idle'), 2500)
+  }
+
+  return (
+    <div style={{ background: '#1a1728', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '24px 24px 28px' }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 20 }}>
+        Intro-sektion
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <Field label="Badge-text (t.ex. RIKSDAGEN · LIVE)" value={data.badge} onChange={v => setData(d => ({ ...d, badge: v }))} />
+        <Field label="Rubrik — rad 1 (t.ex. Vad händer i)" value={data.headingPre} onChange={v => setData(d => ({ ...d, headingPre: v }))} />
+        <Field label="Roterande ord (kommaseparerade)" value={wordsRaw} onChange={setWordsRaw} />
+        <Field label="Rubrik — rad 2 (t.ex. just nu?)" value={data.headingPost} onChange={v => setData(d => ({ ...d, headingPost: v }))} />
+        <Field label="Undertitel" value={data.subtitle} onChange={v => setData(d => ({ ...d, subtitle: v }))} multiline />
+        <Field label={'Chips (en per rad, format: emoji Text)\nt.ex. 🗣️ Debatter'} value={chipsRaw} onChange={setChipsRaw} multiline />
+      </div>
+
+      <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={save} disabled={status === 'saving'} style={{
+          padding: '10px 24px', borderRadius: 8, background: '#7c5cfc',
+          color: '#fff', border: 'none', fontWeight: 700, fontSize: 14,
+          cursor: status === 'saving' ? 'default' : 'pointer', opacity: status === 'saving' ? 0.7 : 1,
+        }}>
+          {status === 'saving' ? 'Uppdaterar…' : 'Uppdatera'}
+        </button>
+        {status === 'saved' && <span style={{ fontSize: 13, color: '#2ec27e', fontWeight: 600 }}>✓ Sparat och live!</span>}
+        {status === 'error' && <span style={{ fontSize: 13, color: '#e8445a', fontWeight: 600 }}>Något gick fel</span>}
+      </div>
+    </div>
+  )
+}
+
 // ── Main admin page ───────────────────────────────────────────────────────────
 
 export default function AdminCMS() {
@@ -284,9 +370,9 @@ export default function AdminCMS() {
         </a>
         <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', background: 'rgba(155,125,255,0.15)', borderRadius: 20, padding: '3px 10px' }}>Admin CMS</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-          {(['debatter', 'omrostningar'] as Tab[]).map(t => (
+          {(['debatter', 'omrostningar', 'intro'] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)} style={{ fontSize: 14, color: tab === t ? '#fff' : 'rgba(255,255,255,0.35)', padding: '0 14px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48, fontWeight: tab === t ? 500 : 400, cursor: 'pointer' }}>
-              {t === 'debatter' ? `Debatter (${pendingDebates.length})` : `Omröstningar (${pendingVotes.length})`}
+              {t === 'debatter' ? `Debatter (${pendingDebates.length})` : t === 'omrostningar' ? `Omröstningar (${pendingVotes.length})` : 'Intro-sektion'}
             </button>
           ))}
           <button onClick={() => { localStorage.removeItem('civica_admin_key'); setAuthed(false) }} style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', padding: '0 14px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48, cursor: 'pointer' }}>
@@ -298,6 +384,8 @@ export default function AdminCMS() {
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 20px 60px' }}>
         {loading ? (
           <p style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', paddingTop: 60 }}>Laddar…</p>
+        ) : tab === 'intro' ? (
+          <IntroEditor />
         ) : tab === 'debatter' ? (
           <>
             <SectionHeader label="Väntar på godkännande" count={pendingDebates.length} />

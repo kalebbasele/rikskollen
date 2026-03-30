@@ -510,13 +510,41 @@ function DarkStatusMessage({ message }: { message: string }) {
 
 // ── Shared intro section ──────────────────────────────────────────────────────
 
+const BACKEND = 'https://web-production-1e2f2.up.railway.app'
+
+const DEFAULT_INTRO = {
+  badge: 'RIKSDAGEN · LIVE',
+  headingPre: 'Vad händer i',
+  words: ['Debatter', 'Omröstningar', 'Politik'],
+  headingPost: 'just nu?',
+  subtitle: 'Civica samlar riksdagens senaste debatter och omröstningar — utan krångel.',
+  chips: [
+    { icon: '🗣️', text: 'Debatter' },
+    { icon: '🗳️', text: 'Omröstningar' },
+    { icon: '⚖️', text: 'Valkompassen' },
+  ],
+}
+
+let introSettingsCache: typeof DEFAULT_INTRO | null = null
+
 function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) {
   const [visible, setVisible] = React.useState(false)
   const [wordIdx, setWordIdx] = React.useState(0)
-  const words = ['Debatter', 'Omröstningar', 'Politik']
+  const [intro, setIntro] = React.useState(introSettingsCache ?? DEFAULT_INTRO)
+
+  React.useEffect(() => {
+    if (!introSettingsCache) {
+      fetch(`${BACKEND}/api/public/intro-settings`)
+        .then(r => r.json())
+        .then(d => { introSettingsCache = d; setIntro(d) })
+        .catch(() => {})
+    }
+  }, [])
+
+  const words = intro.words
 
   React.useEffect(() => { const t = setTimeout(() => setVisible(true), 60); return () => clearTimeout(t) }, [])
-  React.useEffect(() => { const iv = setInterval(() => setWordIdx(i => (i + 1) % words.length), 2200); return () => clearInterval(iv) }, [])
+  React.useEffect(() => { const iv = setInterval(() => setWordIdx(i => (i + 1) % words.length), 2200); return () => clearInterval(iv) }, [words.length])
 
   // All colors — ONLY thing that differs between dark and light
   const p = dark ? {
@@ -606,7 +634,7 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
             fontSize: 11, fontWeight: 700, borderRadius: 24,
             padding: '5px 14px', marginBottom: 18, letterSpacing: '0.06em',
           }}>
-            RIKSDAGEN · LIVE
+            {intro.badge}
           </div>
 
           <div style={{
@@ -614,7 +642,7 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
             color: p.textMain, lineHeight: 1.1,
             letterSpacing: '-0.03em', marginBottom: 16,
           }}>
-            <span style={{ display: 'block' }}>Vad händer i</span>
+            <span style={{ display: 'block' }}>{intro.headingPre}</span>
             <span style={{
               display: 'inline-block', color: p.accent,
               minWidth: 200, height: isMobile ? 36 : 46,
@@ -628,7 +656,7 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
                 {words[wordIdx]}
               </span>
             </span>
-            <span style={{ display: 'block' }}>just nu?</span>
+            <span style={{ display: 'block' }}>{intro.headingPost}</span>
           </div>
 
           <p style={{
@@ -637,7 +665,7 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
             animation: visible ? 'fadeUp 0.6s 0.15s ease both' : 'none',
             opacity: visible ? 1 : 0,
           }}>
-            Civica samlar riksdagens senaste debatter och omröstningar — utan krångel.
+            {intro.subtitle}
           </p>
 
           <div style={{
@@ -645,11 +673,7 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
             animation: visible ? 'fadeUp 0.6s 0.28s ease both' : 'none',
             opacity: visible ? 1 : 0,
           }}>
-            {[
-              { icon: '🗣️', text: 'Debatter' },
-              { icon: '🗳️', text: 'Omröstningar' },
-              { icon: '⚖️', text: 'Valkompassen' },
-            ].map(chip => (
+            {intro.chips.map(chip => (
               <div key={chip.text} style={{
                 display: 'flex', alignItems: 'center', gap: 6,
                 background: p.chipBg, border: p.chipBorder,
