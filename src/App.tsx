@@ -949,10 +949,10 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
             color: p.textMain, lineHeight: 1.1,
             letterSpacing: '-0.03em', marginBottom: 16,
           }}>
-            <span style={{ display: 'block' }}>{intro.headingPre}</span>
+            <span>{intro.headingPre} </span>
             <span style={{
               display: 'inline-block', color: p.accent,
-              minWidth: 200, height: isMobile ? 36 : 46,
+              minWidth: 160, height: isMobile ? 36 : 46,
               overflow: 'hidden', verticalAlign: 'bottom', position: 'relative',
             }}>
               <span key={wordIdx} style={{
@@ -963,7 +963,7 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
                 {words[wordIdx]}
               </span>
             </span>
-            <span style={{ display: 'block' }}>{intro.headingPost}</span>
+            <span> {intro.headingPost}</span>
           </div>
 
           <p style={{
