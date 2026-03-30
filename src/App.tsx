@@ -70,6 +70,7 @@ export default function App() {
   const [selectedDebateId, setSelectedDebateId] = useState<string | null>(initial.debateId)
   const [activeCategory, setActiveCategory] = useState('Alla')
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [showCatDropdown, setShowCatDropdown] = useState(false)
   const isMobile = useIsMobile()
 
   const { debates, loading: debatesLoading, error: debatesError, updateDebate } = useDebates()
@@ -137,7 +138,47 @@ export default function App() {
               </button>
             ) : (
               <>
-                {(['debatter', 'omrostningar', 'valkompass'] as Tab[]).map(t => (
+                {/* Debatter with hover dropdown */}
+                <div
+                  style={{ position: 'relative' }}
+                  onMouseEnter={() => setShowCatDropdown(true)}
+                  onMouseLeave={() => setShowCatDropdown(false)}
+                >
+                  <button onClick={() => setTab('debatter')} style={{
+                    fontSize: 14,
+                    color: tab === 'debatter' ? '#fff' : '#aaa',
+                    padding: '7px 16px',
+                    background: tab === 'debatter' ? '#111' : 'none',
+                    border: 'none', borderRadius: 24,
+                    fontWeight: tab === 'debatter' ? 600 : 400,
+                    cursor: 'pointer',
+                  }}>
+                    Debatter
+                  </button>
+                  {showCatDropdown && (
+                    <div style={{
+                      position: 'absolute', top: 'calc(100% + 6px)', right: 0,
+                      background: '#fff', borderRadius: 14,
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.12)', border: '1px solid #f0f0f8',
+                      padding: '10px 10px', display: 'flex', flexDirection: 'column', gap: 2,
+                      minWidth: 170, zIndex: 100,
+                    }}>
+                      {CATEGORIES.map(cat => (
+                        <button key={cat} onClick={() => { setActiveCategory(cat); setTab('debatter') }} style={{
+                          fontSize: 13, textAlign: 'left',
+                          color: activeCategory === cat ? '#5b3fd4' : '#555',
+                          padding: '7px 12px', borderRadius: 8,
+                          background: activeCategory === cat ? '#f0eeff' : 'none',
+                          border: 'none', cursor: 'pointer',
+                          fontWeight: activeCategory === cat ? 600 : 400,
+                        }}>
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {(['omrostningar', 'valkompass'] as Tab[]).map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
                     fontSize: 14,
                     color: tab === t ? '#fff' : '#aaa',
@@ -147,7 +188,7 @@ export default function App() {
                     fontWeight: tab === t ? 600 : 400,
                     cursor: 'pointer',
                   }}>
-                    {t === 'debatter' ? 'Debatter' : t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
+                    {t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
                   </button>
                 ))}
                 <button onClick={toggleTheme} style={{ fontSize: 13, color: '#bbb', padding: '7px 12px', background: 'none', border: 'none', cursor: 'pointer' }}>
@@ -174,26 +215,6 @@ export default function App() {
               <LightStatusMessage message="Inga debatter matchar." />
             ) : (
               <>
-                {/* Purple filter band */}
-                <div style={{ background: '#5b3fd4', padding: '14px 28px', display: 'flex', alignItems: 'center', gap: 14, overflowX: 'auto' }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.65)', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                    Filtrera debatter
-                  </span>
-                  {CATEGORIES.map(cat => (
-                    <button key={cat} onClick={() => setActiveCategory(cat)} style={{
-                      fontSize: 13,
-                      color: activeCategory === cat ? '#fff' : 'rgba(255,255,255,0.55)',
-                      padding: '4px 14px', borderRadius: 24,
-                      background: activeCategory === cat ? 'rgba(255,255,255,0.18)' : 'transparent',
-                      border: activeCategory === cat ? 'none' : '1px solid rgba(255,255,255,0.2)',
-                      cursor: 'pointer', whiteSpace: 'nowrap',
-                      fontWeight: activeCategory === cat ? 600 : 400,
-                    }}>
-                      {cat}
-                    </button>
-                  ))}
-                </div>
-
                 <IntroSection isMobile={isMobile} dark={false} />
 
                 <LightHeroCard debate={filteredDebates[0]} onClick={() => openDebate(filteredDebates[0].id)} isMobile={isMobile} />
@@ -244,7 +265,47 @@ export default function App() {
               </button>
             ) : (
               <>
-                {(['debatter', 'omrostningar', 'valkompass'] as Tab[]).map(t => (
+                {/* Debatter with hover dropdown */}
+                <div
+                  style={{ position: 'relative' }}
+                  onMouseEnter={() => setShowCatDropdown(true)}
+                  onMouseLeave={() => setShowCatDropdown(false)}
+                >
+                  <button onClick={() => setTab('debatter')} style={{
+                    fontSize: 14,
+                    color: tab === 'debatter' ? '#0b0b18' : 'rgba(255,255,255,0.4)',
+                    padding: '7px 16px',
+                    background: tab === 'debatter' ? '#fff' : 'none',
+                    border: 'none', borderRadius: 24,
+                    fontWeight: tab === 'debatter' ? 600 : 400,
+                    cursor: 'pointer',
+                  }}>
+                    Debatter
+                  </button>
+                  {showCatDropdown && (
+                    <div style={{
+                      position: 'absolute', top: 'calc(100% + 6px)', right: 0,
+                      background: '#1a1535', borderRadius: 14,
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.5)', border: '1px solid rgba(155,125,255,0.15)',
+                      padding: '10px 10px', display: 'flex', flexDirection: 'column', gap: 2,
+                      minWidth: 170, zIndex: 100,
+                    }}>
+                      {CATEGORIES.map(cat => (
+                        <button key={cat} onClick={() => { setActiveCategory(cat); setTab('debatter') }} style={{
+                          fontSize: 13, textAlign: 'left',
+                          color: activeCategory === cat ? '#9b7dff' : 'rgba(255,255,255,0.55)',
+                          padding: '7px 12px', borderRadius: 8,
+                          background: activeCategory === cat ? 'rgba(155,125,255,0.15)' : 'none',
+                          border: 'none', cursor: 'pointer',
+                          fontWeight: activeCategory === cat ? 600 : 400,
+                        }}>
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {(['omrostningar', 'valkompass'] as Tab[]).map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
                     fontSize: 14,
                     color: tab === t ? '#0b0b18' : 'rgba(255,255,255,0.4)',
@@ -254,7 +315,7 @@ export default function App() {
                     fontWeight: tab === t ? 600 : 400,
                     cursor: 'pointer',
                   }}>
-                    {t === 'debatter' ? 'Debatter' : t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
+                    {t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
                   </button>
                 ))}
                 <button onClick={toggleTheme} style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', padding: '7px 12px', background: 'none', border: 'none', cursor: 'pointer' }}>
@@ -281,26 +342,6 @@ export default function App() {
             <DarkStatusMessage message="Inga debatter matchar." />
           ) : (
             <>
-              {/* Dark filter band */}
-              <div style={{ background: '#1a1060', padding: '14px 28px', display: 'flex', alignItems: 'center', gap: 14, overflowX: 'auto' }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                  Filtrera debatter
-                </span>
-                {CATEGORIES.map(cat => (
-                  <button key={cat} onClick={() => setActiveCategory(cat)} style={{
-                    fontSize: 13,
-                    color: activeCategory === cat ? '#fff' : 'rgba(255,255,255,0.45)',
-                    padding: '4px 14px', borderRadius: 24,
-                    background: activeCategory === cat ? 'rgba(255,255,255,0.15)' : 'transparent',
-                    border: activeCategory === cat ? 'none' : '1px solid rgba(255,255,255,0.15)',
-                    cursor: 'pointer', whiteSpace: 'nowrap',
-                    fontWeight: activeCategory === cat ? 600 : 400,
-                  }}>
-                    {cat}
-                  </button>
-                ))}
-              </div>
-
               <IntroSection isMobile={isMobile} dark={true} />
 
               <DarkHeroCard debate={filteredDebates[0]} onClick={() => openDebate(filteredDebates[0].id)} isMobile={isMobile} />
