@@ -102,66 +102,6 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
         )}
       </div>
 
-      {/* ── Bloc summaries ───────────────────────────────────── */}
-      {(debate.leftBloc || debate.rightBloc) && (
-        <div style={{ padding: isMobile ? '28px 0' : '40px 0', borderBottom: '1px solid var(--border)' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>
-            Vad tycker blocken?
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
-            {/* Left bloc */}
-            {debate.leftBloc && (
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--red)', flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--red)' }}>Vänsterblocket</span>
-                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginLeft: 4 }}>
-                    {(debate.leftBloc.parties ?? []).map(p => {
-                      const party = getParty(p)
-                      return <span key={p} style={{ fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4, background: party?.color ?? '#888', color: '#fff' }}>{p}</span>
-                    })}
-                  </div>
-                </div>
-                <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px' }}>
-                  {debate.leftBloc.summary}
-                </p>
-                {debate.leftBloc.keyArg && (
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
-                    <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
-                    {debate.leftBloc.keyArg}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Right bloc */}
-            {debate.rightBloc && (
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent2)', flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent2)' }}>Högerblocket</span>
-                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginLeft: 4 }}>
-                    {(debate.rightBloc.parties ?? []).map(p => {
-                      const party = getParty(p)
-                      return <span key={p} style={{ fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 4, background: party?.color ?? '#888', color: '#fff' }}>{p}</span>
-                    })}
-                  </div>
-                </div>
-                <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px' }}>
-                  {debate.rightBloc.summary}
-                </p>
-                {debate.rightBloc.keyArg && (
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
-                    <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
-                    {debate.rightBloc.keyArg}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* ── Speakers ─────────────────────────────────────────── */}
       {allParticipants.length > 0 && (
         <div style={{ padding: isMobile ? '24px 0' : '32px 0', borderBottom: '1px solid var(--border)' }}>
@@ -185,6 +125,58 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                 </div>
               )
             })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Bloc summaries ───────────────────────────────────── */}
+      {(debate.leftBloc || debate.rightBloc) && (
+        <div style={{ padding: isMobile ? '28px 0' : '40px 0', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>
+            Vad tycker blocken?
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
+            {/* Left bloc */}
+            {debate.leftBloc && (
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+                  {(debate.leftBloc.parties ?? []).map(p => {
+                    const party = getParty(p)
+                    return <span key={p} style={{ fontSize: 12, fontWeight: 800, padding: '4px 10px', borderRadius: 6, background: party?.color ?? '#888', color: party?.textColor ?? '#fff' }}>{p}</span>
+                  })}
+                </div>
+                <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px' }}>
+                  {debate.leftBloc.summary}
+                </p>
+                {debate.leftBloc.keyArg && (
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
+                    <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
+                    {debate.leftBloc.keyArg}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Right bloc */}
+            {debate.rightBloc && (
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+                  {(debate.rightBloc.parties ?? []).map(p => {
+                    const party = getParty(p)
+                    return <span key={p} style={{ fontSize: 12, fontWeight: 800, padding: '4px 10px', borderRadius: 6, background: party?.color ?? '#888', color: party?.textColor ?? '#fff' }}>{p}</span>
+                  })}
+                </div>
+                <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px' }}>
+                  {debate.rightBloc.summary}
+                </p>
+                {debate.rightBloc.keyArg && (
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
+                    <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
+                    {debate.rightBloc.keyArg}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
