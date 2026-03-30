@@ -952,11 +952,11 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
             <span>{intro.headingPre} </span>
             <span style={{
               display: 'inline-block', color: p.accent,
-              minWidth: 160, height: isMobile ? 36 : 46,
+              minWidth: isMobile ? 180 : 240, height: isMobile ? 36 : 46,
               overflow: 'hidden', verticalAlign: 'bottom', position: 'relative',
             }}>
               <span key={wordIdx} style={{
-                position: 'absolute',
+                position: 'absolute', whiteSpace: 'nowrap',
                 animation: 'wordSlide 2.2s ease forwards',
                 fontSize: isMobile ? 28 : 38, fontWeight: 800,
               }}>
