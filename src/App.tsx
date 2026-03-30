@@ -518,34 +518,57 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
   const [wordIdx, setWordIdx] = React.useState(0)
   const words = ['Debatter', 'Omröstningar', 'Politik']
 
-  React.useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 60)
-    return () => clearTimeout(t)
-  }, [])
+  React.useEffect(() => { const t = setTimeout(() => setVisible(true), 60); return () => clearTimeout(t) }, [])
+  React.useEffect(() => { const iv = setInterval(() => setWordIdx(i => (i + 1) % words.length), 2200); return () => clearInterval(iv) }, [])
 
-  React.useEffect(() => {
-    const iv = setInterval(() => setWordIdx(i => (i + 1) % words.length), 2200)
-    return () => clearInterval(iv)
-  }, [])
-
-  const accent     = dark ? '#9b7dff'                    : '#5b3fd4'
-  const textMain   = dark ? '#fff'                        : '#0a0a14'
-  const textSub    = dark ? 'rgba(255,255,255,0.45)'      : '#666'
-  const badgeBg    = dark ? 'rgba(124,92,252,0.18)'       : '#ede8ff'
-  const wrapBg     = dark ? 'linear-gradient(135deg, rgba(124,92,252,0.12) 0%, rgba(13,21,36,0.95) 60%)' : 'linear-gradient(135deg, #f0ecff 0%, #fff 60%)'
-  const wrapBorder = dark ? '0.5px solid rgba(255,255,255,0.09)' : '1px solid #ede8ff'
-  const chipBg     = dark ? 'rgba(255,255,255,0.06)'      : '#fff'
-  const chipBorder = dark ? '0.5px solid rgba(255,255,255,0.12)' : '1px solid #ede8ff'
-  const chipColor  = dark ? 'rgba(255,255,255,0.7)'       : '#333'
-  const rightBg    = dark ? 'linear-gradient(160deg, rgba(124,92,252,0.1) 0%, rgba(13,21,36,0.6) 100%)' : 'linear-gradient(160deg, #ede8ff 0%, #f8f5ff 100%)'
-  const rightBorder= dark ? '0.5px solid rgba(255,255,255,0.07)' : '1px solid #e8e2ff'
-  const blobColor  = dark ? 'rgba(124,92,252,0.15)'       : 'rgba(91,63,212,0.12)'
-  const c1Bg       = dark ? 'rgba(255,255,255,0.05)'      : '#fff'
-  const c1Border   = dark ? '0.5px solid rgba(255,255,255,0.12)' : '1px solid #ede8ff'
-  const c1Shadow   = dark ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(91,63,212,0.14)'
-  const c1Text     = dark ? '#fff'                        : '#111'
-  const c3Bg       = dark ? 'rgba(255,255,255,0.07)'      : '#fff'
-  const c3Border   = dark ? '0.5px solid rgba(255,255,255,0.12)' : '1px solid #ede8ff'
+  // All colors — ONLY thing that differs between dark and light
+  const p = dark ? {
+    wrapBg:     'linear-gradient(135deg, rgba(124,92,252,0.12) 0%, #0d1524 60%)',
+    wrapBorder: '1px solid rgba(255,255,255,0.09)',
+    badgeBg:    'rgba(124,92,252,0.18)',
+    accent:     '#9b7dff',
+    textMain:   '#ffffff',
+    textSub:    'rgba(255,255,255,0.45)',
+    chipBg:     'rgba(255,255,255,0.07)',
+    chipBorder: '1px solid rgba(255,255,255,0.13)',
+    chipColor:  'rgba(255,255,255,0.75)',
+    chipShadow: '0 1px 4px rgba(0,0,0,0.2)',
+    rightBg:    'linear-gradient(160deg, rgba(124,92,252,0.12) 0%, #0a0f1e 100%)',
+    rightBorder:'1px solid rgba(255,255,255,0.07)',
+    blobColor:  'rgba(124,92,252,0.18)',
+    c1Bg:       'rgba(255,255,255,0.06)',
+    c1Border:   '1px solid rgba(255,255,255,0.12)',
+    c1Shadow:   '0 8px 32px rgba(0,0,0,0.5)',
+    c1Text:     '#ffffff',
+    c2Bg:       'linear-gradient(135deg, #8b6cf4, #5b3fd4)',
+    c2Shadow:   '0 8px 28px rgba(124,92,252,0.45)',
+    c3Bg:       'rgba(255,255,255,0.08)',
+    c3Border:   '1px solid rgba(255,255,255,0.12)',
+    c3Shadow:   '0 4px 16px rgba(0,0,0,0.35)',
+  } : {
+    wrapBg:     'linear-gradient(135deg, #f0ecff 0%, #ffffff 60%)',
+    wrapBorder: '1px solid #ede8ff',
+    badgeBg:    '#ede8ff',
+    accent:     '#5b3fd4',
+    textMain:   '#0a0a14',
+    textSub:    '#666666',
+    chipBg:     '#ffffff',
+    chipBorder: '1px solid #ede8ff',
+    chipColor:  '#333333',
+    chipShadow: '0 1px 4px rgba(91,63,212,0.07)',
+    rightBg:    'linear-gradient(160deg, #ede8ff 0%, #f8f5ff 100%)',
+    rightBorder:'1px solid #e8e2ff',
+    blobColor:  'rgba(91,63,212,0.12)',
+    c1Bg:       '#ffffff',
+    c1Border:   '1px solid #ede8ff',
+    c1Shadow:   '0 8px 32px rgba(91,63,212,0.14)',
+    c1Text:     '#111111',
+    c2Bg:       'linear-gradient(135deg, #8b6cf4, #5b3fd4)',
+    c2Shadow:   '0 8px 28px rgba(91,63,212,0.28)',
+    c3Bg:       '#ffffff',
+    c3Border:   '1px solid #ede8ff',
+    c3Shadow:   '0 4px 16px rgba(91,63,212,0.10)',
+  }
 
   return (
     <>
@@ -567,17 +590,12 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
 
       <div style={{
         margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
-        borderRadius: 20,
-        background: wrapBg,
-        border: wrapBorder,
-        backdropFilter: dark ? 'blur(20px)' : undefined,
-        WebkitBackdropFilter: dark ? 'blur(20px)' : undefined,
-        overflow: 'hidden',
+        borderRadius: 20, overflow: 'hidden',
+        background: p.wrapBg, border: p.wrapBorder,
         display: 'grid',
         gridTemplateColumns: isMobile ? '1fr' : '1fr 320px',
         minHeight: isMobile ? 'auto' : 220,
       }}>
-
         {/* Left — text */}
         <div style={{
           padding: isMobile ? '36px 28px 28px' : '48px 44px',
@@ -587,7 +605,7 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
         }}>
           <div style={{
             display: 'inline-flex', alignSelf: 'flex-start',
-            background: badgeBg, color: accent,
+            background: p.badgeBg, color: p.accent,
             fontSize: 11, fontWeight: 700, borderRadius: 24,
             padding: '5px 14px', marginBottom: 18, letterSpacing: '0.06em',
           }}>
@@ -596,12 +614,12 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
 
           <div style={{
             fontSize: isMobile ? 28 : 38, fontWeight: 800,
-            color: textMain, lineHeight: 1.1,
+            color: p.textMain, lineHeight: 1.1,
             letterSpacing: '-0.03em', marginBottom: 16,
           }}>
             <span style={{ display: 'block' }}>Vad händer i</span>
             <span style={{
-              display: 'inline-block', color: accent,
+              display: 'inline-block', color: p.accent,
               minWidth: 200, height: isMobile ? 36 : 46,
               overflow: 'hidden', verticalAlign: 'bottom', position: 'relative',
             }}>
@@ -617,7 +635,7 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
           </div>
 
           <p style={{
-            fontSize: isMobile ? 14 : 15, color: textSub,
+            fontSize: isMobile ? 14 : 15, color: p.textSub,
             lineHeight: 1.65, maxWidth: 380, marginBottom: 24,
             animation: visible ? 'fadeUp 0.6s 0.15s ease both' : 'none',
             opacity: visible ? 1 : 0,
@@ -637,10 +655,10 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
             ].map(chip => (
               <div key={chip.text} style={{
                 display: 'flex', alignItems: 'center', gap: 6,
-                background: chipBg, border: chipBorder,
+                background: p.chipBg, border: p.chipBorder,
                 borderRadius: 24, padding: '7px 14px',
-                fontSize: 13, fontWeight: 600, color: chipColor,
-                boxShadow: dark ? undefined : '0 1px 4px rgba(91,63,212,0.07)',
+                fontSize: 13, fontWeight: 600, color: p.chipColor,
+                boxShadow: p.chipShadow,
               }}>
                 <span>{chip.icon}</span>
                 <span>{chip.text}</span>
@@ -653,42 +671,40 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
         {!isMobile && (
           <div style={{
             position: 'relative', overflow: 'hidden',
-            background: rightBg, borderLeft: rightBorder,
+            background: p.rightBg, borderLeft: p.rightBorder,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             minHeight: 220,
           }}>
             <div style={{
               position: 'absolute', width: 260, height: 260, borderRadius: '50%',
-              background: `radial-gradient(circle, ${blobColor} 0%, transparent 70%)`,
+              background: `radial-gradient(circle, ${p.blobColor} 0%, transparent 70%)`,
               top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
             }} />
 
             <div style={{ position: 'relative', width: 240, height: 180 }}>
               {/* Card 1 */}
               <div style={{
-                position: 'absolute', top: 0, left: 20,
-                background: c1Bg, borderRadius: 14, padding: '14px 16px',
-                boxShadow: c1Shadow, border: c1Border, width: 180,
-                backdropFilter: dark ? 'blur(20px)' : undefined,
+                position: 'absolute', top: 0, left: 20, width: 180,
+                background: p.c1Bg, borderRadius: 14, padding: '14px 16px',
+                boxShadow: p.c1Shadow, border: p.c1Border,
                 animation: 'floatA 3.5s ease-in-out infinite',
               }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: accent, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Migration</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: c1Text, lineHeight: 1.4 }}>Gränskontroller och asylregler</div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: p.accent, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Migration</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: p.c1Text, lineHeight: 1.4 }}>Gränskontroller och asylregler</div>
                 <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
-                  {['M','SD','S'].map(p => {
-                    const party = getParty(p)
-                    return <div key={p} style={{ width: 20, height: 20, borderRadius: 5, background: party?.color ?? '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: party?.textColor ?? '#fff' }}>{p.slice(0,2)}</div>
+                  {['M','SD','S'].map(party => {
+                    const pt = getParty(party)
+                    return <div key={party} style={{ width: 20, height: 20, borderRadius: 5, background: pt?.color ?? '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: pt?.textColor ?? '#fff' }}>{party.slice(0,2)}</div>
                   })}
                 </div>
               </div>
 
               {/* Card 2 */}
               <div style={{
-                position: 'absolute', bottom: 0, right: 0,
-                background: `linear-gradient(135deg, ${accent}, ${dark ? '#7c5cfc' : '#8b6cf4'})`,
-                borderRadius: 14, padding: '14px 16px',
-                boxShadow: `0 8px 28px ${dark ? 'rgba(124,92,252,0.45)' : 'rgba(91,63,212,0.28)'}`,
-                width: 150, animation: 'floatB 4.2s ease-in-out infinite',
+                position: 'absolute', bottom: 0, right: 0, width: 150,
+                background: p.c2Bg, borderRadius: 14, padding: '14px 16px',
+                boxShadow: p.c2Shadow,
+                animation: 'floatB 4.2s ease-in-out infinite',
               }}>
                 <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Omröstning</div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
@@ -707,8 +723,7 @@ function IntroSection({ isMobile, dark }: { isMobile: boolean; dark: boolean }) 
               <div style={{
                 position: 'absolute', top: 60, right: 10,
                 width: 48, height: 48, borderRadius: 12,
-                background: c3Bg, border: c3Border,
-                boxShadow: dark ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 16px rgba(91,63,212,0.1)',
+                background: p.c3Bg, border: p.c3Border, boxShadow: p.c3Shadow,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 22, animation: 'floatC 2.9s ease-in-out infinite',
               }}>
