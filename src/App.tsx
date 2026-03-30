@@ -838,6 +838,8 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
   const [visible, setVisible] = React.useState(false)
   const [wordIdx, setWordIdx] = React.useState(0)
   const [intro, setIntro] = React.useState(introSettingsCache ?? DEFAULT_INTRO)
+  const [wordWidth, setWordWidth] = React.useState<number | null>(null)
+  const ghostRef = React.useRef<HTMLSpanElement>(null)
 
   React.useEffect(() => {
     if (!introSettingsCache) {
@@ -852,6 +854,7 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
 
   React.useEffect(() => { const t = setTimeout(() => setVisible(true), 60); return () => clearTimeout(t) }, [])
   React.useEffect(() => { const iv = setInterval(() => setWordIdx(i => (i + 1) % words.length), 2200); return () => clearInterval(iv) }, [words.length])
+  React.useLayoutEffect(() => { if (ghostRef.current) setWordWidth(ghostRef.current.offsetWidth) }, [wordIdx, isMobile])
 
   // All colors — ONLY thing that differs between dark and light
   const p = dark ? {
@@ -954,9 +957,11 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
               display: 'inline-block', color: p.accent,
               position: 'relative', overflow: 'hidden',
               height: isMobile ? 36 : 46, verticalAlign: 'bottom',
+              width: wordWidth ?? 'auto',
+              transition: 'width 0.4s cubic-bezier(0.4,0,0.2,1)',
             }}>
-              {/* Ghost sizer — invisible, sets container width to match current word */}
-              <span style={{ visibility: 'hidden', whiteSpace: 'nowrap', fontSize: isMobile ? 28 : 38, fontWeight: 800 }}>
+              {/* Ghost — absolutely positioned, just for measuring width */}
+              <span ref={ghostRef} style={{ position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap', fontSize: isMobile ? 28 : 38, fontWeight: 800, pointerEvents: 'none' }}>
                 {words[wordIdx]}
               </span>
               {/* Animated word */}
