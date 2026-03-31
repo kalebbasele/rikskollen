@@ -62,9 +62,10 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
 
         {/* Big title */}
         <h1 style={{
-          fontSize: isMobile ? 28 : 42, fontWeight: 800,
+          fontFamily: 'var(--font-display)',
+          fontSize: isMobile ? 28 : 42, fontWeight: 700,
           color: 'var(--text)', lineHeight: 1.15,
-          letterSpacing: '-0.025em', margin: '0 0 20px',
+          letterSpacing: '-0.01em', margin: '0 0 20px',
         }}>
           {debate.title}
         </h1>
@@ -94,7 +95,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
           <p style={{ fontSize: 15, color: 'var(--text3)', lineHeight: 1.7 }}>{debate.aiError}</p>
         ) : debate.ingress ? (
           <p
-            style={{ fontSize: isMobile ? 16 : 19, color: 'var(--text2)', lineHeight: 1.75, margin: 0, fontWeight: 400 }}
+            style={{ fontFamily: 'var(--font-body)', fontSize: isMobile ? 16 : 19, color: 'var(--text2)', lineHeight: 1.75, margin: 0, fontWeight: 400 }}
             dangerouslySetInnerHTML={{ __html: markBold(debate.ingress) }}
           />
         ) : (

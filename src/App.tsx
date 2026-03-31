@@ -144,7 +144,7 @@ export default function App() {
         {/* Navbar */}
         <div style={{ position: 'sticky', top: 0, zIndex: 100, background: '#f8f6f2', borderBottom: '1px solid #e0dbd3', height: 56 }}>
           <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
-          <div onClick={goHome} style={{ fontSize: 20, fontWeight: 700, color: '#111', letterSpacing: '-0.03em', cursor: 'pointer', userSelect: 'none' }}>
+          <div onClick={goHome} style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: '#111', letterSpacing: '-0.01em', cursor: 'pointer', userSelect: 'none' }}>
             Civi<span style={{ color: '#5b3fd4' }}>ca</span>
           </div>
           <div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: 4 }}>
@@ -306,7 +306,7 @@ export default function App() {
       {/* Navbar */}
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: '#0b0b18', borderBottom: '1px solid rgba(255,255,255,0.07)', height: 56 }}>
         <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
-          <div onClick={goHome} style={{ fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', cursor: 'pointer', userSelect: 'none' }}>
+          <div onClick={goHome} style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', cursor: 'pointer', userSelect: 'none' }}>
             Civi<span style={{ color: '#9b7dff' }}>ca</span>
           </div>
           <div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: 4 }}>
@@ -628,7 +628,7 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
         <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: 'rgba(155,125,255,0.18)', color: '#9b7dff', fontSize: 11, fontWeight: 700, borderRadius: 24, padding: '5px 12px', marginBottom: 16 }}>
           Senaste · {cat.label}
         </div>
-        <div style={{ fontSize: isMobile ? 22 : 30, fontWeight: 700, color: '#fff', letterSpacing: '-0.025em', lineHeight: 1.1, marginBottom: 12 }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? 22 : 30, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1.15, marginBottom: 12 }}>
           {debate.title}
         </div>
         <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
@@ -695,7 +695,7 @@ function DarkSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSel
             <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.color, marginBottom: 8 }}>
               {cat.label}
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.4, flex: 1 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.4, flex: 1 }}>
               {debate.title.length > 80 ? debate.title.slice(0, 80) + '…' : debate.title}
             </div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 6, marginBottom: 14 }}>
@@ -761,7 +761,7 @@ function DarkFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void 
       <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.color, marginBottom: 5 }}>
         {cat.label}
       </div>
-      <div style={{ fontSize: 14, color: '#fff', fontWeight: 500, lineHeight: 1.4 }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#fff', fontWeight: 500, lineHeight: 1.4 }}>
         {debate.title.length > 90 ? debate.title.slice(0, 90) + '…' : debate.title}
       </div>
       <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>
@@ -918,9 +918,10 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
           </div>
 
           <div style={{
-            fontSize: isMobile ? 28 : 38, fontWeight: 800,
-            color: p.textMain, lineHeight: 1.1,
-            letterSpacing: '-0.03em', marginBottom: 16,
+            fontFamily: 'var(--font-display)',
+            fontSize: isMobile ? 28 : 38, fontWeight: 700,
+            color: p.textMain, lineHeight: 1.15,
+            letterSpacing: '-0.01em', marginBottom: 16,
           }}>
             <span>{intro.headingPre} </span>
             <span style={{
@@ -931,14 +932,15 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
               transition: 'width 0.4s cubic-bezier(0.4,0,0.2,1)',
             }}>
               {/* Ghost — absolutely positioned, just for measuring width */}
-              <span ref={ghostRef} style={{ position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap', fontSize: isMobile ? 28 : 38, fontWeight: 800, pointerEvents: 'none' }}>
+              <span ref={ghostRef} style={{ position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap', fontFamily: 'var(--font-display)', fontSize: isMobile ? 28 : 38, fontWeight: 700, pointerEvents: 'none' }}>
                 {words[wordIdx]}
               </span>
               {/* Animated word */}
               <span key={wordIdx} style={{
                 position: 'absolute', left: 0, top: 0, whiteSpace: 'nowrap',
                 animation: 'wordSlide 2.2s ease forwards',
-                fontSize: isMobile ? 28 : 38, fontWeight: 800,
+                fontFamily: 'var(--font-display)',
+                fontSize: isMobile ? 28 : 38, fontWeight: 700,
               }}>
                 {words[wordIdx]}
               </span>
@@ -1049,7 +1051,7 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
         <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: '#f0eeff', color: '#5b3fd4', fontSize: 11, fontWeight: 700, borderRadius: 24, padding: '5px 12px', marginBottom: 16 }}>
           Senaste · {cat.label}
         </div>
-        <div style={{ fontSize: isMobile ? 22 : 30, fontWeight: 700, color: '#111', letterSpacing: '-0.025em', lineHeight: 1.1, marginBottom: 12 }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? 22 : 30, fontWeight: 700, color: '#111', letterSpacing: '-0.01em', lineHeight: 1.15, marginBottom: 12 }}>
           {debate.title}
         </div>
         <div style={{ fontSize: 12, color: '#bbb', lineHeight: 1.6 }}>
@@ -1116,7 +1118,7 @@ function LightSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSe
             <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.lightColor, marginBottom: 8 }}>
               {cat.label}
             </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#111', lineHeight: 1.4, flex: 1 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: '#111', lineHeight: 1.4, flex: 1 }}>
               {debate.title.length > 80 ? debate.title.slice(0, 80) + '…' : debate.title}
             </div>
             <div style={{ fontSize: 11, color: '#ccc', marginTop: 6, marginBottom: 14 }}>
@@ -1182,7 +1184,7 @@ function LightFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void
       <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.lightColor, marginBottom: 5 }}>
         {cat.label}
       </div>
-      <div style={{ fontSize: 14, color: '#111', fontWeight: 500, lineHeight: 1.4 }}>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#111', fontWeight: 500, lineHeight: 1.4 }}>
         {debate.title.length > 90 ? debate.title.slice(0, 90) + '…' : debate.title}
       </div>
       <div style={{ fontSize: 11, color: '#ccc', marginTop: 4 }}>

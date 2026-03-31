@@ -12,7 +12,9 @@
   --red: #e8445a;
   --green: #2ec27e;
   --radius: 12px;
-  --font: 'Inter', sans-serif;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Lora', Georgia, serif;
   --top-bg: #0b0b18;
   --ticker-bg: rgba(124,92,252,0.15);
   --ticker-border: rgba(124,92,252,0.25);
