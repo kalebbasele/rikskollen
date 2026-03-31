@@ -116,18 +116,6 @@ export default function VoteCard({ vote }: Props) {
         )}
       </div>
 
-      {vote.dokId && (
-        <div style={{ padding: '0 20px 18px' }}>
-          <a
-            href={`https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/_${vote.dokId.toLowerCase()}/`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)', textDecoration: 'none' }}
-          >
-            Se hur alla röstade →
-          </a>
-        </div>
-      )}
     </div>
   )
 }
