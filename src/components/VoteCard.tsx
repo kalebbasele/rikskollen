@@ -116,6 +116,22 @@ export default function VoteCard({ vote }: Props) {
         )}
       </div>
 
+      <div style={{ padding: '0 20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+        <p style={{ fontSize: 11, color: 'var(--text3)', margin: 0 }}>
+          Röstdata från riksdagens officiella API
+        </p>
+        {vote.voterId && (
+          <a
+            href={`https://data.riksdagen.se/votering/${vote.voterId}/json`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ fontSize: 11, color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}
+          >
+            Verifiera källdata →
+          </a>
+        )}
+      </div>
+
     </div>
   )
 }
