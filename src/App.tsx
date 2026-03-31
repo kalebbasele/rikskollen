@@ -617,14 +617,13 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
       display: 'grid',
       gridTemplateColumns: isMobile ? '1fr' : '1fr 280px',
       minHeight: 230, cursor: 'pointer',
-      margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
-      borderRadius: 16, overflow: 'hidden',
-      background: '#1a1535',
-      boxShadow: '0 2px 16px rgba(0,0,0,0.4)',
-      border: '1px solid rgba(155,125,255,0.12)',
+      margin: '0 16px',
+      borderBottom: '1px solid rgba(255,255,255,0.07)',
+      paddingBottom: isMobile ? 24 : 32,
+      paddingTop: isMobile ? 24 : 32,
     }}>
       {/* Left text */}
-      <div style={{ padding: isMobile ? '24px 20px 20px' : '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <div style={{ paddingRight: isMobile ? 0 : 32, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: 'rgba(155,125,255,0.18)', color: '#9b7dff', fontSize: 11, fontWeight: 700, borderRadius: 24, padding: '5px 12px', marginBottom: 16 }}>
           Senaste · {cat.label}
         </div>
@@ -637,36 +636,31 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
       </div>
 
       {/* Right portraits */}
-      <div style={{
-        display: 'flex', flexDirection: 'row', alignItems: 'stretch',
-        gap: 8, padding: 8,
-        borderLeft: isMobile ? 'none' : '1px solid rgba(155,125,255,0.1)',
-        borderTop: isMobile ? '1px solid rgba(155,125,255,0.1)' : 'none',
-        minHeight: isMobile ? 180 : 'auto',
-      }}>
-        {participants.slice(0, 2).map((p, i) => {
-          const party = getParty(p.person.party)
-          const glow = party?.color ?? '#5b3fd4'
-          const shortName = abbrevName(p.person)
-          return (
-            <div key={p.person.id || i} style={{
-              position: 'relative', flex: 1,
-              borderRadius: 10, overflow: 'hidden',
-              background: '#1e1a40', minHeight: 180,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-            }}>
-              <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '18%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 6px 6px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>
-                <PartyBadge party={p.person.party} size={16} radius={4} />
+      {!isMobile && (
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {participants.slice(0, 2).map((p, i) => {
+            const party = getParty(p.person.party)
+            const glow = party?.color ?? '#5b3fd4'
+            const shortName = abbrevName(p.person)
+            return (
+              <div key={p.person.id || i} style={{
+                position: 'relative', flex: 1,
+                borderRadius: 10, overflow: 'hidden',
+                background: '#1e1a40', minHeight: 160,
+              }}>
+                <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+                  onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '18%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 6px 6px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>
+                  <PartyBadge party={p.person.party} size={16} radius={4} />
+                </div>
               </div>
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
@@ -676,21 +670,17 @@ function DarkSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSel
     <div style={{
       display: 'grid',
       gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-      gap: isMobile ? 8 : 12,
-      padding: isMobile ? '0 12px 8px' : '0 16px 8px',
+      gap: 0,
+      padding: '0 16px',
     }}>
       {debates.map((debate) => {
         const cat = getCategory(debate.topic + debate.title)
         const participants = debate.participants
         return (
           <div key={debate.id} onClick={() => onSelect(debate.id)} style={{
-            padding: '18px 18px 0',
+            padding: '20px 16px 20px 0',
             display: 'flex', flexDirection: 'column', cursor: 'pointer',
-            background: '#1a1535',
-            borderRadius: 14,
-            border: '1px solid rgba(155,125,255,0.12)',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-            overflow: 'hidden',
+            borderBottom: '1px solid rgba(255,255,255,0.07)',
           }}>
             <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.color, marginBottom: 8 }}>
               {cat.label}
@@ -698,16 +688,16 @@ function DarkSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSel
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.4, flex: 1 }}>
               {debate.title.length > 80 ? debate.title.slice(0, 80) + '…' : debate.title}
             </div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 6, marginBottom: 14 }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 6, marginBottom: 12 }}>
               {formatDateShort(debate.date)}
             </div>
             {/* Portraits */}
-            <div style={{ display: 'flex', gap: 6, paddingBottom: 18 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
               {participants.slice(0, 3).map((p, pi) => {
-                const sz = 48
+                const sz = 44
                 return (
                   <div key={p.person.id || pi} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <div style={{ width: sz, height: sz, borderRadius: 10, overflow: 'hidden', background: '#1e1a40', position: 'relative', boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>
+                    <div style={{ width: sz, height: sz, borderRadius: 8, overflow: 'hidden', background: '#1e1a40', position: 'relative' }}>
                       <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                         onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
@@ -739,7 +729,7 @@ function DarkFeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: (
           <div style={{ padding: '14px 20px 6px', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             {formatDateLabel(group.date)}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '0 16px 8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', padding: '0 16px' }}>
             {group.debates.map(d => <DarkFeedRow key={d.id} debate={d} onClick={() => onSelect(d.id)} />)}
           </div>
         </div>
@@ -752,11 +742,9 @@ function DarkFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void 
   const cat = getCategory(debate.topic + debate.title)
   return (
     <div onClick={onClick} style={{
-      minHeight: 80, background: '#1a1535', cursor: 'pointer',
-      borderRadius: 10, overflow: 'hidden',
-      border: '1px solid rgba(155,125,255,0.1)',
-      boxShadow: '0 1px 6px rgba(0,0,0,0.2)',
-      padding: '16px 22px',
+      cursor: 'pointer',
+      borderBottom: '1px solid rgba(255,255,255,0.07)',
+      padding: '16px 0',
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.color, marginBottom: 5 }}>
         {cat.label}
@@ -1040,14 +1028,13 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
       display: 'grid',
       gridTemplateColumns: isMobile ? '1fr' : '1fr 280px',
       minHeight: 230, cursor: 'pointer',
-      margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
-      borderRadius: 16, overflow: 'hidden',
-      background: '#f8f6f2',
-      boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
-      border: '1px solid #e0dbd3',
+      margin: isMobile ? '0 16px' : '0 16px',
+      borderBottom: '1px solid #e0dbd3',
+      paddingBottom: isMobile ? 24 : 32,
+      paddingTop: isMobile ? 24 : 32,
     }}>
       {/* Left text */}
-      <div style={{ padding: isMobile ? '24px 20px 20px' : '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <div style={{ paddingRight: isMobile ? 0 : 32, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: '#f0eeff', color: '#5b3fd4', fontSize: 11, fontWeight: 700, borderRadius: 24, padding: '5px 12px', marginBottom: 16 }}>
           Senaste · {cat.label}
         </div>
@@ -1060,36 +1047,31 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
       </div>
 
       {/* Right portraits */}
-      <div style={{
-        display: 'flex', flexDirection: 'row', alignItems: 'stretch',
-        gap: 8, padding: 8,
-        borderLeft: isMobile ? 'none' : '1px solid #e0dbd3',
-        borderTop: isMobile ? '1px solid #e0dbd3' : 'none',
-        minHeight: isMobile ? 180 : 'auto',
-      }}>
-        {participants.slice(0, 2).map((p, i) => {
-          const party = getParty(p.person.party)
-          const glow = party?.color ?? '#5b3fd4'
-          const shortName = abbrevName(p.person)
-          return (
-            <div key={p.person.id || i} style={{
-              position: 'relative', flex: 1,
-              borderRadius: 10, overflow: 'hidden',
-              background: '#ddd8d0', minHeight: 180,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-            }}>
-              <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '18%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 6px 6px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>
-                <PartyBadge party={p.person.party} size={16} radius={4} />
+      {!isMobile && (
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {participants.slice(0, 2).map((p, i) => {
+            const party = getParty(p.person.party)
+            const glow = party?.color ?? '#5b3fd4'
+            const shortName = abbrevName(p.person)
+            return (
+              <div key={p.person.id || i} style={{
+                position: 'relative', flex: 1,
+                borderRadius: 10, overflow: 'hidden',
+                background: '#ddd8d0', minHeight: 160,
+              }}>
+                <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+                  onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '18%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 6px 6px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>
+                  <PartyBadge party={p.person.party} size={16} radius={4} />
+                </div>
               </div>
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
@@ -1099,21 +1081,17 @@ function LightSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSe
     <div style={{
       display: 'grid',
       gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-      gap: isMobile ? 8 : 12,
-      padding: isMobile ? '0 12px 8px' : '0 16px 8px',
+      gap: 0,
+      padding: isMobile ? '0 16px' : '0 16px',
     }}>
-      {debates.map((debate, i) => {
+      {debates.map((debate) => {
         const cat = getCategory(debate.topic + debate.title)
         const participants = debate.participants
         return (
           <div key={debate.id} onClick={() => onSelect(debate.id)} style={{
-            padding: '18px 18px 0',
+            padding: '20px 16px 20px 0',
             display: 'flex', flexDirection: 'column', cursor: 'pointer',
-            background: '#f8f6f2',
-            borderRadius: 14,
-            border: '1px solid #e0dbd3',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-            overflow: 'hidden',
+            borderBottom: '1px solid #e0dbd3',
           }}>
             <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.lightColor, marginBottom: 8 }}>
               {cat.label}
@@ -1121,16 +1099,16 @@ function LightSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSe
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: '#111', lineHeight: 1.4, flex: 1 }}>
               {debate.title.length > 80 ? debate.title.slice(0, 80) + '…' : debate.title}
             </div>
-            <div style={{ fontSize: 11, color: '#ccc', marginTop: 6, marginBottom: 14 }}>
+            <div style={{ fontSize: 11, color: '#ccc', marginTop: 6, marginBottom: 12 }}>
               {formatDateShort(debate.date)}
             </div>
             {/* Portraits */}
-            <div style={{ display: 'flex', gap: 6, paddingBottom: 18 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
               {participants.slice(0, 3).map((p, pi) => {
-                const sz = 48
+                const sz = 44
                 return (
                   <div key={p.person.id || pi} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <div style={{ width: sz, height: sz, borderRadius: 10, overflow: 'hidden', background: '#ddd8d0', position: 'relative', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>
+                    <div style={{ width: sz, height: sz, borderRadius: 8, overflow: 'hidden', background: '#ddd8d0', position: 'relative' }}>
                       <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                         onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
@@ -1162,7 +1140,7 @@ function LightFeedSection({ debates, onSelect }: { debates: Debate[]; onSelect: 
           <div style={{ padding: '14px 20px 6px', fontSize: 10, fontWeight: 700, color: '#ccc', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
             {formatDateLabel(group.date)}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '0 16px 8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', padding: '0 16px' }}>
             {group.debates.map(d => <LightFeedRow key={d.id} debate={d} onClick={() => onSelect(d.id)} />)}
           </div>
         </div>
@@ -1175,11 +1153,9 @@ function LightFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void
   const cat = getCategory(debate.topic + debate.title)
   return (
     <div onClick={onClick} style={{
-      minHeight: 80, background: '#f8f6f2', cursor: 'pointer',
-      borderRadius: 10, overflow: 'hidden',
-      border: '1px solid #e0dbd3',
-      boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
-      padding: '16px 22px',
+      cursor: 'pointer',
+      borderBottom: '1px solid #e0dbd3',
+      padding: '16px 0',
     }}>
       <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: cat.lightColor, marginBottom: 5 }}>
         {cat.label}
