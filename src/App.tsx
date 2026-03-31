@@ -140,9 +140,9 @@ export default function App() {
   if (theme === 'light') {
     return (
       <>
-      <div style={{ background: '#f7f7fb', minHeight: '100vh' }}>
+      <div style={{ background: '#f0ede8', minHeight: '100vh' }}>
         {/* Navbar */}
-        <div style={{ position: 'sticky', top: 0, zIndex: 100, background: '#fff', borderBottom: '1px solid #f0f0f8', height: 56 }}>
+        <div style={{ position: 'sticky', top: 0, zIndex: 100, background: '#f8f6f2', borderBottom: '1px solid #e0dbd3', height: 56 }}>
           <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
           <div onClick={goHome} style={{ fontSize: 20, fontWeight: 700, color: '#111', letterSpacing: '-0.03em', cursor: 'pointer', userSelect: 'none' }}>
             Civi<span style={{ color: '#5b3fd4' }}>ca</span>
@@ -174,8 +174,8 @@ export default function App() {
                   {showCatDropdown && (
                     <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
                       <div style={{
-                        background: '#fff', borderRadius: 14,
-                        boxShadow: '0 8px 32px rgba(0,0,0,0.12)', border: '1px solid #f0f0f8',
+                        background: '#f8f6f2', borderRadius: 14,
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.10)', border: '1px solid #e0dbd3',
                         padding: '8px', display: 'flex', flexDirection: 'column', gap: 1,
                         minWidth: 190,
                       }}>
@@ -228,7 +228,7 @@ export default function App() {
                   </button>
                   {showOmDropdown && (
                     <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
-                      <div style={{ background: '#fff', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', border: '1px solid #f0f0f8', padding: '8px', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 230 }}>
+                      <div style={{ background: '#f8f6f2', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', border: '1px solid #e0dbd3', padding: '8px', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 230 }}>
                         {OM_LINKS.map(l => (
                           <button key={l.key} onClick={() => setInfoPage(l.key)} style={{ fontSize: 13, textAlign: 'left', color: '#555', padding: '8px 14px', borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer' }}>
                             {l.label}
@@ -253,7 +253,7 @@ export default function App() {
             <DebateDetail debate={selectedDebate!} onUpdate={(updated: Debate) => updateDebate(updated)} />
           </div>
         ) : tab === 'debatter' ? (
-          <div className="page-inner" style={{ background: '#fff' }}>
+          <div className="page-inner" style={{ background: '#f0ede8' }}>
             {debatesLoading ? (
               <div style={{ padding: 20 }}>{Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}</div>
             ) : debatesError ? (
@@ -1040,9 +1040,9 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
       minHeight: 230, cursor: 'pointer',
       margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
-      background: '#fff',
-      boxShadow: '0 2px 16px rgba(0,0,0,0.07)',
-      border: '1px solid #f0f0f8',
+      background: '#f8f6f2',
+      boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
+      border: '1px solid #e0dbd3',
     }}>
       {/* Left text */}
       <div style={{ padding: isMobile ? '24px 20px 20px' : '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
@@ -1061,8 +1061,8 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
       <div style={{
         display: 'flex', flexDirection: 'row', alignItems: 'stretch',
         gap: 8, padding: 8,
-        borderLeft: isMobile ? 'none' : '1px solid #f0f0f8',
-        borderTop: isMobile ? '1px solid #f0f0f8' : 'none',
+        borderLeft: isMobile ? 'none' : '1px solid #e0dbd3',
+        borderTop: isMobile ? '1px solid #e0dbd3' : 'none',
         minHeight: isMobile ? 180 : 'auto',
       }}>
         {participants.slice(0, 2).map((p, i) => {
@@ -1073,7 +1073,7 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
             <div key={p.person.id || i} style={{
               position: 'relative', flex: 1,
               borderRadius: 10, overflow: 'hidden',
-              background: '#e8e6f0', minHeight: 180,
+              background: '#ddd8d0', minHeight: 180,
               boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             }}>
               <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
@@ -1107,9 +1107,9 @@ function LightSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSe
           <div key={debate.id} onClick={() => onSelect(debate.id)} style={{
             padding: '18px 18px 0',
             display: 'flex', flexDirection: 'column', cursor: 'pointer',
-            background: '#fff',
+            background: '#f8f6f2',
             borderRadius: 14,
-            border: '1px solid #f0f0f8',
+            border: '1px solid #e0dbd3',
             boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
             overflow: 'hidden',
           }}>
@@ -1128,7 +1128,7 @@ function LightSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSe
                 const sz = 48
                 return (
                   <div key={p.person.id || pi} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <div style={{ width: sz, height: sz, borderRadius: 10, overflow: 'hidden', background: '#e8e6f0', position: 'relative', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>
+                    <div style={{ width: sz, height: sz, borderRadius: 10, overflow: 'hidden', background: '#ddd8d0', position: 'relative', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>
                       <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
                         onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
@@ -1173,9 +1173,9 @@ function LightFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void
   const cat = getCategory(debate.topic + debate.title)
   return (
     <div onClick={onClick} style={{
-      minHeight: 80, background: '#fff', cursor: 'pointer',
+      minHeight: 80, background: '#f8f6f2', cursor: 'pointer',
       borderRadius: 10, overflow: 'hidden',
-      border: '1px solid #f0f0f8',
+      border: '1px solid #e0dbd3',
       boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
       padding: '16px 22px',
     }}>
