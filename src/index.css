@@ -31,14 +31,14 @@
 }
 
 [data-theme="light"] {
-  --bg: #f0eff6;
-  --surface: #fff;
-  --surface2: #f4f3f8;
-  --surface3: #e8e6f0;
-  --border: rgba(0,0,0,0.08);
-  --text: #1e1a30;
-  --text2: #666;
-  --text3: #aaa;
+  --bg: #f0ede8;
+  --surface: #f8f6f2;
+  --surface2: #ede9e3;
+  --surface3: #e0dbd3;
+  --border: rgba(0,0,0,0.1);
+  --text: #1a1814;
+  --text2: #555;
+  --text3: #999;
   --accent: #6644cc;
   --accent2: #6644cc;
   --top-bg: #1e1a30;

@@ -69,7 +69,10 @@ export default function App() {
   const [tab, setTabState] = useState<Tab>(initial.tab)
   const [selectedDebateId, setSelectedDebateId] = useState<string | null>(initial.debateId)
   const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set(['Alla']))
-  const [theme, setTheme] = useState<'dark' | 'light'>('light')
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    document.documentElement.setAttribute('data-theme', 'light')
+    return 'light'
+  })
   const [showCatDropdown, setShowCatDropdown] = useState(false)
   const [showOmDropdown, setShowOmDropdown] = useState(false)
   const [infoPage, setInfoPage] = useState<InfoPageKey | null>(null)
@@ -125,7 +128,7 @@ export default function App() {
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark'
     setTheme(next)
-    document.documentElement.setAttribute('data-theme', next === 'light' ? 'light' : '')
+    document.documentElement.setAttribute('data-theme', next === 'light' ? 'light' : 'dark')
   }
 
   const latestDebate = debates[0]
