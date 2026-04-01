@@ -651,7 +651,7 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
         borderTop: isMobile ? '1px solid rgba(155,125,255,0.1)' : 'none',
         minHeight: isMobile ? 180 : 'auto',
       }}>
-        {participants.slice(0, 2).map((p, i) => {
+        {participants.slice(0, 4).map((p, i) => {
           const party = getParty(p.person.party)
           const glow = party?.color ?? '#5b3fd4'
           const shortName = abbrevName(p.person)
@@ -709,9 +709,9 @@ function DarkSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSel
               {formatDateShort(debate.date)}
             </div>
             {/* Portraits */}
-            <div style={{ display: 'flex', gap: 6, paddingBottom: 18 }}>
-              {participants.slice(0, 3).map((p, pi) => {
-                const sz = 48
+            <div style={{ display: 'flex', gap: 6, paddingBottom: 18, flexWrap: 'wrap' }}>
+              {participants.slice(0, 5).map((p, pi) => {
+                const sz = 44
                 return (
                   <div key={p.person.id || pi} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                     <div style={{ width: sz, height: sz, borderRadius: 10, overflow: 'hidden', background: '#1e1a40', position: 'relative', boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}>
@@ -723,6 +723,14 @@ function DarkSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSel
                   </div>
                 )
               })}
+              {participants.length > 5 && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 10, background: 'rgba(155,125,255,0.15)', border: '1px solid rgba(155,125,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#9b7dff' }}>
+                    +{participants.length - 5}
+                  </div>
+                  <div style={{ height: 16 }} />
+                </div>
+              )}
             </div>
           </div>
         )
@@ -1074,7 +1082,7 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
         borderTop: isMobile ? '1px solid #e0dbd3' : 'none',
         minHeight: isMobile ? 180 : 'auto',
       }}>
-        {participants.slice(0, 2).map((p, i) => {
+        {participants.slice(0, 4).map((p, i) => {
           const party = getParty(p.person.party)
           const glow = party?.color ?? '#5b3fd4'
           const shortName = abbrevName(p.person)
@@ -1132,9 +1140,9 @@ function LightSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSe
               {formatDateShort(debate.date)}
             </div>
             {/* Portraits */}
-            <div style={{ display: 'flex', gap: 6, paddingBottom: 18 }}>
-              {participants.slice(0, 3).map((p, pi) => {
-                const sz = 48
+            <div style={{ display: 'flex', gap: 6, paddingBottom: 18, flexWrap: 'wrap' }}>
+              {participants.slice(0, 5).map((p, pi) => {
+                const sz = 44
                 return (
                   <div key={p.person.id || pi} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                     <div style={{ width: sz, height: sz, borderRadius: 10, overflow: 'hidden', background: '#ddd8d0', position: 'relative', boxShadow: '0 2px 6px rgba(0,0,0,0.08)' }}>
@@ -1146,6 +1154,14 @@ function LightSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSe
                   </div>
                 )
               })}
+              {participants.length > 5 && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 10, background: 'rgba(102,68,204,0.1)', border: '1px solid rgba(102,68,204,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#6644cc' }}>
+                    +{participants.length - 5}
+                  </div>
+                  <div style={{ height: 16 }} />
+                </div>
+              )}
             </div>
           </div>
         )
