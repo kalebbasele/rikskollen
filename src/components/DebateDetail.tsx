@@ -240,7 +240,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
       <div style={{ padding: isMobile ? '20px 0 40px' : '28px 0 60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         {debate.dokId && (
           <a
-            href={`https://www.riksdagen.se/sv/dokument-och-lagar/dokument/interpellation/_${debate.dokId}/`}
+            href={`https://www.riksdagen.se/sv/dokument-och-lagar/dokument/${debate.dokType === 'bet' ? 'betankande' : 'interpellation'}/_${debate.dokId}/`}
             target="_blank" rel="noopener noreferrer"
             style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent2)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}
           >
