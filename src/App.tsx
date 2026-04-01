@@ -622,7 +622,7 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
   return (
     <div onClick={onClick} style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : '1fr 280px',
+      gridTemplateColumns: isMobile ? '1fr' : '1fr 360px',
       minHeight: 230, cursor: 'pointer',
       margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
@@ -651,7 +651,7 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
         borderTop: isMobile ? '1px solid rgba(155,125,255,0.1)' : 'none',
         minHeight: isMobile ? 180 : 'auto',
       }}>
-        {participants.slice(0, 4).map((p, i) => {
+        {participants.slice(0, 7).map((p, i) => {
           const party = getParty(p.person.party)
           const glow = party?.color ?? '#5b3fd4'
           const shortName = abbrevName(p.person)
@@ -1053,7 +1053,7 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
   return (
     <div onClick={onClick} style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : '1fr 280px',
+      gridTemplateColumns: isMobile ? '1fr' : '1fr 360px',
       minHeight: 230, cursor: 'pointer',
       margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
@@ -1082,7 +1082,7 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
         borderTop: isMobile ? '1px solid #e0dbd3' : 'none',
         minHeight: isMobile ? 180 : 'auto',
       }}>
-        {participants.slice(0, 4).map((p, i) => {
+        {participants.slice(0, 7).map((p, i) => {
           const party = getParty(p.person.party)
           const glow = party?.color ?? '#5b3fd4'
           const shortName = abbrevName(p.person)
