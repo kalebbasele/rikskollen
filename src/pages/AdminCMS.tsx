@@ -308,8 +308,10 @@ function StatsPanel() {
     if (!byDebate[row.debate_id]) {
       byDebate[row.debate_id] = { title: row.title || row.debate_id, left: { up: 0, down: 0 }, right: { up: 0, down: 0 } }
     }
-    if (row.bloc === 'left' || row.bloc === 'right') {
-      byDebate[row.debate_id][row.bloc][row.reaction as 'up' | 'down'] = row.count
+    const bloc = row.bloc as 'left' | 'right'
+    const reaction = row.reaction as 'up' | 'down'
+    if ((bloc === 'left' || bloc === 'right') && (reaction === 'up' || reaction === 'down')) {
+      byDebate[row.debate_id][bloc][reaction] = row.count
     }
   }
   const debateList = Object.entries(byDebate)
