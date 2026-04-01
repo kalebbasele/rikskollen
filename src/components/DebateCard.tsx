@@ -16,7 +16,7 @@ export default function DebateCard({ debate, onClick }: Props) {
       <div
         onClick={onClick}
         style={{
-          display: 'grid', gridTemplateColumns: '1fr 200px',
+          display: 'grid', gridTemplateColumns: '1fr 260px',
           minHeight: 80, borderBottom: '1px solid #f5f5fa',
           background: '#fff', cursor: 'pointer', overflow: 'hidden',
           border: '1px solid #f0f0f8', borderRadius: 10,
@@ -34,7 +34,7 @@ export default function DebateCard({ debate, onClick }: Props) {
         <div style={{ display: 'grid', gridTemplateColumns: mainParticipants.length === 1 ? '1fr' : '1fr 1fr', borderLeft: '1px solid #f5f5fa' }}>
           {mainParticipants.map((p, i) => (
             <div key={p.person.id || i} style={{ borderLeft: i > 0 ? '1px solid #f5f5fa' : 'none', background: '#fafafe' }}>
-              <PersonPortrait person={p.person} height={80} width={100} variant="card" />
+              <PersonPortrait person={p.person} height={80} width={130} variant="card" />
             </div>
           ))}
         </div>
@@ -72,7 +72,7 @@ export default function DebateCard({ debate, onClick }: Props) {
         <div style={{ display: 'flex', flexShrink: 0 }}>
           {mainParticipants.map((p, i) => (
             <div key={p.person.id || i} style={{ borderLeft: i > 0 ? '0.5px solid rgba(255,255,255,0.07)' : 'none' }}>
-              <PersonPortrait person={p.person} height={130} width={74} variant="card" />
+              <PersonPortrait person={p.person} height={130} width={104} variant="card" />
             </div>
           ))}
         </div>
