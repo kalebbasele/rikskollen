@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import type { Vote } from '../types'
 import { getParty } from '../types'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 interface Props {
   vote: Vote
@@ -8,6 +9,7 @@ interface Props {
 
 export default function VoteCard({ vote }: Props) {
   const [pvOpen, setPvOpen] = useState(false)
+  const isMobile = useIsMobile()
 
   const total = vote.totalJa + vote.totalNej
   const jaPct = total > 0 ? Math.round((vote.totalJa / total) * 100) : 0
@@ -28,7 +30,7 @@ export default function VoteCard({ vote }: Props) {
       </div>
 
       {/* JA / NEJ explanation */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 20px 16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 10, padding: '0 20px 16px' }}>
         <div style={{ background: 'rgba(34,139,74,0.08)', border: '1px solid rgba(34,139,74,0.2)', borderRadius: 10, padding: '12px 14px' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#228b4a', marginBottom: 6, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
             JA innebar

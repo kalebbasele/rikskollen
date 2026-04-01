@@ -146,27 +146,27 @@ export default function App() {
       <div style={{ background: '#f0ede8', minHeight: '100vh' }}>
         {/* Navbar */}
         <div style={{ position: 'sticky', top: 0, zIndex: 100, background: '#f8f6f2', borderBottom: '1px solid #e0dbd3', height: 56 }}>
-          <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
-          <div onClick={goHome} style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: '#111', letterSpacing: '-0.01em', cursor: 'pointer', userSelect: 'none' }}>
+          <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: isMobile ? '0 16px' : '0 24px' }}>
+          <div onClick={goHome} style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? 18 : 20, fontWeight: 700, color: '#111', letterSpacing: '-0.01em', cursor: 'pointer', userSelect: 'none', flexShrink: 0 }}>
             Civi<span style={{ color: '#5b3fd4' }}>ca</span>
           </div>
-          <div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: 4 }}>
+          <div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: isMobile ? 2 : 4 }}>
             {showDetail ? (
               <button onClick={() => history.back()} style={{ fontSize: 14, fontWeight: 600, color: '#5b3fd4', background: 'none', border: 'none', cursor: 'pointer' }}>
                 ← Tillbaka
               </button>
             ) : (
               <>
-                {/* Debatter with hover dropdown */}
+                {/* Debatter — desktop gets hover dropdown, mobile just navigates */}
                 <div
                   style={{ position: 'relative' }}
-                  onMouseEnter={() => setShowCatDropdown(true)}
-                  onMouseLeave={() => setShowCatDropdown(false)}
+                  onMouseEnter={() => !isMobile && setShowCatDropdown(true)}
+                  onMouseLeave={() => !isMobile && setShowCatDropdown(false)}
                 >
                   <button onClick={() => setTab('debatter')} style={{
-                    fontSize: 14,
+                    fontSize: isMobile ? 13 : 14,
                     color: tab === 'debatter' ? '#fff' : '#aaa',
-                    padding: '7px 16px',
+                    padding: isMobile ? '6px 10px' : '7px 16px',
                     background: tab === 'debatter' ? '#111' : 'none',
                     border: 'none', borderRadius: 24,
                     fontWeight: tab === 'debatter' ? 600 : 400,
@@ -174,7 +174,7 @@ export default function App() {
                   }}>
                     Debatter
                   </button>
-                  {showCatDropdown && (
+                  {showCatDropdown && !isMobile && (
                     <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
                       <div style={{
                         background: '#f8f6f2', borderRadius: 14,
@@ -213,9 +213,9 @@ export default function App() {
                 </div>
                 {(['omrostningar', 'valkompass'] as Tab[]).map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
-                    fontSize: 14,
+                    fontSize: isMobile ? 13 : 14,
                     color: tab === t ? '#fff' : '#aaa',
-                    padding: '7px 16px',
+                    padding: isMobile ? '6px 10px' : '7px 16px',
                     background: tab === t ? '#111' : 'none',
                     border: 'none', borderRadius: 24,
                     fontWeight: tab === t ? 600 : 400,
@@ -224,25 +224,27 @@ export default function App() {
                     {t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
                   </button>
                 ))}
-                {/* Om Civica dropdown */}
-                <div style={{ position: 'relative' }} onMouseEnter={() => setShowOmDropdown(true)} onMouseLeave={() => setShowOmDropdown(false)}>
-                  <button style={{ fontSize: 14, color: '#aaa', padding: '7px 16px', background: 'none', border: 'none', borderRadius: 24, cursor: 'pointer' }}>
-                    Om Civica
-                  </button>
-                  {showOmDropdown && (
-                    <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
-                      <div style={{ background: '#f8f6f2', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', border: '1px solid #e0dbd3', padding: '8px', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 230 }}>
-                        {OM_LINKS.map(l => (
-                          <button key={l.key} onClick={() => setInfoPage(l.key)} style={{ fontSize: 13, textAlign: 'left', color: '#555', padding: '8px 14px', borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer' }}>
-                            {l.label}
-                          </button>
-                        ))}
+                {/* Om Civica — desktop only */}
+                {!isMobile && (
+                  <div style={{ position: 'relative' }} onMouseEnter={() => setShowOmDropdown(true)} onMouseLeave={() => setShowOmDropdown(false)}>
+                    <button style={{ fontSize: 14, color: '#aaa', padding: '7px 16px', background: 'none', border: 'none', borderRadius: 24, cursor: 'pointer' }}>
+                      Om Civica
+                    </button>
+                    {showOmDropdown && (
+                      <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
+                        <div style={{ background: '#f8f6f2', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', border: '1px solid #e0dbd3', padding: '8px', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 230 }}>
+                          {OM_LINKS.map(l => (
+                            <button key={l.key} onClick={() => setInfoPage(l.key)} style={{ fontSize: 13, textAlign: 'left', color: '#555', padding: '8px 14px', borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer' }}>
+                              {l.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-                <button onClick={toggleTheme} style={{ fontSize: 13, color: '#bbb', padding: '7px 12px', background: 'none', border: 'none', cursor: 'pointer' }}>
-                  Mörkt
+                    )}
+                  </div>
+                )}
+                <button onClick={toggleTheme} style={{ fontSize: isMobile ? 11 : 13, color: '#bbb', padding: isMobile ? '6px 8px' : '7px 12px', background: 'none', border: 'none', cursor: 'pointer' }}>
+                  {isMobile ? '◐' : 'Mörkt'}
                 </button>
               </>
             )}
@@ -284,7 +286,7 @@ export default function App() {
             <div style={{ maxWidth: 680, margin: '0 auto' }}><Valkompass /></div>
           </div>
         ) : (
-          <div className="page-inner" style={{ padding: '16px 20px 60px' }}>
+          <div className="page-inner" style={{ padding: isMobile ? '12px 12px 80px' : '16px 20px 60px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {votesLoading
                 ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
@@ -308,27 +310,27 @@ export default function App() {
     <div style={{ background: '#0d0a2e', minHeight: '100vh' }}>
       {/* Navbar */}
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: '#0b0b18', borderBottom: '1px solid rgba(255,255,255,0.07)', height: 56 }}>
-        <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 24px' }}>
-          <div onClick={goHome} style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', cursor: 'pointer', userSelect: 'none' }}>
+        <div className="page-inner" style={{ height: '100%', display: 'flex', alignItems: 'center', padding: isMobile ? '0 16px' : '0 24px' }}>
+          <div onClick={goHome} style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? 18 : 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', cursor: 'pointer', userSelect: 'none', flexShrink: 0 }}>
             Civi<span style={{ color: '#9b7dff' }}>ca</span>
           </div>
-          <div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: 4 }}>
+          <div style={{ display: 'flex', marginLeft: 'auto', alignItems: 'center', gap: isMobile ? 2 : 4 }}>
             {showDetail ? (
               <button onClick={() => history.back()} style={{ fontSize: 14, fontWeight: 600, color: '#9b7dff', background: 'none', border: 'none', cursor: 'pointer' }}>
                 ← Tillbaka
               </button>
             ) : (
               <>
-                {/* Debatter with hover dropdown */}
+                {/* Debatter — desktop gets hover dropdown, mobile just navigates */}
                 <div
                   style={{ position: 'relative' }}
-                  onMouseEnter={() => setShowCatDropdown(true)}
-                  onMouseLeave={() => setShowCatDropdown(false)}
+                  onMouseEnter={() => !isMobile && setShowCatDropdown(true)}
+                  onMouseLeave={() => !isMobile && setShowCatDropdown(false)}
                 >
                   <button onClick={() => setTab('debatter')} style={{
-                    fontSize: 14,
+                    fontSize: isMobile ? 13 : 14,
                     color: tab === 'debatter' ? '#0b0b18' : 'rgba(255,255,255,0.4)',
-                    padding: '7px 16px',
+                    padding: isMobile ? '6px 10px' : '7px 16px',
                     background: tab === 'debatter' ? '#fff' : 'none',
                     border: 'none', borderRadius: 24,
                     fontWeight: tab === 'debatter' ? 600 : 400,
@@ -336,7 +338,7 @@ export default function App() {
                   }}>
                     Debatter
                   </button>
-                  {showCatDropdown && (
+                  {showCatDropdown && !isMobile && (
                     <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
                       <div style={{
                         background: '#1a1535', borderRadius: 14,
@@ -375,9 +377,9 @@ export default function App() {
                 </div>
                 {(['omrostningar', 'valkompass'] as Tab[]).map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
-                    fontSize: 14,
+                    fontSize: isMobile ? 13 : 14,
                     color: tab === t ? '#0b0b18' : 'rgba(255,255,255,0.4)',
-                    padding: '7px 16px',
+                    padding: isMobile ? '6px 10px' : '7px 16px',
                     background: tab === t ? '#fff' : 'none',
                     border: 'none', borderRadius: 24,
                     fontWeight: tab === t ? 600 : 400,
@@ -386,25 +388,27 @@ export default function App() {
                     {t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
                   </button>
                 ))}
-                {/* Om Civica dropdown */}
-                <div style={{ position: 'relative' }} onMouseEnter={() => setShowOmDropdown(true)} onMouseLeave={() => setShowOmDropdown(false)}>
-                  <button style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', padding: '7px 16px', background: 'none', border: 'none', borderRadius: 24, cursor: 'pointer' }}>
-                    Om Civica
-                  </button>
-                  {showOmDropdown && (
-                    <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
-                      <div style={{ background: '#1a1535', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.5)', border: '1px solid rgba(155,125,255,0.15)', padding: '8px', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 230 }}>
-                        {OM_LINKS.map(l => (
-                          <button key={l.key} onClick={() => setInfoPage(l.key)} style={{ fontSize: 13, textAlign: 'left', color: 'rgba(255,255,255,0.6)', padding: '8px 14px', borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer' }}>
-                            {l.label}
-                          </button>
-                        ))}
+                {/* Om Civica — desktop only */}
+                {!isMobile && (
+                  <div style={{ position: 'relative' }} onMouseEnter={() => setShowOmDropdown(true)} onMouseLeave={() => setShowOmDropdown(false)}>
+                    <button style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', padding: '7px 16px', background: 'none', border: 'none', borderRadius: 24, cursor: 'pointer' }}>
+                      Om Civica
+                    </button>
+                    {showOmDropdown && (
+                      <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
+                        <div style={{ background: '#1a1535', borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.5)', border: '1px solid rgba(155,125,255,0.15)', padding: '8px', display: 'flex', flexDirection: 'column', gap: 1, minWidth: 230 }}>
+                          {OM_LINKS.map(l => (
+                            <button key={l.key} onClick={() => setInfoPage(l.key)} style={{ fontSize: 13, textAlign: 'left', color: 'rgba(255,255,255,0.6)', padding: '8px 14px', borderRadius: 8, background: 'none', border: 'none', cursor: 'pointer' }}>
+                              {l.label}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-                <button onClick={toggleTheme} style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', padding: '7px 12px', background: 'none', border: 'none', cursor: 'pointer' }}>
-                  Ljust
+                    )}
+                  </div>
+                )}
+                <button onClick={toggleTheme} style={{ fontSize: isMobile ? 11 : 13, color: 'rgba(255,255,255,0.3)', padding: isMobile ? '6px 8px' : '7px 12px', background: 'none', border: 'none', cursor: 'pointer' }}>
+                  {isMobile ? '◐' : 'Ljust'}
                 </button>
               </>
             )}
@@ -446,7 +450,7 @@ export default function App() {
           <div style={{ maxWidth: 680, margin: '0 auto' }}><Valkompass /></div>
         </div>
       ) : (
-        <div className="page-inner" style={{ padding: '16px 20px 60px' }}>
+        <div className="page-inner" style={{ padding: isMobile ? '12px 12px 80px' : '16px 20px 60px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {votesLoading
               ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
