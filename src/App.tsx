@@ -622,7 +622,7 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
   return (
     <div onClick={onClick} style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : '1fr 737px',
+      gridTemplateColumns: isMobile ? '1fr' : '1fr 360px',
       minHeight: 230, cursor: 'pointer',
       margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
@@ -1053,7 +1053,7 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
   return (
     <div onClick={onClick} style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : '1fr 737px',
+      gridTemplateColumns: isMobile ? '1fr' : '1fr 360px',
       minHeight: 230, cursor: 'pointer',
       margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
