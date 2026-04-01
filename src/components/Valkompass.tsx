@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { QUESTIONS, PARTY_NAMES, PARTY_IDS, computeResults, type VPartyId } from '../data/valkompassen'
 import { getParty } from '../types'
 import { useIsMobile } from '../hooks/useIsMobile'
@@ -195,10 +195,16 @@ function Intro({ onStart, isMobile }: { onStart: () => void; isMobile: boolean }
 
 // ── Results screen ─────────────────────────────────────────────────────────────
 
+const BACKEND = 'https://web-production-1e2f2.up.railway.app'
+
 function Results({ answers, onReset, isMobile }: { answers: Record<number, number>; onReset: () => void; isMobile: boolean }) {
   const results = computeResults(answers)
   const top = results[0]
   const topParty = getParty(top.partyId)
+
+  useEffect(() => {
+    fetch(`${BACKEND}/api/public/valkompass/${top.partyId}`, { method: 'POST' }).catch(() => {})
+  }, [])
 
   return (
     <div style={{ padding: isMobile ? '0 4px' : 0 }}>

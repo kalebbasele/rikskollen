@@ -4,6 +4,58 @@ import { getParty } from '../types'
 import { generateDebateSummary } from '../lib/aiClient'
 import { useIsMobile } from '../hooks/useIsMobile'
 
+const BACKEND = 'https://web-production-1e2f2.up.railway.app'
+
+interface ReactionCounts {
+  left: { up: number; down: number }
+  right: { up: number; down: number }
+}
+
+function ReactionButtons({ debateId, bloc }: { debateId: string; bloc: 'left' | 'right' }) {
+  const [counts, setCounts] = useState<{ up: number; down: number } | null>(null)
+  const [voted, setVoted] = useState<'up' | 'down' | null>(null)
+
+  useEffect(() => {
+    fetch(`${BACKEND}/api/public/reactions/${debateId}`)
+      .then(r => r.json())
+      .then((d: ReactionCounts) => setCounts(d[bloc]))
+      .catch(() => setCounts({ up: 0, down: 0 }))
+  }, [debateId, bloc])
+
+  async function react(reaction: 'up' | 'down') {
+    if (voted) return
+    setVoted(reaction)
+    setCounts(prev => prev ? { ...prev, [reaction]: prev[reaction] + 1 } : { up: reaction === 'up' ? 1 : 0, down: reaction === 'down' ? 1 : 0 })
+    try {
+      await fetch(`${BACKEND}/api/public/reactions/${debateId}/${bloc}/${reaction}`, { method: 'POST' })
+    } catch {}
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+      <span style={{ fontSize: 11, color: 'var(--text3)', marginRight: 4 }}>Vad tyckte du?</span>
+      {(['up', 'down'] as const).map(r => (
+        <button
+          key={r}
+          onClick={() => react(r)}
+          disabled={voted !== null}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            padding: '5px 10px', borderRadius: 20,
+            border: `1px solid ${voted === r ? (r === 'up' ? 'rgba(34,139,74,0.5)' : 'rgba(185,28,28,0.5)') : 'var(--border)'}`,
+            background: voted === r ? (r === 'up' ? 'rgba(34,139,74,0.12)' : 'rgba(185,28,28,0.12)') : 'transparent',
+            color: voted === r ? (r === 'up' ? '#228b4a' : '#b91c1c') : 'var(--text3)',
+            fontSize: 13, cursor: voted ? 'default' : 'pointer', transition: 'all 0.15s',
+          }}
+        >
+          <span style={{ fontSize: 15 }}>{r === 'up' ? '👍' : '👎'}</span>
+          {counts !== null && <span style={{ fontWeight: 600, fontSize: 12 }}>{counts[r]}</span>}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 interface Props {
   debate: Debate
   onUpdate: (updated: Debate) => void
@@ -155,6 +207,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                     {debate.leftBloc.keyArg}
                   </div>
                 )}
+                <ReactionButtons debateId={debate.id} bloc="left" />
               </div>
             )}
 
@@ -176,6 +229,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                     {debate.rightBloc.keyArg}
                   </div>
                 )}
+                <ReactionButtons debateId={debate.id} bloc="right" />
               </div>
             )}
           </div>

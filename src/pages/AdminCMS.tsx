@@ -10,7 +10,7 @@ function adminHeaders() {
   return { 'Content-Type': 'application/json', 'x-admin-key': getAdminKey() }
 }
 
-type Tab = 'debatter' | 'omrostningar' | 'intro'
+type Tab = 'debatter' | 'omrostningar' | 'intro' | 'statistik'
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 
@@ -285,6 +285,102 @@ function IntroEditor() {
   )
 }
 
+// ── Stats panel ───────────────────────────────────────────────────────────────
+
+function StatsPanel() {
+  const [reactions, setReactions] = useState<any[]>([])
+  const [valkompass, setValkompass] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    Promise.all([
+      fetch(`${BACKEND}/admin/stats/reactions`, { headers: { 'x-admin-key': getAdminKey() } }).then(r => r.json()),
+      fetch(`${BACKEND}/admin/stats/valkompass`, { headers: { 'x-admin-key': getAdminKey() } }).then(r => r.json()),
+    ]).then(([r, v]) => {
+      setReactions(Array.isArray(r) ? r : [])
+      setValkompass(Array.isArray(v) ? v : [])
+    }).catch(() => {}).finally(() => setLoading(false))
+  }, [])
+
+  // Group reactions by debate
+  const byDebate: Record<string, { title: string; left: { up: number; down: number }; right: { up: number; down: number } }> = {}
+  for (const row of reactions) {
+    if (!byDebate[row.debate_id]) {
+      byDebate[row.debate_id] = { title: row.title || row.debate_id, left: { up: 0, down: 0 }, right: { up: 0, down: 0 } }
+    }
+    if (row.bloc === 'left' || row.bloc === 'right') {
+      byDebate[row.debate_id][row.bloc][row.reaction as 'up' | 'down'] = row.count
+    }
+  }
+  const debateList = Object.entries(byDebate)
+
+  const totalValkompass = valkompass.reduce((s, r) => s + r.count, 0)
+
+  if (loading) return <p style={{ color: 'rgba(255,255,255,0.3)', paddingTop: 40, textAlign: 'center' }}>Laddar statistik…</p>
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {/* Reactions */}
+      <div style={{ background: '#1a1728', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '20px 24px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>
+          Reaktioner på debatter
+        </div>
+        {debateList.length === 0 ? (
+          <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 14 }}>Inga reaktioner än</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {debateList.map(([id, d]) => (
+              <div key={id} style={{ borderBottom: '0.5px solid rgba(255,255,255,0.06)', paddingBottom: 14 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 8 }}>{d.title}</div>
+                <div style={{ display: 'flex', gap: 20, fontSize: 13 }}>
+                  <div>
+                    <span style={{ color: 'rgba(255,255,255,0.35)', marginRight: 8 }}>Vänster</span>
+                    <span style={{ color: '#2ec27e', marginRight: 6 }}>👍 {d.left.up}</span>
+                    <span style={{ color: '#e8445a' }}>👎 {d.left.down}</span>
+                  </div>
+                  <div>
+                    <span style={{ color: 'rgba(255,255,255,0.35)', marginRight: 8 }}>Höger</span>
+                    <span style={{ color: '#2ec27e', marginRight: 6 }}>👍 {d.right.up}</span>
+                    <span style={{ color: '#e8445a' }}>👎 {d.right.down}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Valkompass */}
+      <div style={{ background: '#1a1728', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '20px 24px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
+          Valkompassen — resultat
+        </div>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', marginBottom: 16 }}>
+          Totalt {totalValkompass} genomförda
+        </div>
+        {valkompass.length === 0 ? (
+          <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 14 }}>Inga resultat än</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {valkompass.map(r => {
+              const pct = totalValkompass > 0 ? Math.round((r.count / totalValkompass) * 100) : 0
+              return (
+                <div key={r.party_id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, width: 32, color: '#fff' }}>{r.party_id}</span>
+                  <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', borderRadius: 3, background: '#9b7dff', width: `${pct}%` }} />
+                  </div>
+                  <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', width: 60, textAlign: 'right' }}>{r.count} ({pct}%)</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ── Main admin page ───────────────────────────────────────────────────────────
 
 export default function AdminCMS() {
@@ -370,9 +466,9 @@ export default function AdminCMS() {
         </a>
         <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', background: 'rgba(155,125,255,0.15)', borderRadius: 20, padding: '3px 10px' }}>Admin CMS</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-          {(['debatter', 'omrostningar', 'intro'] as Tab[]).map(t => (
+          {(['debatter', 'omrostningar', 'intro', 'statistik'] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)} style={{ fontSize: 14, color: tab === t ? '#fff' : 'rgba(255,255,255,0.35)', padding: '0 14px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48, fontWeight: tab === t ? 500 : 400, cursor: 'pointer' }}>
-              {t === 'debatter' ? `Debatter (${pendingDebates.length})` : t === 'omrostningar' ? `Omröstningar (${pendingVotes.length})` : 'Intro-sektion'}
+              {t === 'debatter' ? `Debatter (${pendingDebates.length})` : t === 'omrostningar' ? `Omröstningar (${pendingVotes.length})` : t === 'intro' ? 'Intro-sektion' : 'Statistik'}
             </button>
           ))}
           <button onClick={() => { localStorage.removeItem('civica_admin_key'); setAuthed(false) }} style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', padding: '0 14px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48, cursor: 'pointer' }}>
@@ -382,8 +478,10 @@ export default function AdminCMS() {
       </div>
 
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 20px 60px' }}>
-        {loading ? (
+        {loading && tab !== 'statistik' ? (
           <p style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', paddingTop: 60 }}>Laddar…</p>
+        ) : tab === 'statistik' ? (
+          <StatsPanel />
         ) : tab === 'intro' ? (
           <IntroEditor />
         ) : tab === 'debatter' ? (
