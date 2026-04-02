@@ -616,6 +616,7 @@ export default function AdminCMS() {
           </>
         ) : tab === 'debatter' ? (
           <>
+            <RegenerateSummaries />
             <SectionHeader label="Väntar på godkännande" count={pendingDebates.length} />
             {pendingDebates.length === 0
               ? <Empty text="Inga debatter väntar" />
