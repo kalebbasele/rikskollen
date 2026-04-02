@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
-import type { Debate, Vote } from './types'
-import { useDebates, useVotes } from './hooks/useData'
+import type { Debate, Vote, Fragstund } from './types'
+import { useDebates, useVotes, useFragstund } from './hooks/useData'
 import { getParty } from './types'
 import DebateDetail from './components/DebateDetail'
 import VoteCard from './components/VoteCard'
@@ -8,7 +8,7 @@ import SkeletonCard from './components/SkeletonCard'
 import Valkompass from './components/Valkompass'
 import { useIsMobile } from './hooks/useIsMobile'
 
-type Tab = 'debatter' | 'omrostningar' | 'valkompass'
+type Tab = 'debatter' | 'omrostningar' | 'valkompass' | 'fragstund'
 
 const CATEGORIES = ['Alla', 'Migration', 'Ekonomi', 'Klimat', 'Vård', 'Försvar', 'Utbildning', 'Utrikespolitik']
 
@@ -80,6 +80,7 @@ export default function App() {
 
   const { debates, loading: debatesLoading, error: debatesError, updateDebate } = useDebates()
   const { votes, loading: votesLoading, error: votesError } = useVotes()
+  const { fragstund, loading: fragstundLoading, error: fragstundError } = useFragstund()
 
   function toggleCategory(cat: string) {
     if (cat === 'Alla') { setActiveCategories(new Set(['Alla'])); return }
@@ -211,7 +212,7 @@ export default function App() {
                     </div>
                   )}
                 </div>
-                {(['omrostningar', 'valkompass'] as Tab[]).map(t => (
+                {(['omrostningar', 'fragstund', 'valkompass'] as Tab[]).map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
                     fontSize: isMobile ? 13 : 14,
                     color: tab === t ? '#fff' : '#aaa',
@@ -221,7 +222,7 @@ export default function App() {
                     fontWeight: tab === t ? 600 : 400,
                     cursor: 'pointer',
                   }}>
-                    {t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
+                    {t === 'omrostningar' ? 'Omröstningar' : t === 'fragstund' ? 'Frågestund' : 'Valkompass'}
                   </button>
                 ))}
                 {/* Om Civica — desktop only */}
@@ -280,6 +281,17 @@ export default function App() {
                 )}
               </>
             )}
+          </div>
+        ) : tab === 'fragstund' ? (
+          <div className="page-inner" style={{ padding: isMobile ? '12px 12px 80px' : '16px 20px 60px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {fragstundLoading
+                ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+                : fragstundError ? <LightStatusMessage message={fragstundError} />
+                : fragstund.length === 0 ? <LightStatusMessage message="Inga frågestunder." />
+                : fragstund.map(fs => <FragstundCard key={fs.id} item={fs} dark={false} />)
+              }
+            </div>
           </div>
         ) : tab === 'valkompass' ? (
           <div className="page-inner" style={{ padding: isMobile ? '16px 12px 60px' : '24px 20px 60px' }}>
@@ -375,7 +387,7 @@ export default function App() {
                     </div>
                   )}
                 </div>
-                {(['omrostningar', 'valkompass'] as Tab[]).map(t => (
+                {(['omrostningar', 'fragstund', 'valkompass'] as Tab[]).map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
                     fontSize: isMobile ? 13 : 14,
                     color: tab === t ? '#0b0b18' : 'rgba(255,255,255,0.4)',
@@ -385,7 +397,7 @@ export default function App() {
                     fontWeight: tab === t ? 600 : 400,
                     cursor: 'pointer',
                   }}>
-                    {t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
+                    {t === 'omrostningar' ? 'Omröstningar' : t === 'fragstund' ? 'Frågestund' : 'Valkompass'}
                   </button>
                 ))}
                 {/* Om Civica — desktop only */}
@@ -445,6 +457,17 @@ export default function App() {
             </>
           )}
         </div>
+      ) : tab === 'fragstund' ? (
+        <div className="page-inner" style={{ padding: isMobile ? '12px 12px 80px' : '16px 20px 60px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {fragstundLoading
+              ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+              : fragstundError ? <DarkStatusMessage message={fragstundError} />
+              : fragstund.length === 0 ? <DarkStatusMessage message="Inga frågestunder." />
+              : fragstund.map(fs => <FragstundCard key={fs.id} item={fs} dark={true} />)
+            }
+          </div>
+        </div>
       ) : tab === 'valkompass' ? (
         <div className="page-inner" style={{ padding: isMobile ? '16px 12px 60px' : '24px 20px 60px' }}>
           <div style={{ maxWidth: 680, margin: '0 auto' }}><Valkompass /></div>
@@ -465,6 +488,36 @@ export default function App() {
     </div>
     {infoPage && <InfoOverlay page={infoPage} dark={true} onClose={() => setInfoPage(null)} />}
     </>
+  )
+}
+
+// ── Frågestund card ───────────────────────────────────────────────────────────
+
+function FragstundCard({ item, dark }: { item: Fragstund; dark: boolean }) {
+  const bg = dark ? '#1a1728' : '#fff'
+  const border = dark ? '0.5px solid rgba(255,255,255,0.07)' : '1px solid #e8e4de'
+  const labelColor = dark ? 'rgba(155,125,255,0.7)' : '#7c5cfc'
+  const titleColor = dark ? '#fff' : '#111'
+  const textColor = dark ? 'rgba(255,255,255,0.5)' : '#666'
+  const badgeColor = dark ? 'rgba(255,255,255,0.07)' : '#f0eeff'
+  const badgeText = dark ? 'rgba(255,255,255,0.4)' : '#7c5cfc'
+  return (
+    <div style={{ background: bg, border, borderRadius: 14, padding: '16px 18px' }}>
+      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: labelColor, marginBottom: 6 }}>
+        Frågestund · {item.date}
+      </div>
+      <div style={{ fontSize: 16, fontWeight: 600, color: titleColor, lineHeight: 1.35, marginBottom: item.summary ? 8 : 0 }}>
+        {item.title}
+      </div>
+      {item.summary && (
+        <p style={{ fontSize: 13, color: textColor, lineHeight: 1.55, margin: '0 0 10px' }}>{item.summary}</p>
+      )}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: badgeColor, borderRadius: 20, padding: '3px 10px' }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: badgeText }}>
+          {item.anforandenCount} anföranden
+        </span>
+      </div>
+    </div>
   )
 }
 

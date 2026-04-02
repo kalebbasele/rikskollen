@@ -95,6 +95,16 @@ export interface Vote {
   aiError?: string
 }
 
+// --- Frågestund ---
+export interface Fragstund {
+  id: string
+  dokId: string
+  title: string
+  date: string
+  anforandenCount: number
+  summary?: string
+}
+
 // --- Filters ---
 export interface ActiveFilters {
   parties: string[]

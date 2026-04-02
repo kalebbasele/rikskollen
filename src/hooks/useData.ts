@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { Debate, Vote } from '../types'
+import type { Debate, Vote, Fragstund } from '../types'
 
 const BACKEND = 'https://web-production-1e2f2.up.railway.app'
 
@@ -51,6 +51,29 @@ export function useVotes() {
   }, [])
 
   return { votes, loading, error }
+}
+
+// ── Frågestund ────────────────────────────────────────────────────────────────
+
+export function useFragstund() {
+  const [fragstund, setFragstund] = useState<Fragstund[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch(`${BACKEND}/api/public/fragstund`)
+      .then(r => r.json())
+      .then((data: Fragstund[]) => {
+        if (!cancelled) { setFragstund(data); setLoading(false) }
+      })
+      .catch(() => {
+        if (!cancelled) { setError('Kunde inte ladda frågestunder.'); setLoading(false) }
+      })
+    return () => { cancelled = true }
+  }, [])
+
+  return { fragstund, loading, error }
 }
 
 // Kept for DebateDetail compatibility
