@@ -697,36 +697,47 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
       </div>
 
       {/* Right portraits */}
-      <div style={{
-        display: 'flex', flexDirection: 'row', alignItems: 'stretch',
-        gap: isMobile ? 6 : 8, padding: isMobile ? 6 : 8,
-        borderLeft: isMobile ? 'none' : '1px solid rgba(155,125,255,0.1)',
-        borderTop: isMobile ? '1px solid rgba(155,125,255,0.1)' : 'none',
-        minHeight: isMobile ? 130 : 'auto',
-      }}>
-        {participants.slice(0, isMobile ? 4 : 7).map((p, i) => {
-          const party = getParty(p.person.party)
-          const glow = party?.color ?? '#5b3fd4'
-          const shortName = abbrevName(p.person)
-          return (
-            <div key={p.person.id || i} style={{
-              position: 'relative', flex: 1,
-              borderRadius: 10, overflow: 'hidden',
-              background: '#1e1a40', minHeight: isMobile ? 130 : 180,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-            }}>
-              <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '22%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 5px 5px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                {!isMobile && <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>}
-                <PartyBadge party={p.person.party} size={isMobile ? 14 : 16} radius={4} />
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      {(() => {
+        const shown = participants.slice(0, isMobile ? 4 : 7)
+        const useGrid = !isMobile && shown.length >= 6
+        const gridCols = shown.length === 7 ? 4 : 3
+        return (
+          <div style={{
+            display: useGrid ? 'grid' : 'flex',
+            ...(useGrid
+              ? { gridTemplateColumns: `repeat(${gridCols}, 1fr)`, gridTemplateRows: '1fr 1fr', gap: 4, padding: 8 }
+              : { flexDirection: 'row', alignItems: 'stretch', gap: isMobile ? 6 : 8, padding: isMobile ? 6 : 8 }
+            ),
+            borderLeft: isMobile ? 'none' : '1px solid rgba(155,125,255,0.1)',
+            borderTop: isMobile ? '1px solid rgba(155,125,255,0.1)' : 'none',
+            minHeight: isMobile ? 130 : 'auto',
+          }}>
+            {shown.map((p, i) => {
+              const party = getParty(p.person.party)
+              const glow = party?.color ?? '#5b3fd4'
+              const shortName = abbrevName(p.person)
+              return (
+                <div key={p.person.id || i} style={{
+                  position: 'relative',
+                  borderRadius: useGrid ? 8 : 10, overflow: 'hidden',
+                  background: '#1e1a40',
+                  ...(!useGrid ? { flex: 1, minHeight: isMobile ? 130 : 180 } : {}),
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                }}>
+                  <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+                    onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '22%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 5px 5px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                    {!isMobile && <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>}
+                    <PartyBadge party={p.person.party} size={isMobile ? 14 : 16} radius={4} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )
+      })()}
     </div>
   )
 }
@@ -1123,36 +1134,47 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
       </div>
 
       {/* Right portraits */}
-      <div style={{
-        display: 'flex', flexDirection: 'row', alignItems: 'stretch',
-        gap: isMobile ? 6 : 8, padding: isMobile ? 6 : 8,
-        borderLeft: isMobile ? 'none' : '1px solid #e0dbd3',
-        borderTop: isMobile ? '1px solid #e0dbd3' : 'none',
-        minHeight: isMobile ? 130 : 'auto',
-      }}>
-        {participants.slice(0, isMobile ? 4 : 7).map((p, i) => {
-          const party = getParty(p.person.party)
-          const glow = party?.color ?? '#5b3fd4'
-          const shortName = abbrevName(p.person)
-          return (
-            <div key={p.person.id || i} style={{
-              position: 'relative', flex: 1,
-              borderRadius: 10, overflow: 'hidden',
-              background: '#ddd8d0', minHeight: isMobile ? 130 : 180,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-            }}>
-              <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '22%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 5px 5px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                {!isMobile && <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>}
-                <PartyBadge party={p.person.party} size={isMobile ? 14 : 16} radius={4} />
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      {(() => {
+        const shown = participants.slice(0, isMobile ? 4 : 7)
+        const useGrid = !isMobile && shown.length >= 6
+        const gridCols = shown.length === 7 ? 4 : 3
+        return (
+          <div style={{
+            display: useGrid ? 'grid' : 'flex',
+            ...(useGrid
+              ? { gridTemplateColumns: `repeat(${gridCols}, 1fr)`, gridTemplateRows: '1fr 1fr', gap: 4, padding: 8 }
+              : { flexDirection: 'row', alignItems: 'stretch', gap: isMobile ? 6 : 8, padding: isMobile ? 6 : 8 }
+            ),
+            borderLeft: isMobile ? 'none' : '1px solid #e0dbd3',
+            borderTop: isMobile ? '1px solid #e0dbd3' : 'none',
+            minHeight: isMobile ? 130 : 'auto',
+          }}>
+            {shown.map((p, i) => {
+              const party = getParty(p.person.party)
+              const glow = party?.color ?? '#5b3fd4'
+              const shortName = abbrevName(p.person)
+              return (
+                <div key={p.person.id || i} style={{
+                  position: 'relative',
+                  borderRadius: useGrid ? 8 : 10, overflow: 'hidden',
+                  background: '#ddd8d0',
+                  ...(!useGrid ? { flex: 1, minHeight: isMobile ? 130 : 180 } : {}),
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                }}>
+                  <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
+                    onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '22%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 5px 5px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                    {!isMobile && <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>}
+                    <PartyBadge party={p.person.party} size={isMobile ? 14 : 16} radius={4} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )
+      })()}
     </div>
   )
 }
