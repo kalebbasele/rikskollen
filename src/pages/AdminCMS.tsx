@@ -325,16 +325,17 @@ function IntroEditor() {
 
 // ── Regenerate summaries ──────────────────────────────────────────────────────
 
-function RegenerateSummaries() {
+function RegenerateSummaries({ onReload }: { onReload: () => void }) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [result, setResult] = useState<any>(null)
 
-  async function run() {
+  async function run(force = false) {
     setStatus('loading')
     try {
-      const res = await fetch(`${BACKEND}/admin/regenerate-summaries`, { method: 'POST', headers: adminHeaders() })
+      const url = `${BACKEND}/admin/regenerate-summaries${force ? '?force=true' : ''}`
+      const res = await fetch(url, { method: 'POST', headers: adminHeaders() })
       const data = await res.json()
-      if (res.ok) { setResult(data); setStatus('done') }
+      if (res.ok) { setResult(data); setStatus('done'); onReload() }
       else setStatus('error')
     } catch { setStatus('error') }
   }
@@ -344,16 +345,16 @@ function RegenerateSummaries() {
       <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
         AI-sammanfattningar
       </div>
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 14 }}>
-        Kör AI-generering för debatter och frågestunder som saknar sammanfattning (max 20 åt gången).
-      </p>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <button onClick={run} disabled={status === 'loading'} style={{ padding: '9px 20px', borderRadius: 8, background: '#7c5cfc', color: '#fff', border: 'none', fontWeight: 600, fontSize: 13, cursor: status === 'loading' ? 'default' : 'pointer', opacity: status === 'loading' ? 0.6 : 1 }}>
-          {status === 'loading' ? 'Regenererar…' : 'Regenerera saknade sammanfattningar'}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <button onClick={() => run(false)} disabled={status === 'loading'} style={{ padding: '9px 20px', borderRadius: 8, background: '#7c5cfc', color: '#fff', border: 'none', fontWeight: 600, fontSize: 13, cursor: status === 'loading' ? 'default' : 'pointer', opacity: status === 'loading' ? 0.6 : 1 }}>
+          {status === 'loading' ? 'Genererar…' : 'Generera saknade'}
+        </button>
+        <button onClick={() => run(true)} disabled={status === 'loading'} style={{ padding: '9px 20px', borderRadius: 8, background: '#3a2f5e', color: '#c4b5fd', border: '0.5px solid rgba(155,125,255,0.3)', fontWeight: 600, fontSize: 13, cursor: status === 'loading' ? 'default' : 'pointer', opacity: status === 'loading' ? 0.6 : 1 }}>
+          Regenerera alla (skriver över)
         </button>
         {status === 'done' && result && (
           <span style={{ fontSize: 13, color: '#2ec27e', fontWeight: 600 }}>
-            ✓ {result.updatedDebates} debatter + {result.updatedFragstund} frågestunder uppdaterade (av {result.totalChecked} utan sammanfattning)
+            ✓ {result.updatedDebates} debatter + {result.updatedFragstund} frågestunder uppdaterade
           </span>
         )}
         {status === 'error' && <span style={{ fontSize: 13, color: '#e8445a', fontWeight: 600 }}>Något gick fel</span>}
@@ -583,7 +584,7 @@ export default function AdminCMS() {
           <p style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', paddingTop: 60 }}>Laddar…</p>
         ) : tab === 'statistik' ? (
           <>
-            <RegenerateSummaries />
+            <RegenerateSummaries onReload={loadAll} />
             <StatsPanel />
           </>
         ) : tab === 'intro' ? (
@@ -616,7 +617,7 @@ export default function AdminCMS() {
           </>
         ) : tab === 'debatter' ? (
           <>
-            <RegenerateSummaries />
+            <RegenerateSummaries onReload={loadAll} />
             <SectionHeader label="Väntar på godkännande" count={pendingDebates.length} />
             {pendingDebates.length === 0
               ? <Empty text="Inga debatter väntar" />
