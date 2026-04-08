@@ -671,7 +671,7 @@ function InfoOverlay({ page, dark, onClose }: { page: InfoPageKey; dark: boolean
 function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: () => void; isMobile: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
   const participants = debate.participants
-  const portraitColWidth = !isMobile && participants.length >= 7 ? 587 : 360
+  const portraitColWidth = !isMobile && participants.length >= 7 ? 663 : 360
 
   return (
     <div onClick={onClick} style={{
@@ -1098,7 +1098,7 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
 function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: () => void; isMobile: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
   const participants = debate.participants
-  const portraitColWidth = !isMobile && participants.length >= 7 ? 587 : 360
+  const portraitColWidth = !isMobile && participants.length >= 7 ? 663 : 360
 
   return (
     <div onClick={onClick} style={{
