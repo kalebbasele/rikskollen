@@ -7,6 +7,20 @@ interface Props {
   vote: Vote
 }
 
+function getPartyInsight(vote: Vote): string | null {
+  const pvs = vote.partyVotes.filter(pv => pv.party && pv.party !== '-' && (pv.ja + pv.nej) > 0)
+  if (pvs.length < 2) return null
+  const jaParties = pvs.filter(pv => pv.ja >= pv.nej).map(pv => pv.party)
+  const nejParties = pvs.filter(pv => pv.nej > pv.ja).map(pv => pv.party)
+  if (nejParties.length === 0) return 'Alla riksdagspartier röstade enhälligt för.'
+  if (jaParties.length === 0) return 'Inget riksdagsparti röstade för förslaget.'
+  if (nejParties.length === 1) return `Nästan enhälligt — ${nejParties[0]} var det enda partiet som röstade mot.`
+  if (jaParties.length === 1) return `Starkt motstånd — ${jaParties[0]} var det enda partiet som röstade för.`
+  if (nejParties.length === 2 && pvs.length >= 5) return `${nejParties.join(' och ')} röstade emot, övriga partier var för.`
+  if (jaParties.length === 2 && pvs.length >= 5) return `Bara ${jaParties.join(' och ')} röstade för, övriga partier emot.`
+  return null
+}
+
 export default function VoteCard({ vote }: Props) {
   const [pvOpen, setPvOpen] = useState(false)
   const isMobile = useIsMobile()
@@ -60,6 +74,15 @@ export default function VoteCard({ vote }: Props) {
           <div style={{ width: `${nejPct}%`, background: '#b91c1c', transition: 'width 0.6s ease' }} />
         </div>
       </div>
+
+      {/* Party insight */}
+      {getPartyInsight(vote) && (
+        <div style={{ padding: '0 20px 14px' }}>
+          <p style={{ fontSize: 13, color: 'var(--text3)', fontStyle: 'italic', margin: 0 }}>
+            {getPartyInsight(vote)}
+          </p>
+        </div>
+      )}
 
       {/* Vad händer nu */}
       <div style={{ margin: '0 20px 16px', background: 'var(--surface2)', borderRadius: 12, padding: '14px 16px' }}>
