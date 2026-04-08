@@ -549,7 +549,7 @@ const INFO_CONTENT: Record<InfoPageKey, { title: string; body: React.ReactNode }
     body: (
       <>
         <p>Har du frågor, feedback eller vill samarbeta? Hör gärna av dig!</p>
-        <p><strong>E-post:</strong> hej@civica.se</p>
+        <p><strong>E-post:</strong> Info@Civica.se</p>
         <p>Vi svarar normalt inom 1–3 vardagar.</p>
         <p>Hittar du ett fel eller saknar du en funktion? Vi tar gärna emot konstruktiv feedback och försöker kontinuerligt förbättra tjänsten.</p>
       </>
@@ -566,8 +566,8 @@ const INFO_CONTENT: Record<InfoPageKey, { title: string; body: React.ReactNode }
         <h4>Om du kontaktar oss</h4>
         <p>Om du skickar e-post till oss behandlar vi de uppgifter du lämnar (namn, e-postadress och ditt ärende) för att kunna svara dig. Dessa raderas när ärendet är avslutat.</p>
         <h4>Dina rättigheter</h4>
-        <p>Enligt GDPR har du rätt att begära information om, rättelse av eller radering av personuppgifter som rör dig. Kontakta oss på hej@civica.se.</p>
-        <p>Personuppgiftsansvarig: Civica · hej@civica.se</p>
+        <p>Enligt GDPR har du rätt att begära information om, rättelse av eller radering av personuppgifter som rör dig. Kontakta oss på Info@Civica.se.</p>
+        <p>Personuppgiftsansvarig: Civica · Info@Civica.se</p>
       </>
     ),
   },
