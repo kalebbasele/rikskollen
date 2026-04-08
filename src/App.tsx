@@ -671,11 +671,13 @@ function InfoOverlay({ page, dark, onClose }: { page: InfoPageKey; dark: boolean
 function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: () => void; isMobile: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
   const participants = debate.participants
+  const portraitCount = Math.min(participants.length, isMobile ? 4 : 7)
+  const portraitColWidth = portraitCount === 7 ? 473 : 360
 
   return (
     <div onClick={onClick} style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : '1fr 360px',
+      gridTemplateColumns: isMobile ? '1fr' : `1fr ${portraitColWidth}px`,
       minHeight: 230, cursor: 'pointer',
       margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
@@ -1097,11 +1099,13 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
 function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: () => void; isMobile: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
   const participants = debate.participants
+  const portraitCount = Math.min(participants.length, isMobile ? 4 : 7)
+  const portraitColWidth = portraitCount === 7 ? 473 : 360
 
   return (
     <div onClick={onClick} style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : '1fr 360px',
+      gridTemplateColumns: isMobile ? '1fr' : `1fr ${portraitColWidth}px`,
       minHeight: 230, cursor: 'pointer',
       margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
