@@ -345,6 +345,7 @@ function IntroEditor() {
 
 function RegenerateSummaries({ onReload }: { onReload: () => void }) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const [allStatus, setAllStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [result, setResult] = useState<any>(null)
 
   async function run() {
@@ -357,18 +358,34 @@ function RegenerateSummaries({ onReload }: { onReload: () => void }) {
     } catch { setStatus('error') }
   }
 
+  async function runAll() {
+    if (!confirm('Detta regenererar ALLA debatter med ny prompt (även publicerade). Fortsätta?')) return
+    setAllStatus('loading')
+    try {
+      const res = await fetch(`${BACKEND}/admin/regenerate-all-summaries`, { method: 'POST', headers: adminHeaders() })
+      if (res.ok) {
+        setAllStatus('done')
+        setTimeout(() => { onReload(); setAllStatus('idle') }, 5000)
+      } else setAllStatus('error')
+    } catch { setAllStatus('error') }
+  }
+
   return (
     <div style={{ background: '#1a1728', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '20px 24px', marginBottom: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <button onClick={run} disabled={status === 'loading'} style={{ padding: '9px 20px', borderRadius: 8, background: '#7c5cfc', color: '#fff', border: 'none', fontWeight: 600, fontSize: 13, cursor: status === 'loading' ? 'default' : 'pointer', opacity: status === 'loading' ? 0.6 : 1 }}>
           {status === 'loading' ? 'Genererar…' : 'Generera saknade sammanfattningar'}
+        </button>
+        <button onClick={runAll} disabled={allStatus === 'loading'} style={{ padding: '9px 20px', borderRadius: 8, background: '#c0392b', color: '#fff', border: 'none', fontWeight: 600, fontSize: 13, cursor: allStatus === 'loading' ? 'default' : 'pointer', opacity: allStatus === 'loading' ? 0.6 : 1 }}>
+          {allStatus === 'loading' ? 'Körs i bakgrunden…' : 'Regenerera alla med ny prompt'}
         </button>
         {status === 'done' && result && (
           <span style={{ fontSize: 13, color: '#2ec27e', fontWeight: 600 }}>
             ✓ {result.updatedDebates} debatter + {result.updatedFragstund} frågestunder uppdaterade
           </span>
         )}
-        {status === 'error' && <span style={{ fontSize: 13, color: '#e8445a', fontWeight: 600 }}>Något gick fel</span>}
+        {allStatus === 'done' && <span style={{ fontSize: 13, color: '#2ec27e', fontWeight: 600 }}>✓ Regenerering startad — ladda om om några minuter</span>}
+        {(status === 'error' || allStatus === 'error') && <span style={{ fontSize: 13, color: '#e8445a', fontWeight: 600 }}>Något gick fel</span>}
       </div>
     </div>
   )
