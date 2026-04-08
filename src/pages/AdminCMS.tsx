@@ -65,8 +65,8 @@ function Portrait({ person }: { person: any }) {
 
 // ── Debate card ───────────────────────────────────────────────────────────────
 
-function DebateAdminCard({ row, onApprove, onDelete, onSave }: {
-  row: any; onApprove: () => void; onDelete: () => void; onSave: (data: any) => void
+function DebateAdminCard({ row, onApprove, onDelete, onSave, onReload }: {
+  row: any; onApprove: () => void; onDelete: () => void; onSave: (data: any) => void; onReload: () => void
 }) {
   const [title, setTitle] = useState(row.title ?? '')
   const [ingress, setIngress] = useState(row.ingress ?? '')
@@ -75,6 +75,7 @@ function DebateAdminCard({ row, onApprove, onDelete, onSave }: {
   const [rightSummary, setRightSummary] = useState(row.right_bloc?.summary ?? '')
   const [rightKey, setRightKey] = useState(row.right_bloc?.keyArg ?? '')
   const [saving, setSaving] = useState(false)
+  const [regenerating, setRegenerating] = useState(false)
   const participants: any[] = row.participants ?? []
 
   async function save() {
@@ -85,6 +86,22 @@ function DebateAdminCard({ row, onApprove, onDelete, onSave }: {
       right_bloc: { ...(row.right_bloc ?? {}), summary: rightSummary, keyArg: rightKey },
     })
     setSaving(false)
+  }
+
+  async function resetAndRegenerate() {
+    if (!row.dok_id) return
+    setRegenerating(true)
+    try {
+      await fetch(`${BACKEND}/admin/debates/reset-summary`, {
+        method: 'POST', headers: adminHeaders(), body: JSON.stringify({ dokId: row.dok_id })
+      })
+      await fetch(`${BACKEND}/admin/regenerate-summaries`, {
+        method: 'POST', headers: adminHeaders()
+      })
+      onReload()
+    } finally {
+      setRegenerating(false)
+    }
   }
 
   return (
@@ -114,9 +131,10 @@ function DebateAdminCard({ row, onApprove, onDelete, onSave }: {
           <Field label="Vänsterblocket — huvudargument" value={leftKey} onChange={setLeftKey} multiline />
           <Field label="Högerblocket — huvudargument" value={rightKey} onChange={setRightKey} multiline />
         </div>
-        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+        <div style={{ display: 'flex', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
           <Btn color="#2ec27e" onClick={onApprove}>Godkänn och publicera</Btn>
           <Btn color="#555" onClick={save} disabled={saving}>{saving ? 'Sparar…' : 'Spara ändringar'}</Btn>
+          <Btn color="#7c5cfc" onClick={resetAndRegenerate} disabled={regenerating}>{regenerating ? 'Återskapar…' : 'Återskapa sammanfattning'}</Btn>
           <Btn color="#e8445a" onClick={onDelete}>Radera</Btn>
         </div>
       </div>
@@ -619,6 +637,7 @@ export default function AdminCMS() {
                   onApprove={() => approveDebate(row.id)}
                   onDelete={() => deleteDebate(row.id)}
                   onSave={(data) => saveDebate(row.id, data)}
+                  onReload={loadAll}
                 />
               ))
             }
@@ -630,6 +649,7 @@ export default function AdminCMS() {
                     onApprove={() => {}}
                     onDelete={() => deleteDebate(row.id)}
                     onSave={(data) => saveDebate(row.id, data)}
+                    onReload={loadAll}
                   />
                 ))}
               </>
