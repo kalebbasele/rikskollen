@@ -329,11 +329,10 @@ function RegenerateSummaries({ onReload }: { onReload: () => void }) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [result, setResult] = useState<any>(null)
 
-  async function run(force = false) {
+  async function run() {
     setStatus('loading')
     try {
-      const url = `${BACKEND}/admin/regenerate-summaries${force ? '?force=true' : ''}`
-      const res = await fetch(url, { method: 'POST', headers: adminHeaders() })
+      const res = await fetch(`${BACKEND}/admin/regenerate-summaries`, { method: 'POST', headers: adminHeaders() })
       const data = await res.json()
       if (res.ok) { setResult(data); setStatus('done'); onReload() }
       else setStatus('error')
@@ -342,15 +341,9 @@ function RegenerateSummaries({ onReload }: { onReload: () => void }) {
 
   return (
     <div style={{ background: '#1a1728', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '20px 24px', marginBottom: 16 }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
-        AI-sammanfattningar
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-        <button onClick={() => run(false)} disabled={status === 'loading'} style={{ padding: '9px 20px', borderRadius: 8, background: '#7c5cfc', color: '#fff', border: 'none', fontWeight: 600, fontSize: 13, cursor: status === 'loading' ? 'default' : 'pointer', opacity: status === 'loading' ? 0.6 : 1 }}>
-          {status === 'loading' ? 'Genererar…' : 'Generera saknade'}
-        </button>
-        <button onClick={() => run(true)} disabled={status === 'loading'} style={{ padding: '9px 20px', borderRadius: 8, background: '#3a2f5e', color: '#c4b5fd', border: '0.5px solid rgba(155,125,255,0.3)', fontWeight: 600, fontSize: 13, cursor: status === 'loading' ? 'default' : 'pointer', opacity: status === 'loading' ? 0.6 : 1 }}>
-          Regenerera alla (skriver över)
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+        <button onClick={run} disabled={status === 'loading'} style={{ padding: '9px 20px', borderRadius: 8, background: '#7c5cfc', color: '#fff', border: 'none', fontWeight: 600, fontSize: 13, cursor: status === 'loading' ? 'default' : 'pointer', opacity: status === 'loading' ? 0.6 : 1 }}>
+          {status === 'loading' ? 'Genererar…' : 'Generera saknade sammanfattningar'}
         </button>
         {status === 'done' && result && (
           <span style={{ fontSize: 13, color: '#2ec27e', fontWeight: 600 }}>
