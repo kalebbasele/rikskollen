@@ -719,7 +719,7 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
               <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '22%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
               <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 5px 5px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                {!isMobile && <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>}
+                <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>
                 <PartyBadge party={p.person.party} size={16} radius={4} />
               </div>
             </div>
@@ -1144,7 +1144,7 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
               <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '22%', background: `linear-gradient(to top, ${glow}ee 0%, transparent 100%)` }} />
               <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '4px 5px 5px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-                {!isMobile && <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>}
+                <span style={{ fontSize: 10, fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, minWidth: 0 }}>{shortName}</span>
                 <PartyBadge party={p.person.party} size={16} radius={4} />
               </div>
             </div>
