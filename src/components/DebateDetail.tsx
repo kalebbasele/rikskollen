@@ -188,51 +188,65 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>
             Vad tycker blocken?
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
-            {/* Left bloc */}
-            {debate.leftBloc && (
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 20px', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
-                  {(debate.leftBloc.parties ?? []).map(p => {
+          {/* Flat 4-row grid: badges / summary / keyArg / reactions — same row = same height = perfect alignment */}
+          {!isMobile ? (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: 'auto 1fr auto auto', gap: '0 12px' }}>
+              {/* Row 1: Party badges */}
+              {[debate.leftBloc, debate.rightBloc].map((bloc, i) => (
+                <div key={i} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderBottom: 'none', borderRadius: '16px 16px 0 0', padding: '20px 20px 14px', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  {(bloc?.parties ?? []).map(p => {
                     const party = getParty(p)
                     return <span key={p} style={{ fontSize: 12, fontWeight: 800, padding: '4px 10px', borderRadius: 6, background: party?.color ?? '#888', color: party?.textColor ?? '#fff' }}>{p}</span>
                   })}
                 </div>
-                <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px', flex: 1 }}>
-                  {debate.leftBloc.summary}
-                </p>
-                {debate.leftBloc.keyArg && (
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
-                    <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
-                    {debate.leftBloc.keyArg}
-                  </div>
-                )}
-                <ReactionButtons debateId={debate.id} bloc="left" />
-              </div>
-            )}
-
-            {/* Right bloc */}
-            {debate.rightBloc && (
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 20px', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
-                  {(debate.rightBloc.parties ?? []).map(p => {
-                    const party = getParty(p)
-                    return <span key={p} style={{ fontSize: 12, fontWeight: 800, padding: '4px 10px', borderRadius: 6, background: party?.color ?? '#888', color: party?.textColor ?? '#fff' }}>{p}</span>
-                  })}
+              ))}
+              {/* Row 2: Summary */}
+              {[debate.leftBloc, debate.rightBloc].map((bloc, i) => (
+                <div key={i} style={{ background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)', padding: '0 20px 14px' }}>
+                  <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: 0 }}>{bloc?.summary}</p>
                 </div>
-                <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px', flex: 1 }}>
-                  {debate.rightBloc.summary}
-                </p>
-                {debate.rightBloc.keyArg && (
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
-                    <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
-                    {debate.rightBloc.keyArg}
+              ))}
+              {/* Row 3: Kärnargument */}
+              {[debate.leftBloc, debate.rightBloc].map((bloc, i) => (
+                <div key={i} style={{ background: 'var(--surface)', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)', borderTop: '1px solid var(--border)', padding: '14px 20px 0' }}>
+                  {bloc?.keyArg && (
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.5 }}>
+                      <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
+                      {bloc.keyArg}
+                    </div>
+                  )}
+                </div>
+              ))}
+              {/* Row 4: Reactions */}
+              {(['left', 'right'] as const).map((side, i) => (
+                <div key={i} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderTop: 'none', borderRadius: '0 0 16px 16px', padding: '0 20px 20px' }}>
+                  <ReactionButtons debateId={debate.id} bloc={side} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* Mobile: single column cards */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[{ bloc: debate.leftBloc, side: 'left' as const }, { bloc: debate.rightBloc, side: 'right' as const }].map(({ bloc, side }) => bloc && (
+                <div key={side} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+                    {(bloc.parties ?? []).map(p => {
+                      const party = getParty(p)
+                      return <span key={p} style={{ fontSize: 12, fontWeight: 800, padding: '4px 10px', borderRadius: 6, background: party?.color ?? '#888', color: party?.textColor ?? '#fff' }}>{p}</span>
+                    })}
                   </div>
-                )}
-                <ReactionButtons debateId={debate.id} bloc="right" />
-              </div>
-            )}
-          </div>
+                  <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px' }}>{bloc.summary}</p>
+                  {bloc.keyArg && (
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5, marginBottom: 14 }}>
+                      <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
+                      {bloc.keyArg}
+                    </div>
+                  )}
+                  <ReactionButtons debateId={debate.id} bloc={side} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
