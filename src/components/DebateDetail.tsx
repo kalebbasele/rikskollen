@@ -191,7 +191,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 12 }}>
             {/* Left bloc */}
             {debate.leftBloc && (
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 20px' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 20px', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
                   {(debate.leftBloc.parties ?? []).map(p => {
                     const party = getParty(p)
@@ -202,7 +202,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                   {debate.leftBloc.summary}
                 </p>
                 {debate.leftBloc.keyArg && (
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5, marginTop: 'auto' }}>
                     <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
                     {debate.leftBloc.keyArg}
                   </div>
@@ -213,7 +213,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
 
             {/* Right bloc */}
             {debate.rightBloc && (
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 20px' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '20px 20px', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
                   {(debate.rightBloc.parties ?? []).map(p => {
                     const party = getParty(p)
@@ -224,7 +224,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                   {debate.rightBloc.summary}
                 </p>
                 {debate.rightBloc.keyArg && (
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5, marginTop: 'auto' }}>
                     <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
                     {debate.rightBloc.keyArg}
                   </div>
