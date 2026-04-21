@@ -38,9 +38,14 @@ export default function VoteCard({ vote }: Props) {
     }}>
       {/* Title */}
       <div style={{ padding: '20px 20px 16px' }}>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, lineHeight: 1.3, color: 'var(--text)' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, lineHeight: 1.3, color: 'var(--text)', marginBottom: 6 }}>
           {vote.humanTitle ?? (vote.title.length > 80 ? vote.title.slice(0, 80) + '…' : vote.title)}
         </div>
+        {vote.date && (
+          <div style={{ fontSize: 12, color: 'var(--text3)' }}>
+            {new Date(vote.date).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' })}
+          </div>
+        )}
       </div>
 
       {/* JA / NEJ explanation */}
