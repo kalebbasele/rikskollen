@@ -212,7 +212,7 @@ export default function App() {
                     </div>
                   )}
                 </div>
-                {(['omrostningar', 'fragstund', 'valkompass'] as Tab[]).map(t => (
+                {(['omrostningar', 'valkompass'] as Tab[]).map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
                     fontSize: isMobile ? 12 : 14,
                     color: tab === t ? '#fff' : '#aaa',
@@ -222,7 +222,7 @@ export default function App() {
                     fontWeight: tab === t ? 600 : 400,
                     cursor: 'pointer', whiteSpace: 'nowrap',
                   }}>
-                    {t === 'omrostningar' ? (isMobile ? 'Röstar' : 'Omröstningar') : t === 'fragstund' ? (isMobile ? 'Frågor' : 'Frågestund') : (isMobile ? 'Kompass' : 'Valkompass')}
+                    {t === 'omrostningar' ? (isMobile ? 'Röstar' : 'Omröstningar') : (isMobile ? 'Kompass' : 'Valkompass')}
                   </button>
                 ))}
                 {/* Om Civica — desktop only */}
@@ -387,7 +387,7 @@ export default function App() {
                     </div>
                   )}
                 </div>
-                {(['omrostningar', 'fragstund', 'valkompass'] as Tab[]).map(t => (
+                {(['omrostningar', 'valkompass'] as Tab[]).map(t => (
                   <button key={t} onClick={() => setTab(t)} style={{
                     fontSize: isMobile ? 13 : 14,
                     color: tab === t ? '#0b0b18' : 'rgba(255,255,255,0.4)',
@@ -397,7 +397,7 @@ export default function App() {
                     fontWeight: tab === t ? 600 : 400,
                     cursor: 'pointer',
                   }}>
-                    {t === 'omrostningar' ? 'Omröstningar' : t === 'fragstund' ? 'Frågestund' : 'Valkompass'}
+                    {t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
                   </button>
                 ))}
                 {/* Om Civica — desktop only */}
