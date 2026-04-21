@@ -198,11 +198,11 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                     return <span key={p} style={{ fontSize: 12, fontWeight: 800, padding: '4px 10px', borderRadius: 6, background: party?.color ?? '#888', color: party?.textColor ?? '#fff' }}>{p}</span>
                   })}
                 </div>
-                <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px' }}>
+                <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px', flex: 1 }}>
                   {debate.leftBloc.summary}
                 </p>
                 {debate.leftBloc.keyArg && (
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5, marginTop: 'auto' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
                     <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
                     {debate.leftBloc.keyArg}
                   </div>
@@ -220,11 +220,11 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
                     return <span key={p} style={{ fontSize: 12, fontWeight: 800, padding: '4px 10px', borderRadius: 6, background: party?.color ?? '#888', color: party?.textColor ?? '#fff' }}>{p}</span>
                   })}
                 </div>
-                <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px' }}>
+                <p style={{ fontSize: 14, color: 'var(--text2)', lineHeight: 1.7, margin: '0 0 14px', flex: 1 }}>
                   {debate.rightBloc.summary}
                 </p>
                 {debate.rightBloc.keyArg && (
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5, marginTop: 'auto' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', paddingTop: 14, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
                     <span style={{ color: 'var(--text3)', fontWeight: 500, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Kärnargument · </span>
                     {debate.rightBloc.keyArg}
                   </div>
