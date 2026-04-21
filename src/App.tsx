@@ -676,8 +676,8 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
   return (
     <div onClick={onClick} style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr 128px' : `1fr ${portraitColWidth}px`,
-      minHeight: isMobile ? 260 : 230, cursor: 'pointer',
+      gridTemplateColumns: isMobile ? `1fr 190px` : `1fr ${portraitColWidth}px`,
+      minHeight: isMobile ? 240 : 230, cursor: 'pointer',
       margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
       background: '#1a1535',
@@ -685,25 +685,25 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
       border: '1px solid rgba(155,125,255,0.12)',
     }}>
       {/* Left text */}
-      <div style={{ padding: isMobile ? '20px 16px' : '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-        <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: 'rgba(155,125,255,0.18)', color: '#9b7dff', fontSize: 11, fontWeight: 700, borderRadius: 24, padding: '5px 12px', marginBottom: 16 }}>
+      <div style={{ padding: isMobile ? '18px 14px' : '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minWidth: 0 }}>
+        <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: 'rgba(155,125,255,0.18)', color: '#9b7dff', fontSize: 11, fontWeight: 700, borderRadius: 24, padding: '5px 12px', marginBottom: 14 }}>
           Senaste · {cat.label}
         </div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? 18 : 30, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 12 }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? 15 : 30, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1.25, marginBottom: 10 }}>
           {debate.title}
         </div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
-          {formatDate(debate.date)} · {debate.venue} · Interpellationsdebatt
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>
+          {formatDate(debate.date)} · {debate.venue}
         </div>
       </div>
 
       {/* Right portraits */}
       <div style={{
         display: 'flex', flexDirection: 'row', alignItems: 'stretch',
-        gap: 8, padding: 8,
+        gap: 6, padding: 6,
         borderLeft: '1px solid rgba(155,125,255,0.1)',
       }}>
-        {participants.slice(0, isMobile ? 3 : 7).map((p, i) => {
+        {participants.slice(0, isMobile ? 2 : 7).map((p, i) => {
           const party = getParty(p.person.party)
           const glow = party?.color ?? '#5b3fd4'
           const shortName = abbrevName(p.person)
@@ -711,7 +711,7 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
             <div key={p.person.id || i} style={{
               position: 'relative', flex: 1,
               borderRadius: 8, overflow: 'hidden',
-              background: '#1e1a40', minHeight: isMobile ? 180 : 180,
+              background: '#1e1a40',
               boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
             }}>
               <img src={p.person.photoUrl} alt={p.person.name} loading="lazy"
@@ -1101,8 +1101,8 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
   return (
     <div onClick={onClick} style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr 128px' : `1fr ${portraitColWidth}px`,
-      minHeight: isMobile ? 260 : 230, cursor: 'pointer',
+      gridTemplateColumns: isMobile ? `1fr 190px` : `1fr ${portraitColWidth}px`,
+      minHeight: isMobile ? 240 : 230, cursor: 'pointer',
       margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
       background: '#f8f6f2',
@@ -1110,25 +1110,25 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
       border: '1px solid #e0dbd3',
     }}>
       {/* Left text */}
-      <div style={{ padding: isMobile ? '20px 16px' : '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-        <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: '#f0eeff', color: '#5b3fd4', fontSize: 11, fontWeight: 700, borderRadius: 24, padding: '5px 12px', marginBottom: 16 }}>
+      <div style={{ padding: isMobile ? '18px 14px' : '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minWidth: 0 }}>
+        <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: '#f0eeff', color: '#5b3fd4', fontSize: 11, fontWeight: 700, borderRadius: 24, padding: '5px 12px', marginBottom: 14 }}>
           Senaste · {cat.label}
         </div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? 18 : 30, fontWeight: 700, color: '#111', letterSpacing: '-0.01em', lineHeight: 1.2, marginBottom: 12 }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: isMobile ? 15 : 30, fontWeight: 700, color: '#111', letterSpacing: '-0.01em', lineHeight: 1.25, marginBottom: 10 }}>
           {debate.title}
         </div>
-        <div style={{ fontSize: 12, color: '#bbb', lineHeight: 1.6 }}>
-          {formatDate(debate.date)} · {debate.venue} · Interpellationsdebatt
+        <div style={{ fontSize: 11, color: '#bbb', lineHeight: 1.5 }}>
+          {formatDate(debate.date)} · {debate.venue}
         </div>
       </div>
 
       {/* Right portraits */}
       <div style={{
         display: 'flex', flexDirection: 'row', alignItems: 'stretch',
-        gap: 8, padding: 8,
+        gap: 6, padding: 6,
         borderLeft: '1px solid #e0dbd3',
       }}>
-        {participants.slice(0, isMobile ? 3 : 7).map((p, i) => {
+        {participants.slice(0, isMobile ? 2 : 7).map((p, i) => {
           const party = getParty(p.person.party)
           const glow = party?.color ?? '#5b3fd4'
           const shortName = abbrevName(p.person)
