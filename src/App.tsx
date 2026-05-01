@@ -893,54 +893,10 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
   React.useEffect(() => { const iv = setInterval(() => setWordIdx(i => (i + 1) % words.length), 2200); return () => clearInterval(iv) }, [words.length])
   React.useLayoutEffect(() => { if (ghostRef.current) setWordWidth(ghostRef.current.offsetWidth) }, [wordIdx, isMobile])
 
-  // All colors — ONLY thing that differs between dark and light
-  const p = dark ? {
-    wrapBg:     'linear-gradient(135deg, #1e1260 0%, #0e0a30 60%)',
-    wrapBorder: '1px solid rgba(155,125,255,0.2)',
-    badgeBg:    'rgba(155,125,255,0.22)',
-    accent:     '#9b7dff',
-    textMain:   '#ffffff',
-    textSub:    'rgba(255,255,255,0.55)',
-    chipBg:     'rgba(255,255,255,0.09)',
-    chipBorder: '1px solid rgba(155,125,255,0.28)',
-    chipColor:  'rgba(255,255,255,0.85)',
-    chipShadow: '0 1px 4px rgba(0,0,0,0.3)',
-    rightBg:    'linear-gradient(160deg, #2a1880 0%, #1a0e55 100%)',
-    rightBorder:'1px solid rgba(155,125,255,0.18)',
-    blobColor:  'rgba(155,125,255,0.3)',
-    c1Bg:       'rgba(255,255,255,0.12)',
-    c1Border:   '1px solid rgba(155,125,255,0.25)',
-    c1Shadow:   '0 8px 32px rgba(0,0,0,0.5)',
-    c1Text:     '#ffffff',
-    c2Bg:       'linear-gradient(135deg, #7c5cfc, #4a2fc4)',
-    c2Shadow:   '0 8px 28px rgba(124,92,252,0.55)',
-    c3Bg:       'rgba(255,255,255,0.12)',
-    c3Border:   '1px solid rgba(155,125,255,0.25)',
-    c3Shadow:   '0 4px 16px rgba(0,0,0,0.4)',
-  } : {
-    wrapBg:     'linear-gradient(135deg, #f0ecff 0%, #ffffff 60%)',
-    wrapBorder: '1px solid #ede8ff',
-    badgeBg:    '#ede8ff',
-    accent:     '#5b3fd4',
-    textMain:   '#0a0a14',
-    textSub:    '#666666',
-    chipBg:     '#ffffff',
-    chipBorder: '1px solid #ede8ff',
-    chipColor:  '#333333',
-    chipShadow: '0 1px 4px rgba(91,63,212,0.07)',
-    rightBg:    'linear-gradient(160deg, #ede8ff 0%, #f8f5ff 100%)',
-    rightBorder:'1px solid #e8e2ff',
-    blobColor:  'rgba(91,63,212,0.12)',
-    c1Bg:       '#ffffff',
-    c1Border:   '1px solid #ede8ff',
-    c1Shadow:   '0 8px 32px rgba(91,63,212,0.14)',
-    c1Text:     '#111111',
-    c2Bg:       'linear-gradient(135deg, #8b6cf4, #5b3fd4)',
-    c2Shadow:   '0 8px 28px rgba(91,63,212,0.28)',
-    c3Bg:       '#ffffff',
-    c3Border:   '1px solid #ede8ff',
-    c3Shadow:   '0 4px 16px rgba(91,63,212,0.10)',
-  }
+  const BG_IMAGE = 'https://bilder.riksdagen.se/publishedmedia/m2rvndjhuiksizjq8kwf/Pressbild_utrikespolitisk_debatt_1_20260218_Foto_Linnea_Bengtsson_Sveriges_riksdag.jpg'
+  const overlay = isMobile
+    ? 'linear-gradient(to bottom, rgba(6,3,22,0.94) 0%, rgba(6,3,22,0.65) 100%)'
+    : 'linear-gradient(100deg, rgba(6,3,22,0.95) 0%, rgba(6,3,22,0.82) 36%, rgba(6,3,22,0.45) 62%, rgba(6,3,22,0.08) 100%)'
 
   return (
     <>
@@ -955,54 +911,55 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
           85%  { opacity: 1; transform: translateY(0); }
           100% { opacity: 0; transform: translateY(-12px); }
         }
-        @keyframes floatA { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-8px)} }
-        @keyframes floatB { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-5px)} }
-        @keyframes floatC { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-11px)} }
       `}</style>
 
       <div style={{
         margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
         borderRadius: 20, overflow: 'hidden',
-        background: p.wrapBg, border: p.wrapBorder,
-        display: 'grid',
-        gridTemplateColumns: isMobile ? '1fr' : '1fr 320px',
-        minHeight: isMobile ? 'auto' : 220,
+        position: 'relative',
+        minHeight: isMobile ? 230 : 300,
+        backgroundImage: `${overlay}, url("${BG_IMAGE}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: isMobile ? '70% center' : '65% 30%',
+        display: 'flex', alignItems: 'center',
       }}>
-        {/* Left — text */}
+        {/* Text */}
         <div style={{
-          padding: isMobile ? '24px 20px 20px' : '48px 44px',
-          display: 'flex', flexDirection: 'column', justifyContent: 'center',
+          padding: isMobile ? '32px 22px 36px' : '52px 56px',
+          maxWidth: isMobile ? '100%' : 540,
           opacity: visible ? 1 : 0,
           animation: visible ? 'fadeUp 0.6s ease both' : 'none',
         }}>
           <div style={{
-            display: 'inline-flex', alignSelf: 'flex-start',
-            background: p.badgeBg, color: p.accent,
+            display: 'inline-flex',
+            background: 'rgba(255,255,255,0.10)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255,255,255,0.16)',
+            color: 'rgba(255,255,255,0.88)',
             fontSize: 11, fontWeight: 700, borderRadius: 24,
-            padding: '5px 14px', marginBottom: 18, letterSpacing: '0.06em',
+            padding: '5px 14px', marginBottom: 20, letterSpacing: '0.07em',
           }}>
             {intro.badge}
           </div>
 
           {isMobile ? (
-            /* Mobile: animated word on its own line — no width shift */
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: p.textMain, lineHeight: 1.2, letterSpacing: '-0.01em', marginBottom: 14 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#fff', lineHeight: 1.2, letterSpacing: '-0.01em', marginBottom: 14 }}>
               <div>{intro.headingPre}</div>
-              <div style={{ position: 'relative', height: 32, overflow: 'hidden', margin: '2px 0' }}>
-                <span key={wordIdx} style={{ position: 'absolute', left: 0, top: 0, color: p.accent, whiteSpace: 'nowrap', animation: 'wordSlide 2.2s ease forwards', fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700 }}>
+              <div style={{ position: 'relative', height: 34, overflow: 'hidden', margin: '2px 0' }}>
+                <span key={wordIdx} style={{ position: 'absolute', left: 0, top: 0, color: '#a78bfa', whiteSpace: 'nowrap', animation: 'wordSlide 2.2s ease forwards', fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700 }}>
                   {words[wordIdx]}
                 </span>
               </div>
               <div>{intro.headingPost}</div>
             </div>
           ) : (
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 38, fontWeight: 700, color: p.textMain, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: 16 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 44, fontWeight: 700, color: '#fff', lineHeight: 1.12, letterSpacing: '-0.02em', marginBottom: 18 }}>
               <span>{intro.headingPre} </span>
-              <span style={{ display: 'inline-block', color: p.accent, position: 'relative', overflow: 'hidden', height: 46, verticalAlign: 'bottom', width: wordWidth ?? 'auto', transition: 'width 0.4s cubic-bezier(0.4,0,0.2,1)' }}>
-                <span ref={ghostRef} style={{ position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap', fontFamily: 'var(--font-display)', fontSize: 38, fontWeight: 700, pointerEvents: 'none' }}>
+              <span style={{ display: 'inline-block', color: '#a78bfa', position: 'relative', overflow: 'hidden', height: 54, verticalAlign: 'bottom', width: wordWidth ?? 'auto', transition: 'width 0.4s cubic-bezier(0.4,0,0.2,1)' }}>
+                <span ref={ghostRef} style={{ position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap', fontFamily: 'var(--font-display)', fontSize: 44, fontWeight: 700, pointerEvents: 'none' }}>
                   {words[wordIdx]}
                 </span>
-                <span key={wordIdx} style={{ position: 'absolute', left: 0, top: 0, whiteSpace: 'nowrap', animation: 'wordSlide 2.2s ease forwards', fontFamily: 'var(--font-display)', fontSize: 38, fontWeight: 700 }}>
+                <span key={wordIdx} style={{ position: 'absolute', left: 0, top: 0, whiteSpace: 'nowrap', animation: 'wordSlide 2.2s ease forwards', fontFamily: 'var(--font-display)', fontSize: 44, fontWeight: 700 }}>
                   {words[wordIdx]}
                 </span>
               </span>
@@ -1011,81 +968,23 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
           )}
 
           <p style={{
-            fontSize: isMobile ? 14 : 15, color: p.textSub,
-            lineHeight: 1.65, maxWidth: 380, marginBottom: 0,
+            fontSize: isMobile ? 14 : 16, color: 'rgba(255,255,255,0.70)',
+            lineHeight: 1.65, maxWidth: 400, margin: 0,
             animation: visible ? 'fadeUp 0.6s 0.15s ease both' : 'none',
             opacity: visible ? 1 : 0,
           }}>
             {intro.subtitle}
           </p>
-
         </div>
 
-        {/* Right — floating visual */}
-        {!isMobile && (
-          <div style={{
-            position: 'relative', overflow: 'hidden',
-            background: p.rightBg, borderLeft: p.rightBorder,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            minHeight: 220,
-          }}>
-            <div style={{
-              position: 'absolute', width: 260, height: 260, borderRadius: '50%',
-              background: `radial-gradient(circle, ${p.blobColor} 0%, transparent 70%)`,
-              top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-            }} />
-
-            <div style={{ position: 'relative', width: 240, height: 180 }}>
-              {/* Card 1 */}
-              <div style={{
-                position: 'absolute', top: 0, left: 20, width: 180,
-                background: p.c1Bg, borderRadius: 14, padding: '14px 16px',
-                boxShadow: p.c1Shadow, border: p.c1Border,
-                animation: 'floatA 3.5s ease-in-out infinite',
-              }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: p.accent, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Migration</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: p.c1Text, lineHeight: 1.4 }}>Gränskontroller och asylregler</div>
-                <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
-                  {['M','SD','S'].map(party => {
-                    const pt = getParty(party)
-                    return <div key={party} style={{ width: 20, height: 20, borderRadius: 5, background: pt?.color ?? '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 800, color: pt?.textColor ?? '#fff' }}>{party.slice(0,2)}</div>
-                  })}
-                </div>
-              </div>
-
-              {/* Card 2 */}
-              <div style={{
-                position: 'absolute', bottom: 0, right: 0, width: 150,
-                background: p.c2Bg, borderRadius: 14, padding: '14px 16px',
-                boxShadow: p.c2Shadow,
-                animation: 'floatB 4.2s ease-in-out infinite',
-              }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>Omröstning</div>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
-                  <div>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>174</div>
-                    <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>JA</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.45)' }}>125</div>
-                    <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.38)', fontWeight: 600 }}>NEJ</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 3 */}
-              <div style={{
-                position: 'absolute', top: 60, right: 10,
-                width: 48, height: 48, borderRadius: 12,
-                background: p.c3Bg, border: p.c3Border, boxShadow: p.c3Shadow,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 22, animation: 'floatC 2.9s ease-in-out infinite',
-              }}>
-                🗳️
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Photo credit */}
+        <div style={{
+          position: 'absolute', bottom: 10, right: 14,
+          fontSize: 10, color: 'rgba(255,255,255,0.28)', fontStyle: 'italic',
+          pointerEvents: 'none',
+        }}>
+          Foto © Linnea Bengtsson / Sveriges riksdag
+        </div>
       </div>
     </>
   )
