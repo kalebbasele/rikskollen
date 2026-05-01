@@ -871,12 +871,18 @@ const CHIP_TABS: Record<string, string> = {
   'Valkompassen': 'valkompass',
 }
 
+const BG_SLIDES = [
+  { url: 'https://bilder.riksdagen.se/publishedmedia/m2rvndjhuiksizjq8kwf/Pressbild_utrikespolitisk_debatt_1_20260218_Foto_Linnea_Bengtsson_Sveriges_riksdag.jpg', credit: 'Foto © Linnea Bengtsson / Sveriges riksdag', pos: '65% 30%' },
+  { url: 'https://bilder.riksdagen.se/publishedmedia/vkv2iwiitk77cuedm01a/Pressbild_utrikespolitisk_debatt_2_20260218_Foto_Linnea_Bengtsson_Sveriges_riksdag.jpg', credit: 'Foto © Linnea Bengtsson / Sveriges riksdag', pos: '60% 25%' },
+  { url: 'https://bilder.riksdagen.se/publishedmedia/wwsytdvdjx9xy35qy5xv/EU-politisk_partiledardebatt_1x_Foto_Melker_Dahlstrand.jpg', credit: 'Foto © Melker Dahlstrand / Sveriges riksdag', pos: '60% 20%' },
+  { url: 'https://bilder.riksdagen.se/publishedmedia/tjx9ifoyxwhd6jf41pjm/pressbilder-kammaren-under-votering-2023.jpg', credit: 'Foto © Sveriges riksdag', pos: '50% 40%' },
+]
+
 function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark: boolean; onNavigate: (tab: string) => void }) {
   const [visible, setVisible] = React.useState(false)
   const [wordIdx, setWordIdx] = React.useState(0)
+  const [bgIdx, setBgIdx] = React.useState(0)
   const [intro, setIntro] = React.useState(introSettingsCache ?? DEFAULT_INTRO)
-  const [wordWidth, setWordWidth] = React.useState<number | null>(null)
-  const ghostRef = React.useRef<HTMLSpanElement>(null)
 
   React.useEffect(() => {
     if (!introSettingsCache) {
@@ -891,12 +897,15 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
 
   React.useEffect(() => { const t = setTimeout(() => setVisible(true), 60); return () => clearTimeout(t) }, [])
   React.useEffect(() => { const iv = setInterval(() => setWordIdx(i => (i + 1) % words.length), 2200); return () => clearInterval(iv) }, [words.length])
-  React.useLayoutEffect(() => { if (ghostRef.current) setWordWidth(ghostRef.current.offsetWidth) }, [wordIdx, isMobile])
+  // Cycle background image every 5 seconds
+  React.useEffect(() => { const iv = setInterval(() => setBgIdx(i => (i + 1) % BG_SLIDES.length), 5000); return () => clearInterval(iv) }, [])
 
-  const BG_IMAGE = 'https://bilder.riksdagen.se/publishedmedia/m2rvndjhuiksizjq8kwf/Pressbild_utrikespolitisk_debatt_1_20260218_Foto_Linnea_Bengtsson_Sveriges_riksdag.jpg'
   const overlay = isMobile
     ? 'linear-gradient(to bottom, rgba(6,3,22,0.94) 0%, rgba(6,3,22,0.65) 100%)'
     : 'linear-gradient(100deg, rgba(6,3,22,0.95) 0%, rgba(6,3,22,0.82) 36%, rgba(6,3,22,0.45) 62%, rgba(6,3,22,0.08) 100%)'
+
+  const fs = isMobile ? 26 : 44
+  const lineH = isMobile ? 34 : 56
 
   return (
     <>
@@ -918,13 +927,23 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
         borderRadius: 20, overflow: 'hidden',
         position: 'relative',
         minHeight: isMobile ? 230 : 300,
-        backgroundImage: `${overlay}, url("${BG_IMAGE}")`,
-        backgroundSize: 'cover',
-        backgroundPosition: isMobile ? '70% center' : '65% 30%',
         display: 'flex', alignItems: 'center',
       }}>
-        {/* Text */}
+        {/* Background slides — crossfade */}
+        {BG_SLIDES.map((slide, i) => (
+          <div key={i} style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: `${overlay}, url("${slide.url}")`,
+            backgroundSize: 'cover',
+            backgroundPosition: isMobile ? '70% center' : slide.pos,
+            opacity: bgIdx === i ? 1 : 0,
+            transition: 'opacity 1.4s ease',
+          }} />
+        ))}
+
+        {/* Text — sits above backgrounds */}
         <div style={{
+          position: 'relative', zIndex: 1,
           padding: isMobile ? '32px 22px 36px' : '52px 56px',
           maxWidth: isMobile ? '100%' : 540,
           opacity: visible ? 1 : 0,
@@ -942,30 +961,21 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
             {intro.badge}
           </div>
 
-          {isMobile ? (
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#fff', lineHeight: 1.2, letterSpacing: '-0.01em', marginBottom: 14 }}>
-              <div>{intro.headingPre}</div>
-              <div style={{ position: 'relative', height: 34, overflow: 'hidden', margin: '2px 0' }}>
-                <span key={wordIdx} style={{ position: 'absolute', left: 0, top: 0, color: '#a78bfa', whiteSpace: 'nowrap', animation: 'wordSlide 2.2s ease forwards', fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700 }}>
-                  {words[wordIdx]}
-                </span>
-              </div>
-              <div>{intro.headingPost}</div>
-            </div>
-          ) : (
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 44, fontWeight: 700, color: '#fff', lineHeight: 1.12, letterSpacing: '-0.02em', marginBottom: 18 }}>
-              <span>{intro.headingPre} </span>
-              <span style={{ display: 'inline-block', color: '#a78bfa', position: 'relative', overflow: 'hidden', height: 54, verticalAlign: 'bottom', width: wordWidth ?? 'auto', transition: 'width 0.4s cubic-bezier(0.4,0,0.2,1)' }}>
-                <span ref={ghostRef} style={{ position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap', fontFamily: 'var(--font-display)', fontSize: 44, fontWeight: 700, pointerEvents: 'none' }}>
-                  {words[wordIdx]}
-                </span>
-                <span key={wordIdx} style={{ position: 'absolute', left: 0, top: 0, whiteSpace: 'nowrap', animation: 'wordSlide 2.2s ease forwards', fontFamily: 'var(--font-display)', fontSize: 44, fontWeight: 700 }}>
-                  {words[wordIdx]}
-                </span>
+          {/* Stacked heading — each part on its own line so word length never causes wrapping */}
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: fs, fontWeight: 700, color: '#fff', lineHeight: 1.12, letterSpacing: '-0.02em', marginBottom: isMobile ? 14 : 18 }}>
+            <div>{intro.headingPre}</div>
+            <div style={{ position: 'relative', height: lineH, overflow: 'hidden' }}>
+              <span key={wordIdx} style={{
+                position: 'absolute', left: 0, top: 0,
+                color: '#a78bfa', whiteSpace: 'nowrap',
+                animation: 'wordSlide 2.2s ease forwards',
+                fontFamily: 'var(--font-display)', fontSize: fs, fontWeight: 700,
+              }}>
+                {words[wordIdx]}
               </span>
-              <span> {intro.headingPost}</span>
             </div>
-          )}
+            <div>{intro.headingPost}</div>
+          </div>
 
           <p style={{
             fontSize: isMobile ? 14 : 16, color: 'rgba(255,255,255,0.70)',
@@ -977,13 +987,13 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
           </p>
         </div>
 
-        {/* Photo credit */}
+        {/* Photo credit — updates with each slide */}
         <div style={{
-          position: 'absolute', bottom: 10, right: 14,
+          position: 'absolute', zIndex: 1, bottom: 10, right: 14,
           fontSize: 10, color: 'rgba(255,255,255,0.28)', fontStyle: 'italic',
-          pointerEvents: 'none',
+          pointerEvents: 'none', transition: 'opacity 0.6s ease',
         }}>
-          Foto © Linnea Bengtsson / Sveriges riksdag
+          {BG_SLIDES[bgIdx].credit}
         </div>
       </div>
     </>
