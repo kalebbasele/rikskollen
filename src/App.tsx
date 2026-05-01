@@ -902,7 +902,7 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
 
   const overlay = isMobile
     ? 'linear-gradient(to bottom, rgba(6,3,22,0.94) 0%, rgba(6,3,22,0.65) 100%)'
-    : 'linear-gradient(100deg, rgba(6,3,22,0.95) 0%, rgba(6,3,22,0.82) 36%, rgba(6,3,22,0.45) 62%, rgba(6,3,22,0.08) 100%)'
+    : 'linear-gradient(100deg, rgba(6,3,22,0.95) 0%, rgba(6,3,22,0.80) 28%, rgba(6,3,22,0.35) 50%, rgba(6,3,22,0.0) 72%)'
 
   const fs = isMobile ? 26 : 44
   const lineH = isMobile ? 34 : 56
