@@ -907,9 +907,7 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
   // Cycle background image every 5 seconds
   React.useEffect(() => { const iv = setInterval(() => setBgIdx(i => (i + 1) % BG_SLIDES.length), 5000); return () => clearInterval(iv) }, [])
 
-  const overlay = isMobile
-    ? 'linear-gradient(to bottom, rgba(6,3,22,0.94) 0%, rgba(6,3,22,0.65) 100%)'
-    : 'linear-gradient(100deg, rgba(6,3,22,0.95) 0%, rgba(6,3,22,0.80) 28%, rgba(6,3,22,0.35) 50%, rgba(6,3,22,0.0) 72%)'
+  const overlay = 'linear-gradient(100deg, rgba(6,3,22,0.95) 0%, rgba(6,3,22,0.80) 28%, rgba(6,3,22,0.35) 50%, rgba(6,3,22,0.0) 72%)'
 
   const fs = isMobile ? 26 : 44
   const lineH = isMobile ? 34 : 56
