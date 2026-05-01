@@ -872,9 +872,13 @@ const CHIP_TABS: Record<string, string> = {
 }
 
 const BG_SLIDES = [
-  { url: 'https://bilder.riksdagen.se/publishedmedia/m2rvndjhuiksizjq8kwf/Pressbild_utrikespolitisk_debatt_1_20260218_Foto_Linnea_Bengtsson_Sveriges_riksdag.jpg', credit: 'Foto © Linnea Bengtsson / Sveriges riksdag', pos: '65% 30%' },
-  { url: 'https://bilder.riksdagen.se/publishedmedia/vkv2iwiitk77cuedm01a/Pressbild_utrikespolitisk_debatt_2_20260218_Foto_Linnea_Bengtsson_Sveriges_riksdag.jpg', credit: 'Foto © Linnea Bengtsson / Sveriges riksdag', pos: '60% 25%' },
-  { url: 'https://bilder.riksdagen.se/publishedmedia/wwsytdvdjx9xy35qy5xv/EU-politisk_partiledardebatt_1x_Foto_Melker_Dahlstrand.jpg', credit: 'Foto © Melker Dahlstrand / Sveriges riksdag', pos: '60% 40%' },
+  // S + SD: Andersson (S) debating Åkesson (SD), partiledardebatt jan 2026 — wide chamber shot
+  { url: 'https://bilder.riksdagen.se/publishedmedia/o7evzanvjkjk7l5ritu4/20260114_Partiledardebatten_Linnea-0068.jpg', credit: 'Foto © Linnea Bengtsson / Sveriges riksdag', pos: '50% 35%' },
+  // M + MP: Kristersson (M) debating Lind (MP), partiledardebatt jan 2026
+  { url: 'https://bilder.riksdagen.se/publishedmedia/q1fa8wb6ygsgvg4y5542/20260114_Partiledardebatten_Linnea-0062.jpg', credit: 'Foto © Linnea Bengtsson / Sveriges riksdag', pos: '55% 25%' },
+  // S + M: Andersson (S) at podium with Kristersson (M), EU-debatt nov 2025
+  { url: 'https://bilder.riksdagen.se/publishedmedia/x8j0sknpoy0b6k1g7lzz/EU-politisk_partiledardebatt_2x_Foto_Melker_Dahlstrand.jpg', credit: 'Foto © Melker Dahlstrand / Sveriges riksdag', pos: '50% 25%' },
+  // Alla partier: kammaren under votering
   { url: 'https://bilder.riksdagen.se/publishedmedia/tjx9ifoyxwhd6jf41pjm/pressbilder-kammaren-under-votering-2023.jpg', credit: 'Foto © Sveriges riksdag', pos: '50% 40%' },
 ]
 
