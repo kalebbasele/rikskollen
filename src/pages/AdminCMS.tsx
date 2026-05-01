@@ -603,6 +603,23 @@ export default function AdminCMS() {
           </>
         ) : (
           <>
+            <div style={{ marginBottom: 20 }}>
+              <button
+                onClick={async () => {
+                  if (!confirm('Ta bort alla dubbletter bland omröstningarna?')) return
+                  const res = await fetch(`${BACKEND}/admin/votes/deduplicate`, { method: 'POST', headers: adminHeaders() })
+                  const data = await res.json()
+                  alert(data.deleted > 0 ? `Raderade ${data.deleted} dubblett(er).` : data.message)
+                  if (data.deleted > 0) {
+                    const v = await fetch(`${BACKEND}/admin/votes`, { headers: adminHeaders() }).then(r => r.json())
+                    setVotes(Array.isArray(v) ? v : [])
+                  }
+                }}
+                style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              >
+                🧹 Rensa dubletter
+              </button>
+            </div>
             <SectionHeader label="Väntar på godkännande" count={pendingVotes.length} />
             {pendingVotes.length === 0
               ? <Empty text="Inga omröstningar väntar" />
