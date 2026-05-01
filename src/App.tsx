@@ -874,7 +874,7 @@ const CHIP_TABS: Record<string, string> = {
 const BG_SLIDES = [
   { url: 'https://bilder.riksdagen.se/publishedmedia/m2rvndjhuiksizjq8kwf/Pressbild_utrikespolitisk_debatt_1_20260218_Foto_Linnea_Bengtsson_Sveriges_riksdag.jpg', credit: 'Foto © Linnea Bengtsson / Sveriges riksdag', pos: '65% 30%' },
   { url: 'https://bilder.riksdagen.se/publishedmedia/vkv2iwiitk77cuedm01a/Pressbild_utrikespolitisk_debatt_2_20260218_Foto_Linnea_Bengtsson_Sveriges_riksdag.jpg', credit: 'Foto © Linnea Bengtsson / Sveriges riksdag', pos: '60% 25%' },
-  { url: 'https://bilder.riksdagen.se/publishedmedia/wwsytdvdjx9xy35qy5xv/EU-politisk_partiledardebatt_1x_Foto_Melker_Dahlstrand.jpg', credit: 'Foto © Melker Dahlstrand / Sveriges riksdag', pos: '60% 5%' },
+  { url: 'https://bilder.riksdagen.se/publishedmedia/wwsytdvdjx9xy35qy5xv/EU-politisk_partiledardebatt_1x_Foto_Melker_Dahlstrand.jpg', credit: 'Foto © Melker Dahlstrand / Sveriges riksdag', pos: '60% 40%' },
   { url: 'https://bilder.riksdagen.se/publishedmedia/tjx9ifoyxwhd6jf41pjm/pressbilder-kammaren-under-votering-2023.jpg', credit: 'Foto © Sveriges riksdag', pos: '50% 40%' },
 ]
 
