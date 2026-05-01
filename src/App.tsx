@@ -565,8 +565,11 @@ const INFO_CONTENT: Record<InfoPageKey, { title: string; body: React.ReactNode }
         <p>Debatter och omröstningar hämtas från Riksdagens öppna API och lagras tillfälligt i vår databas för snabbare åtkomst.</p>
         <h4>Om du kontaktar oss</h4>
         <p>Om du skickar e-post till oss behandlar vi de uppgifter du lämnar (namn, e-postadress och ditt ärende) för att kunna svara dig. Dessa raderas när ärendet är avslutat.</p>
+        <h4>Rättslig grund</h4>
+        <p>Den rättsliga grunden för vår behandling av personuppgifter är <strong>berättigat intresse</strong> (GDPR artikel 6.1 f) — att tillgängliggöra offentlig information om riksdagens arbete för allmänheten.</p>
         <h4>Dina rättigheter</h4>
         <p>Enligt GDPR har du rätt att begära information om, rättelse av eller radering av personuppgifter som rör dig. Kontakta oss på Info@Civica.se.</p>
+        <p>Du har även rätt att lämna klagomål till <strong>Integritetsskyddsmyndigheten (IMY)</strong> på <a href="https://www.imy.se" target="_blank" rel="noopener noreferrer" style={{color:'var(--accent2)'}}>imy.se</a> om du anser att vi behandlar dina uppgifter felaktigt.</p>
         <p>Personuppgiftsansvarig: Civica · Info@Civica.se</p>
       </>
     ),
