@@ -125,6 +125,7 @@ export default function App() {
   function openDebate(id: string) {
     setSelectedDebateId(id)
     history.pushState({}, '', `/?debate=${id}`)
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   const toggleTheme = () => {
