@@ -103,6 +103,11 @@ export default function App() {
   const selectedDebate = selectedDebateId ? debates.find(d => d.id === selectedDebateId) : null
   const showDetail = !!selectedDebate
 
+  // Scroll to top whenever tab or selected debate changes
+  React.useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [tab, selectedDebateId])
+
   // Sync URL → state when browser back/forward is pressed
   React.useEffect(() => {
     function onPop() {
@@ -119,13 +124,11 @@ export default function App() {
     setSelectedDebateId(null)
     const url = t === 'debatter' ? '/' : `/?tab=${t}`
     history.pushState({}, '', url)
-    window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   function openDebate(id: string) {
     setSelectedDebateId(id)
     history.pushState({}, '', `/?debate=${id}`)
-    window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   const toggleTheme = () => {
