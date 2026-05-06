@@ -119,6 +119,7 @@ export default function App() {
     setSelectedDebateId(null)
     const url = t === 'debatter' ? '/' : `/?tab=${t}`
     history.pushState({}, '', url)
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   function openDebate(id: string) {
