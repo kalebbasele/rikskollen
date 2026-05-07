@@ -121,6 +121,7 @@ export default function VoteCard({ vote }: Props) {
                 const party = getParty(pv.party)
                 const pvTotal = pv.ja + pv.nej
                 const jaW = pvTotal > 0 ? (pv.ja / pvTotal) * 100 : 0
+                const absent = pvTotal === 0
 
                 return (
                   <div key={pv.party} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -133,11 +134,17 @@ export default function VoteCard({ vote }: Props) {
                       {pv.party}
                     </span>
                     <div style={{ flex: 1, height: 7, borderRadius: 4, background: 'var(--surface2)', overflow: 'hidden', display: 'flex' }}>
-                      <div style={{ width: `${jaW}%`, background: '#228b4a' }} />
-                      <div style={{ width: `${100 - jaW}%`, background: '#b91c1c' }} />
+                      {absent ? (
+                        <div style={{ width: '100%', background: 'var(--surface3)' }} />
+                      ) : (
+                        <>
+                          <div style={{ width: `${jaW}%`, background: '#228b4a' }} />
+                          <div style={{ width: `${100 - jaW}%`, background: '#b91c1c' }} />
+                        </>
+                      )}
                     </div>
-                    <span style={{ fontSize: 12, color: pv.ja >= pv.nej ? '#228b4a' : '#b91c1c', minWidth: 70, textAlign: 'right', whiteSpace: 'nowrap', fontWeight: 600 }}>
-                      {pv.ja} ja · {pv.nej} nej
+                    <span style={{ fontSize: 12, color: absent ? 'var(--text3)' : (pv.ja >= pv.nej ? '#228b4a' : '#b91c1c'), minWidth: 80, textAlign: 'right', whiteSpace: 'nowrap', fontWeight: 600 }}>
+                      {absent ? 'Frånvarande' : `${pv.ja} ja · ${pv.nej} nej`}
                     </span>
                   </div>
                 )
