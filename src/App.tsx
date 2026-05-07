@@ -684,9 +684,9 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
   return (
     <div onClick={onClick} style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? `1fr 190px` : `1fr ${portraitColWidth}px`,
-      minHeight: isMobile ? 200 : 230, cursor: 'pointer',
-      margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
+      gridTemplateColumns: isMobile ? `1fr 120px` : `1fr ${portraitColWidth}px`,
+      minHeight: isMobile ? 180 : 230, cursor: 'pointer',
+      margin: isMobile ? '12px 16px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
       background: '#1a1535',
       boxShadow: '0 2px 16px rgba(0,0,0,0.4)',
@@ -742,16 +742,16 @@ function DarkSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSel
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+      gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
       gap: isMobile ? 8 : 12,
-      padding: isMobile ? '0 12px 8px' : '0 16px 8px',
+      padding: isMobile ? '0 16px 8px' : '0 16px 8px',
     }}>
       {debates.map((debate) => {
         const cat = getCategory(debate.topic + debate.title)
         const participants = debate.participants
         return (
           <div key={debate.id} onClick={() => onSelect(debate.id)} style={{
-            padding: '18px 18px 0',
+            padding: isMobile ? '14px 14px 0' : '18px 18px 0',
             display: 'flex', flexDirection: 'column', cursor: 'pointer',
             background: '#1a1535',
             borderRadius: 14,
@@ -933,10 +933,10 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
       `}</style>
 
       <div style={{
-        margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
+        margin: isMobile ? '12px 16px 8px' : '16px 16px 8px',
         borderRadius: 20, overflow: 'hidden',
         position: 'relative',
-        minHeight: isMobile ? 230 : 300,
+        minHeight: isMobile ? 190 : 300,
         display: 'flex', alignItems: 'center',
       }}>
         {/* Background slides — crossfade */}
@@ -1020,9 +1020,9 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
   return (
     <div onClick={onClick} style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? `1fr 190px` : `1fr ${portraitColWidth}px`,
-      minHeight: isMobile ? 200 : 230, cursor: 'pointer',
-      margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
+      gridTemplateColumns: isMobile ? `1fr 120px` : `1fr ${portraitColWidth}px`,
+      minHeight: isMobile ? 180 : 230, cursor: 'pointer',
+      margin: isMobile ? '12px 16px 8px' : '16px 16px 8px',
       borderRadius: 16, overflow: 'hidden',
       background: '#f8f6f2',
       boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
@@ -1078,16 +1078,16 @@ function LightSubgrid({ debates, onSelect, isMobile }: { debates: Debate[]; onSe
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+      gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
       gap: isMobile ? 8 : 12,
-      padding: isMobile ? '0 12px 8px' : '0 16px 8px',
+      padding: isMobile ? '0 16px 8px' : '0 16px 8px',
     }}>
       {debates.map((debate, i) => {
         const cat = getCategory(debate.topic + debate.title)
         const participants = debate.participants
         return (
           <div key={debate.id} onClick={() => onSelect(debate.id)} style={{
-            padding: '18px 18px 0',
+            padding: isMobile ? '14px 14px 0' : '18px 18px 0',
             display: 'flex', flexDirection: 'column', cursor: 'pointer',
             background: '#f8f6f2',
             borderRadius: 14,
