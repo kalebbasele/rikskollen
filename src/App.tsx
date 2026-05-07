@@ -936,7 +936,7 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
         margin: isMobile ? '12px 12px 8px' : '16px 16px 8px',
         borderRadius: 20, overflow: 'hidden',
         position: 'relative',
-        minHeight: isMobile ? 230 : 300,
+        minHeight: isMobile ? 230 : 420,
         display: 'flex', alignItems: 'center',
       }}>
         {/* Background slides — crossfade */}
