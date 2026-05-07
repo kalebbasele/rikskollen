@@ -711,7 +711,7 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
         gap: 6, padding: 6,
         borderLeft: '1px solid rgba(155,125,255,0.1)',
       }}>
-        {participants.slice(0, isMobile ? 2 : 7).map((p, i) => {
+        {participants.slice(0, isMobile ? 1 : 7).map((p, i) => {
           const party = getParty(p.person.party)
           const glow = party?.color ?? '#5b3fd4'
           const shortName = abbrevName(p.person)
@@ -1047,7 +1047,7 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
         gap: 6, padding: 6,
         borderLeft: '1px solid #e0dbd3',
       }}>
-        {participants.slice(0, isMobile ? 2 : 7).map((p, i) => {
+        {participants.slice(0, isMobile ? 1 : 7).map((p, i) => {
           const party = getParty(p.person.party)
           const glow = party?.color ?? '#5b3fd4'
           const shortName = abbrevName(p.person)
