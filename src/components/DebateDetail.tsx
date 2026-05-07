@@ -34,24 +34,21 @@ function ReactionButtons({ debateId, bloc }: { debateId: string; bloc: 'left' | 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
       <span style={{ fontSize: 11, color: 'var(--text3)', marginRight: 4 }}>Vad tyckte du?</span>
-      {(['up', 'down'] as const).map(r => (
-        <button
-          key={r}
-          onClick={() => react(r)}
-          disabled={voted !== null}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            padding: '5px 10px', borderRadius: 20,
-            border: `1px solid ${voted === r ? (r === 'up' ? 'rgba(34,139,74,0.5)' : 'rgba(185,28,28,0.5)') : 'var(--border)'}`,
-            background: voted === r ? (r === 'up' ? 'rgba(34,139,74,0.12)' : 'rgba(185,28,28,0.12)') : 'transparent',
-            color: voted === r ? (r === 'up' ? '#228b4a' : '#b91c1c') : 'var(--text3)',
-            fontSize: 13, cursor: voted ? 'default' : 'pointer', transition: 'all 0.15s',
-          }}
-        >
-          <span style={{ fontSize: 15 }}>{r === 'up' ? '👍' : '👎'}</span>
-          {counts !== null && <span style={{ fontWeight: 600, fontSize: 12 }}>{counts[r]}</span>}
-        </button>
-      ))}
+      <button
+        onClick={() => react('up')}
+        disabled={voted !== null}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          padding: '5px 10px', borderRadius: 20,
+          border: `1px solid ${voted === 'up' ? 'rgba(34,139,74,0.5)' : 'var(--border)'}`,
+          background: voted === 'up' ? 'rgba(34,139,74,0.12)' : 'transparent',
+          color: voted === 'up' ? '#228b4a' : 'var(--text3)',
+          fontSize: 13, cursor: voted ? 'default' : 'pointer', transition: 'all 0.15s',
+        }}
+      >
+        <span style={{ fontSize: 15 }}>👍</span>
+        {counts !== null && <span style={{ fontWeight: 600, fontSize: 12 }}>{counts['up']}</span>}
+      </button>
     </div>
   )
 }
