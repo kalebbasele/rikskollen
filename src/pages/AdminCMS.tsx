@@ -517,7 +517,7 @@ export default function AdminCMS() {
           </>
         ) : (
           <>
-            <div style={{ marginBottom: 20 }}>
+            <div style={{ marginBottom: 20, display: 'flex', gap: 10 }}>
               <button
                 onClick={async () => {
                   if (!confirm('Ta bort alla dubbletter bland omröstningarna?')) return
@@ -532,6 +532,19 @@ export default function AdminCMS() {
                 style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
               >
                 🧹 Rensa dubletter
+              </button>
+              <button
+                onClick={async () => {
+                  if (!confirm('Ta bort alla pending omröstningar t.o.m. 22 april 2026?')) return
+                  const res = await fetch(`${BACKEND}/admin/votes/delete-old-pending`, { method: 'POST', headers: adminHeaders() })
+                  const data = await res.json()
+                  alert(`Raderade ${data.deleted} omröstning(ar).`)
+                  const v = await fetch(`${BACKEND}/admin/votes`, { headers: adminHeaders() }).then(r => r.json())
+                  setVotes(Array.isArray(v) ? v : [])
+                }}
+                style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              >
+                🗑️ Ta bort gamla pending (t.o.m. 22 apr)
               </button>
             </div>
             <SectionHeader label="Väntar på godkännande" count={pendingVotes.length} />
