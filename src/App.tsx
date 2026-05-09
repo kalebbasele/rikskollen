@@ -25,6 +25,21 @@ function getCategory(text: string): { label: string; color: string; lightColor: 
   return { label: 'Riksdag', color: 'rgba(255,255,255,0.3)', lightColor: '#888' }
 }
 
+function matchesVoteCategory(vote: Vote, cat: string): boolean {
+  if (cat === 'Alla') return true
+  const text = ((vote.humanTitle ?? '') + vote.title).toLowerCase()
+  const map: Record<string, string[]> = {
+    'Migration': ['migration', 'asyl', 'gräns', 'utvisning', 'flykt'],
+    'Ekonomi': ['ekonomi', 'budget', 'skatt', 'finansi', 'moms', 'arbete', 'pension'],
+    'Klimat': ['klimat', 'miljö', 'utsläpp', 'energi', 'kärnkraft'],
+    'Vård': ['vård', 'sjukvård', 'hälso', 'äldreomsorg', 'omsorg'],
+    'Försvar': ['försvar', 'nato', 'militär', 'säkerhet'],
+    'Utbildning': ['utbildning', 'skola', 'förskola', 'lärare', 'högskola'],
+    'Utrikespolitik': ['utrik', 'iran', 'ukraina', 'fn ', 'eu ', 'bistånd'],
+  }
+  return (map[cat] ?? []).some(k => text.includes(k))
+}
+
 function matchesCategory(debate: Debate, cat: string): boolean {
   if (cat === 'Alla') return true
   const text = (debate.title + debate.topic).toLowerCase()
@@ -39,6 +54,7 @@ function matchesCategory(debate: Debate, cat: string): boolean {
   }
   return (map[cat] ?? []).some(k => text.includes(k))
 }
+
 
 function PartyBadge({ party, size = 20, radius = 5 }: { party: string; size?: number; radius?: number }) {
   const p = getParty(party)
@@ -69,11 +85,13 @@ export default function App() {
   const [tab, setTabState] = useState<Tab>(initial.tab)
   const [selectedDebateId, setSelectedDebateId] = useState<string | null>(initial.debateId)
   const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set(['Alla']))
+  const [activeVoteCategories, setActiveVoteCategories] = useState<Set<string>>(new Set(['Alla']))
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     document.documentElement.setAttribute('data-theme', 'light')
     return 'light'
   })
   const [showCatDropdown, setShowCatDropdown] = useState(false)
+  const [showVoteCatDropdown, setShowVoteCatDropdown] = useState(false)
   const [showOmDropdown, setShowOmDropdown] = useState(false)
   const [infoPage, setInfoPage] = useState<InfoPageKey | null>(null)
   const isMobile = useIsMobile()
@@ -93,12 +111,31 @@ export default function App() {
     })
   }
 
+  function toggleVoteCategory(cat: string) {
+    if (cat === 'Alla') { setActiveVoteCategories(new Set(['Alla'])); return }
+    setActiveVoteCategories(prev => {
+      const next = new Set(prev)
+      next.delete('Alla')
+      if (next.has(cat)) { next.delete(cat); if (next.size === 0) next.add('Alla') }
+      else next.add(cat)
+      return next
+    })
+  }
+
   const filteredDebates = useMemo(() =>
     activeCategories.has('Alla')
       ? debates
       : debates.filter(d => [...activeCategories].some(cat => matchesCategory(d, cat))),
     [debates, activeCategories]
   )
+
+  const filteredVotes = useMemo(() =>
+    activeVoteCategories.has('Alla')
+      ? votes
+      : votes.filter(v => [...activeVoteCategories].some(cat => matchesVoteCategory(v, cat))),
+    [votes, activeVoteCategories]
+  )
+
 
   const selectedDebate = selectedDebateId ? debates.find(d => d.id === selectedDebateId) : null
   const showDetail = !!selectedDebate
@@ -217,19 +254,70 @@ export default function App() {
                     </div>
                   )}
                 </div>
-                {(['omrostningar', 'valkompass'] as Tab[]).map(t => (
-                  <button key={t} onClick={() => setTab(t)} style={{
+                <div
+                  style={{ position: 'relative' }}
+                  onMouseEnter={() => !isMobile && setShowVoteCatDropdown(true)}
+                  onMouseLeave={() => !isMobile && setShowVoteCatDropdown(false)}
+                >
+                  <button onClick={() => setTab('omrostningar')} style={{
                     fontSize: isMobile ? 12 : 14,
-                    color: tab === t ? '#fff' : '#aaa',
+                    color: tab === 'omrostningar' ? '#fff' : '#aaa',
                     padding: isMobile ? '5px 8px' : '7px 16px',
-                    background: tab === t ? '#111' : 'none',
+                    background: tab === 'omrostningar' ? '#111' : 'none',
                     border: 'none', borderRadius: 24,
-                    fontWeight: tab === t ? 600 : 400,
+                    fontWeight: tab === 'omrostningar' ? 600 : 400,
                     cursor: 'pointer', whiteSpace: 'nowrap',
                   }}>
-                    {t === 'omrostningar' ? (isMobile ? 'Röstar' : 'Omröstningar') : (isMobile ? 'Kompass' : 'Valkompass')}
+                    {isMobile ? 'Röstar' : 'Omröstningar'}
                   </button>
-                ))}
+                  {showVoteCatDropdown && !isMobile && (
+                    <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
+                      <div style={{
+                        background: '#f8f6f2', borderRadius: 14,
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.10)', border: '1px solid #e0dbd3',
+                        padding: '8px', display: 'flex', flexDirection: 'column', gap: 1,
+                        minWidth: 190,
+                      }}>
+                        {CATEGORIES.map(cat => {
+                          const checked = activeVoteCategories.has(cat)
+                          return (
+                            <button key={cat} onClick={() => { toggleVoteCategory(cat); setTab('omrostningar') }} style={{
+                              fontSize: 13, textAlign: 'left',
+                              color: checked ? '#5b3fd4' : '#555',
+                              padding: '7px 12px', borderRadius: 8,
+                              background: checked ? '#f0eeff' : 'none',
+                              border: 'none', cursor: 'pointer',
+                              fontWeight: checked ? 600 : 400,
+                              display: 'flex', alignItems: 'center', gap: 9, justifyContent: 'space-between',
+                            }}>
+                              {cat}
+                              <span style={{
+                                width: 16, height: 16, borderRadius: 4, flexShrink: 0,
+                                border: checked ? 'none' : '1.5px solid #ddd',
+                                background: checked ? '#5b3fd4' : 'transparent',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 10, color: '#fff',
+                              }}>
+                                {checked ? '✓' : ''}
+                              </span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <button onClick={() => setTab('valkompass')} style={{
+                  fontSize: isMobile ? 12 : 14,
+                  color: tab === 'valkompass' ? '#fff' : '#aaa',
+                  padding: isMobile ? '5px 8px' : '7px 16px',
+                  background: tab === 'valkompass' ? '#111' : 'none',
+                  border: 'none', borderRadius: 24,
+                  fontWeight: tab === 'valkompass' ? 600 : 400,
+                  cursor: 'pointer', whiteSpace: 'nowrap',
+                }}>
+                  {isMobile ? 'Kompass' : 'Valkompass'}
+                </button>
                 {/* Om Civica — desktop only */}
                 {!isMobile && (
                   <div style={{ position: 'relative' }} onMouseEnter={() => setShowOmDropdown(true)} onMouseLeave={() => setShowOmDropdown(false)}>
@@ -308,8 +396,8 @@ export default function App() {
               {votesLoading
                 ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
                 : votesError ? <LightStatusMessage message={votesError} />
-                : votes.length === 0 ? <LightStatusMessage message="Inga omröstningar." />
-                : votes.map(v => <VoteCard key={v.id} vote={v} />)
+                : filteredVotes.length === 0 ? <LightStatusMessage message="Inga omröstningar matchar." />
+                : filteredVotes.map(v => <VoteCard key={v.id} vote={v} />)
               }
             </div>
           </div>
@@ -392,19 +480,70 @@ export default function App() {
                     </div>
                   )}
                 </div>
-                {(['omrostningar', 'valkompass'] as Tab[]).map(t => (
-                  <button key={t} onClick={() => setTab(t)} style={{
+                <div
+                  style={{ position: 'relative' }}
+                  onMouseEnter={() => !isMobile && setShowVoteCatDropdown(true)}
+                  onMouseLeave={() => !isMobile && setShowVoteCatDropdown(false)}
+                >
+                  <button onClick={() => setTab('omrostningar')} style={{
                     fontSize: isMobile ? 13 : 14,
-                    color: tab === t ? '#0b0b18' : 'rgba(255,255,255,0.4)',
+                    color: tab === 'omrostningar' ? '#0b0b18' : 'rgba(255,255,255,0.4)',
                     padding: isMobile ? '6px 10px' : '7px 16px',
-                    background: tab === t ? '#fff' : 'none',
+                    background: tab === 'omrostningar' ? '#fff' : 'none',
                     border: 'none', borderRadius: 24,
-                    fontWeight: tab === t ? 600 : 400,
+                    fontWeight: tab === 'omrostningar' ? 600 : 400,
                     cursor: 'pointer',
                   }}>
-                    {t === 'omrostningar' ? 'Omröstningar' : 'Valkompass'}
+                    Omröstningar
                   </button>
-                ))}
+                  {showVoteCatDropdown && !isMobile && (
+                    <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
+                      <div style={{
+                        background: '#1a1535', borderRadius: 14,
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.5)', border: '1px solid rgba(155,125,255,0.15)',
+                        padding: '8px', display: 'flex', flexDirection: 'column', gap: 1,
+                        minWidth: 190,
+                      }}>
+                        {CATEGORIES.map(cat => {
+                          const checked = activeVoteCategories.has(cat)
+                          return (
+                            <button key={cat} onClick={() => { toggleVoteCategory(cat); setTab('omrostningar') }} style={{
+                              fontSize: 13, textAlign: 'left',
+                              color: checked ? '#9b7dff' : 'rgba(255,255,255,0.55)',
+                              padding: '7px 12px', borderRadius: 8,
+                              background: checked ? 'rgba(155,125,255,0.15)' : 'none',
+                              border: 'none', cursor: 'pointer',
+                              fontWeight: checked ? 600 : 400,
+                              display: 'flex', alignItems: 'center', gap: 9, justifyContent: 'space-between',
+                            }}>
+                              {cat}
+                              <span style={{
+                                width: 16, height: 16, borderRadius: 4, flexShrink: 0,
+                                border: checked ? 'none' : '1.5px solid rgba(255,255,255,0.2)',
+                                background: checked ? '#9b7dff' : 'transparent',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: 10, color: '#fff',
+                              }}>
+                                {checked ? '✓' : ''}
+                              </span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <button onClick={() => setTab('valkompass')} style={{
+                  fontSize: isMobile ? 13 : 14,
+                  color: tab === 'valkompass' ? '#0b0b18' : 'rgba(255,255,255,0.4)',
+                  padding: isMobile ? '6px 10px' : '7px 16px',
+                  background: tab === 'valkompass' ? '#fff' : 'none',
+                  border: 'none', borderRadius: 24,
+                  fontWeight: tab === 'valkompass' ? 600 : 400,
+                  cursor: 'pointer',
+                }}>
+                  Valkompass
+                </button>
                 {/* Om Civica — desktop only */}
                 {!isMobile && (
                   <div style={{ position: 'relative' }} onMouseEnter={() => setShowOmDropdown(true)} onMouseLeave={() => setShowOmDropdown(false)}>
@@ -483,8 +622,8 @@ export default function App() {
             {votesLoading
               ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
               : votesError ? <DarkStatusMessage message={votesError} />
-              : votes.length === 0 ? <DarkStatusMessage message="Inga omröstningar." />
-              : votes.map(v => <VoteCard key={v.id} vote={v} />)
+              : filteredVotes.length === 0 ? <DarkStatusMessage message="Inga omröstningar matchar." />
+              : filteredVotes.map(v => <VoteCard key={v.id} vote={v} />)
             }
           </div>
         </div>

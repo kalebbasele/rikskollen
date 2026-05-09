@@ -10,7 +10,7 @@ function adminHeaders() {
   return { 'Content-Type': 'application/json', 'x-admin-key': getAdminKey() }
 }
 
-type Tab = 'debatter' | 'omrostningar' | 'fragstund' | 'intro' | 'statistik'
+type Tab = 'debatter' | 'omrostningar' | 'intro' | 'statistik'
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 
@@ -161,44 +161,6 @@ function VoteAdminCard({ row, onApprove, onDelete, onSave }: {
           <Field label="NEJ innebär" value={nejMeaning} onChange={setNejMeaning} multiline />
         </div>
         <Field label="Vad händer nu (consequence)" value={consequence} onChange={setConsequence} multiline />
-        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-          <Btn color="#2ec27e" onClick={onApprove}>Godkänn och publicera</Btn>
-          <Btn color="#555" onClick={save} disabled={saving}>{saving ? 'Sparar…' : 'Spara ändringar'}</Btn>
-          <Btn color="#e8445a" onClick={onDelete}>Radera</Btn>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ── Frågestund card ───────────────────────────────────────────────────────────
-
-function FragstundAdminCard({ row, onApprove, onDelete, onSave }: {
-  row: any; onApprove: () => void; onDelete: () => void; onSave: (data: any) => void
-}) {
-  const [title, setTitle] = useState(row.title ?? '')
-  const [summary, setSummary] = useState(row.summary ?? '')
-  const [saving, setSaving] = useState(false)
-
-  async function save() {
-    setSaving(true)
-    await onSave({ title, summary })
-    setSaving(false)
-  }
-
-  return (
-    <div style={{ background: '#1a1728', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 14, overflow: 'hidden', marginBottom: 12 }}>
-      <div style={{ padding: '14px 16px 10px' }}>
-        <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(155,125,255,0.7)', marginBottom: 4 }}>
-          Frågestund · {row.date} · {row.anforanden_count ?? 0} anföranden
-        </div>
-        <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', lineHeight: 1.3 }}>{row.title}</div>
-        {row.summary && <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 6, lineHeight: 1.5 }}>{row.summary}</p>}
-      </div>
-      <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: 8, borderTop: '0.5px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ paddingTop: 12, fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Redigera</div>
-        <Field label="Titel" value={title} onChange={setTitle} />
-        <Field label="Sammanfattning" value={summary} onChange={setSummary} multiline />
         <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
           <Btn color="#2ec27e" onClick={onApprove}>Godkänn och publicera</Btn>
           <Btn color="#555" onClick={save} disabled={saving}>{saving ? 'Sparar…' : 'Spara ändringar'}</Btn>
@@ -431,7 +393,6 @@ export default function AdminCMS() {
   const [tab, setTab] = useState<Tab>('debatter')
   const [debates, setDebates] = useState<any[]>([])
   const [votes, setVotes] = useState<any[]>([])
-  const [fragstund, setFragstund] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -446,15 +407,13 @@ export default function AdminCMS() {
   async function loadAll() {
     setLoading(true)
     try {
-      const [dRes, vRes, fsRes] = await Promise.all([
+      const [dRes, vRes] = await Promise.all([
         fetch(`${BACKEND}/admin/debates`, { headers: adminHeaders() }),
         fetch(`${BACKEND}/admin/votes`, { headers: adminHeaders() }),
-        fetch(`${BACKEND}/admin/fragstund`, { headers: adminHeaders() }),
       ])
-      const [d, v, fs] = await Promise.all([dRes.json(), vRes.json(), fsRes.json()])
+      const [d, v] = await Promise.all([dRes.json(), vRes.json()])
       setDebates(Array.isArray(d) ? d : [])
       setVotes(Array.isArray(v) ? v : [])
-      setFragstund(Array.isArray(fs) ? fs : [])
     } catch(e) {
       console.error('loadAll failed:', e)
     } finally {
@@ -496,31 +455,12 @@ export default function AdminCMS() {
     setVotes(prev => prev.map(v => v.id === id ? updated : v))
   }
 
-  async function approveFragstund(id: string) {
-    await fetch(`${BACKEND}/admin/fragstund/${id}/approve`, { method: 'POST', headers: adminHeaders() })
-    setFragstund(prev => prev.map(f => f.id === id ? { ...f, status: 'approved', approved_at: new Date().toISOString() } : f))
-  }
-
-  async function deleteFragstund(id: string) {
-    if (!confirm('Radera frågestunden?')) return
-    await fetch(`${BACKEND}/admin/fragstund/${id}`, { method: 'DELETE', headers: adminHeaders() })
-    setFragstund(prev => prev.filter(f => f.id !== id))
-  }
-
-  async function saveFragstund(id: string, data: any) {
-    const res = await fetch(`${BACKEND}/admin/fragstund/${id}`, { method: 'PATCH', headers: adminHeaders(), body: JSON.stringify(data) })
-    const updated = await res.json()
-    setFragstund(prev => prev.map(f => f.id === id ? updated : f))
-  }
-
   if (!authed) return <Login onLogin={() => { setAuthed(true); loadAll() }} />
 
   const pendingDebates = debates.filter(d => d.status === 'pending')
   const approvedDebates = debates.filter(d => d.status === 'approved')
   const pendingVotes = votes.filter(v => v.status === 'pending')
   const approvedVotes = votes.filter(v => v.status === 'approved')
-  const pendingFragstund = fragstund.filter(f => f.status === 'pending')
-  const approvedFragstund = fragstund.filter(f => f.status === 'approved')
 
   return (
     <div style={{ minHeight: '100vh', background: '#0b0b18', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
@@ -531,9 +471,9 @@ export default function AdminCMS() {
         </a>
         <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', background: 'rgba(155,125,255,0.15)', borderRadius: 20, padding: '3px 10px' }}>Admin CMS</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-          {(['debatter', 'omrostningar', 'fragstund', 'intro', 'statistik'] as Tab[]).map(t => (
+          {(['debatter', 'omrostningar', 'intro', 'statistik'] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)} style={{ fontSize: 14, color: tab === t ? '#fff' : 'rgba(255,255,255,0.35)', padding: '0 14px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48, fontWeight: tab === t ? 500 : 400, cursor: 'pointer' }}>
-              {t === 'debatter' ? `Debatter (${pendingDebates.length})` : t === 'omrostningar' ? `Omröstningar (${pendingVotes.length})` : t === 'fragstund' ? `Frågestund (${pendingFragstund.length})` : t === 'intro' ? 'Intro-sektion' : 'Statistik'}
+              {t === 'debatter' ? `Debatter (${pendingDebates.length})` : t === 'omrostningar' ? `Omröstningar (${pendingVotes.length})` : t === 'intro' ? 'Intro-sektion' : 'Statistik'}
             </button>
           ))}
           <button onClick={() => { localStorage.removeItem('civica_admin_key'); setAuthed(false) }} style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', padding: '0 14px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48, cursor: 'pointer' }}>
@@ -549,32 +489,6 @@ export default function AdminCMS() {
           <StatsPanel />
         ) : tab === 'intro' ? (
           <IntroEditor />
-        ) : tab === 'fragstund' ? (
-          <>
-            <SectionHeader label="Väntar på godkännande" count={pendingFragstund.length} />
-            {pendingFragstund.length === 0
-              ? <Empty text="Inga frågestunder väntar" />
-              : pendingFragstund.map(row => (
-                <FragstundAdminCard key={row.id} row={row}
-                  onApprove={() => approveFragstund(row.id)}
-                  onDelete={() => deleteFragstund(row.id)}
-                  onSave={(data) => saveFragstund(row.id, data)}
-                />
-              ))
-            }
-            {approvedFragstund.length > 0 && (
-              <>
-                <SectionHeader label="Publicerade" count={approvedFragstund.length} dimmed />
-                {approvedFragstund.map(row => (
-                  <FragstundAdminCard key={row.id} row={row}
-                    onApprove={() => {}}
-                    onDelete={() => deleteFragstund(row.id)}
-                    onSave={(data) => saveFragstund(row.id, data)}
-                  />
-                ))}
-              </>
-            )}
-          </>
         ) : tab === 'debatter' ? (
           <>
             <SectionHeader label="Väntar på godkännande" count={pendingDebates.length} />
