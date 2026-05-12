@@ -109,10 +109,10 @@ function DebateAdminCard({ row, onApprove, onDelete, onSave }: {
         <Field label="Titel" value={title} onChange={setTitle} />
         <Field label="Ingress" value={ingress} onChange={setIngress} multiline />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          <Field label="Vänsterblocket — sammanfattning" value={leftSummary} onChange={setLeftSummary} multiline />
-          <Field label="Högerblocket — sammanfattning" value={rightSummary} onChange={setRightSummary} multiline />
-          <Field label="Vänsterblocket — huvudargument" value={leftKey} onChange={setLeftKey} multiline />
-          <Field label="Högerblocket — huvudargument" value={rightKey} onChange={setRightKey} multiline />
+          <Field label="Sida 1 (frågeställare / vänsterblock) — sammanfattning" value={leftSummary} onChange={setLeftSummary} multiline />
+          <Field label="Sida 2 (minister / högerblock) — sammanfattning" value={rightSummary} onChange={setRightSummary} multiline />
+          <Field label="Sida 1 — huvudargument" value={leftKey} onChange={setLeftKey} multiline />
+          <Field label="Sida 2 — huvudargument" value={rightKey} onChange={setRightKey} multiline />
         </div>
         <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
           <Btn color="#2ec27e" onClick={onApprove}>Godkänn och publicera</Btn>

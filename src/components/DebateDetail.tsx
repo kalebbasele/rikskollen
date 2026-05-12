@@ -183,7 +183,7 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
       {(debate.leftBloc || debate.rightBloc) && (
         <div style={{ padding: isMobile ? '28px 0' : '40px 0', borderBottom: '1px solid var(--border)' }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 20 }}>
-            Vad tycker blocken?
+            Sidornas argument
           </div>
           {/* Flat 4-row grid: badges / summary / keyArg / reactions — same row = same height = perfect alignment */}
           {!isMobile ? (
