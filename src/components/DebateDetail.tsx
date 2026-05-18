@@ -247,8 +247,15 @@ export default function DebateDetail({ debate, onUpdate }: Props) {
         </div>
       )}
 
+      {/* ── AI disclaimer ────────────────────────────────────── */}
+      <div style={{ padding: isMobile ? '20px 0 0' : '28px 0 0' }}>
+        <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6, margin: 0, opacity: 0.7 }}>
+          Sammanfattningen är AI-genererad och kan innehålla fel. Läs alltid hela debatten på riksdagen.se för fullständig information.
+        </p>
+      </div>
+
       {/* ── Footer ───────────────────────────────────────────── */}
-      <div style={{ padding: isMobile ? '20px 0 40px' : '28px 0 60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ padding: isMobile ? '12px 0 40px' : '16px 0 60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
         {debate.dokId && (
           <a
             href={`https://www.riksdagen.se/sv/dokument-och-lagar/dokument/${debate.dokType === 'bet' ? 'betankande' : 'interpellation'}/_${debate.dokId}/`}
