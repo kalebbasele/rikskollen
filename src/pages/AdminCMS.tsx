@@ -10,7 +10,7 @@ function adminHeaders() {
   return { 'Content-Type': 'application/json', 'x-admin-key': getAdminKey() }
 }
 
-type Tab = 'debatter' | 'omrostningar' | 'intro' | 'statistik'
+type Tab = 'debatter' | 'forslag' | 'omrostningar' | 'intro' | 'statistik'
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 
@@ -457,8 +457,12 @@ export default function AdminCMS() {
 
   if (!authed) return <Login onLogin={() => { setAuthed(true); loadAll() }} />
 
-  const pendingDebates = debates.filter(d => d.status === 'pending')
-  const approvedDebates = debates.filter(d => d.status === 'approved')
+  const ipDebates = debates.filter(d => !d.dok_type || d.dok_type === 'ip')
+  const betDebates = debates.filter(d => d.dok_type === 'bet')
+  const pendingDebates = ipDebates.filter(d => d.status === 'pending')
+  const approvedDebates = ipDebates.filter(d => d.status === 'approved')
+  const pendingBet = betDebates.filter(d => d.status === 'pending')
+  const approvedBet = betDebates.filter(d => d.status === 'approved')
   const pendingVotes = votes.filter(v => v.status === 'pending')
   const approvedVotes = votes.filter(v => v.status === 'approved')
 
@@ -471,9 +475,9 @@ export default function AdminCMS() {
         </a>
         <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', background: 'rgba(155,125,255,0.15)', borderRadius: 20, padding: '3px 10px' }}>Admin CMS</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-          {(['debatter', 'omrostningar', 'intro', 'statistik'] as Tab[]).map(t => (
+          {(['debatter', 'forslag', 'omrostningar', 'intro', 'statistik'] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)} style={{ fontSize: 14, color: tab === t ? '#fff' : 'rgba(255,255,255,0.35)', padding: '0 14px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48, fontWeight: tab === t ? 500 : 400, cursor: 'pointer' }}>
-              {t === 'debatter' ? `Debatter (${pendingDebates.length})` : t === 'omrostningar' ? `Omröstningar (${pendingVotes.length})` : t === 'intro' ? 'Intro-sektion' : 'Statistik'}
+              {t === 'debatter' ? `Debatter (${pendingDebates.length})` : t === 'forslag' ? `Förslag (${pendingBet.length})` : t === 'omrostningar' ? `Omröstningar (${pendingVotes.length})` : t === 'intro' ? 'Intro-sektion' : 'Statistik'}
             </button>
           ))}
           <button onClick={() => { localStorage.removeItem('civica_admin_key'); setAuthed(false) }} style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', padding: '0 14px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48, cursor: 'pointer' }}>
@@ -506,6 +510,48 @@ export default function AdminCMS() {
               <>
                 <SectionHeader label="Publicerade" count={approvedDebates.length} dimmed />
                 {approvedDebates.map(row => (
+                  <DebateAdminCard key={row.id} row={row}
+                    onApprove={() => {}}
+                    onDelete={() => deleteDebate(row.id)}
+                    onSave={(data) => saveDebate(row.id, data)}
+                  />
+                ))}
+              </>
+            )}
+          </>
+        ) : tab === 'forslag' ? (
+          <>
+            <div style={{ marginBottom: 20 }}>
+              <button
+                onClick={async () => {
+                  const res = await fetch(`${BACKEND}/admin/bet/fetch`, { method: 'POST', headers: adminHeaders() })
+                  const data = await res.json()
+                  alert(data.message ?? 'Startat!')
+                  setTimeout(async () => {
+                    const d = await fetch(`${BACKEND}/admin/debates`, { headers: adminHeaders() }).then(r => r.json())
+                    setDebates(Array.isArray(d) ? d : [])
+                  }, 8000)
+                }}
+                style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(155,125,255,0.15)', border: '1px solid rgba(155,125,255,0.3)', color: '#9b7dff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              >
+                ⬇️ Hämta nya debatter om förslag
+              </button>
+            </div>
+            <SectionHeader label="Väntar på godkännande" count={pendingBet.length} />
+            {pendingBet.length === 0
+              ? <Empty text="Inga debatter om förslag väntar" />
+              : pendingBet.map(row => (
+                <DebateAdminCard key={row.id} row={row}
+                  onApprove={() => approveDebate(row.id)}
+                  onDelete={() => deleteDebate(row.id)}
+                  onSave={(data) => saveDebate(row.id, data)}
+                />
+              ))
+            }
+            {approvedBet.length > 0 && (
+              <>
+                <SectionHeader label="Publicerade" count={approvedBet.length} dimmed />
+                {approvedBet.map(row => (
                   <DebateAdminCard key={row.id} row={row}
                     onApprove={() => {}}
                     onDelete={() => deleteDebate(row.id)}
@@ -580,8 +626,8 @@ export default function AdminCMS() {
 function SectionHeader({ label, count, dimmed }: { label: string; count: number; dimmed?: boolean }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14, marginTop: dimmed ? 32 : 0 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: dimmed ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.5)' }}>{label}</span>
-      <span style={{ fontSize: 11, background: dimmed ? 'rgba(255,255,255,0.06)' : 'rgba(155,125,255,0.2)', color: dimmed ? 'rgba(255,255,255,0.3)' : '#9b7dff', borderRadius: 20, padding: '2px 8px', fontWeight: 700 }}>{count}</span>
+      <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: dimmed ? '#4ade80' : 'rgba(255,255,255,0.5)' }}>{label}</span>
+      <span style={{ fontSize: 11, background: dimmed ? 'rgba(74,222,128,0.15)' : 'rgba(155,125,255,0.2)', color: dimmed ? '#4ade80' : '#9b7dff', borderRadius: 20, padding: '2px 8px', fontWeight: 700 }}>{count}</span>
     </div>
   )
 }
