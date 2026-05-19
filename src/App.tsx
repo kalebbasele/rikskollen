@@ -818,7 +818,9 @@ function InfoOverlay({ page, dark, onClose }: { page: InfoPageKey; dark: boolean
 function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: () => void; isMobile: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
   const participants = debate.participants
-  const portraitColWidth = !isMobile && participants.length >= 7 ? 663 : 360
+  const portraitColWidth = !isMobile
+    ? Math.min(660, Math.max(280, participants.length * 116 + 6))
+    : 360
 
   if (isMobile) {
     return (
@@ -1194,7 +1196,9 @@ function IntroSection({ isMobile, dark, onNavigate }: { isMobile: boolean; dark:
 function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: () => void; isMobile: boolean }) {
   const cat = getCategory(debate.topic + debate.title)
   const participants = debate.participants
-  const portraitColWidth = !isMobile && participants.length >= 7 ? 663 : 360
+  const portraitColWidth = !isMobile
+    ? Math.min(660, Math.max(280, participants.length * 116 + 6))
+    : 360
 
   if (isMobile) {
     return (
