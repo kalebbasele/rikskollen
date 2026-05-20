@@ -65,8 +65,8 @@ function Portrait({ person }: { person: any }) {
 
 // ── Debate card ───────────────────────────────────────────────────────────────
 
-function DebateAdminCard({ row, onApprove, onDelete, onSave }: {
-  row: any; onApprove: () => void; onDelete: () => void; onSave: (data: any) => void
+function DebateAdminCard({ row, onApprove, onDelete, onSave, onPin }: {
+  row: any; onApprove: () => void; onDelete: () => void; onSave: (data: any) => void; onPin?: () => void
 }) {
   const [title, setTitle] = useState(row.title ?? '')
   const [ingress, setIngress] = useState(row.ingress ?? '')
@@ -93,7 +93,7 @@ function DebateAdminCard({ row, onApprove, onDelete, onSave }: {
       <div style={{ display: 'flex', gap: 10, padding: '14px 16px 10px', alignItems: 'flex-start' }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(155,125,255,0.7)', marginBottom: 4 }}>
-            {row.topic} · {row.date}
+            {row.topic} · {row.date}{row.pinned ? ' · 📌 PINNAD' : ''}
           </div>
           <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', lineHeight: 1.3 }}>{row.title}</div>
           {row.ingress && <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 6, lineHeight: 1.5 }}>{row.ingress}</p>}
@@ -114,9 +114,10 @@ function DebateAdminCard({ row, onApprove, onDelete, onSave }: {
           <Field label="Sida 1 — huvudargument" value={leftKey} onChange={setLeftKey} multiline />
           <Field label="Sida 2 — huvudargument" value={rightKey} onChange={setRightKey} multiline />
         </div>
-        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+        <div style={{ display: 'flex', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
           <Btn color="#2ec27e" onClick={onApprove}>Godkänn och publicera</Btn>
           <Btn color="#555" onClick={save} disabled={saving}>{saving ? 'Sparar…' : 'Spara ändringar'}</Btn>
+          {onPin && <Btn color={row.pinned ? '#b45309' : '#4a4a6a'} onClick={onPin}>{row.pinned ? 'Ta bort pinning' : 'Sätt som första'}</Btn>}
           <Btn color="#e8445a" onClick={onDelete}>Radera</Btn>
         </div>
       </div>
@@ -438,6 +439,12 @@ export default function AdminCMS() {
     setDebates(prev => prev.map(d => d.id === id ? updated : d))
   }
 
+  async function pinDebate(id: string) {
+    const isCurrentlyPinned = debates.find(d => d.id === id)?.pinned
+    await fetch(`${BACKEND}/admin/debates/${id}/pin`, { method: 'POST', headers: adminHeaders(), body: JSON.stringify({ pinned: !isCurrentlyPinned }) })
+    setDebates(prev => prev.map(d => d.id === id ? { ...d, pinned: !isCurrentlyPinned } : { ...d, pinned: false }))
+  }
+
   async function approveVote(id: string) {
     await fetch(`${BACKEND}/admin/votes/${id}/approve`, { method: 'POST', headers: adminHeaders() })
     setVotes(prev => prev.map(v => v.id === id ? { ...v, status: 'approved', approved_at: new Date().toISOString() } : v))
@@ -514,6 +521,7 @@ export default function AdminCMS() {
                     onApprove={() => {}}
                     onDelete={() => deleteDebate(row.id)}
                     onSave={(data) => saveDebate(row.id, data)}
+                    onPin={() => pinDebate(row.id)}
                   />
                 ))}
               </>
@@ -556,6 +564,7 @@ export default function AdminCMS() {
                     onApprove={() => {}}
                     onDelete={() => deleteDebate(row.id)}
                     onSave={(data) => saveDebate(row.id, data)}
+                    onPin={() => pinDebate(row.id)}
                   />
                 ))}
               </>
