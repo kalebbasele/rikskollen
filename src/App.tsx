@@ -874,7 +874,7 @@ function DarkHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick: 
       border: '1px solid rgba(155,125,255,0.12)',
     }}>
       {/* Left text */}
-      <div style={{ padding: '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minWidth: 0 }}>
+      <div style={{ padding: '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', minWidth: 0 }}>
         <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: 'rgba(155,125,255,0.18)', color: '#9b7dff', fontSize: 11, fontWeight: 700, borderRadius: 24, padding: '5px 12px', marginBottom: 14 }}>
           Senaste · {cat.label}
         </div>
@@ -1252,7 +1252,7 @@ function LightHeroCard({ debate, onClick, isMobile }: { debate: Debate; onClick:
       border: '1px solid #e0dbd3',
     }}>
       {/* Left text */}
-      <div style={{ padding: '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minWidth: 0 }}>
+      <div style={{ padding: '40px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', minWidth: 0 }}>
         <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: '#f0eeff', color: '#5b3fd4', fontSize: 11, fontWeight: 700, borderRadius: 24, padding: '5px 12px', marginBottom: 14 }}>
           Senaste · {cat.label}
         </div>
