@@ -214,8 +214,14 @@ export default function App() {
                     border: 'none', borderRadius: 24,
                     fontWeight: tab === 'debatter' ? 600 : 400,
                     cursor: 'pointer', whiteSpace: 'nowrap',
+                    display: 'flex', alignItems: 'center', gap: 6,
                   }}>
                     Debatter
+                    {!isMobile && <span style={{ display: 'flex', flexDirection: 'column', gap: 2.5, opacity: 0.55 }}>
+                      <span style={{ display: 'block', width: 13, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                      <span style={{ display: 'block', width: 9, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                      <span style={{ display: 'block', width: 11, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                    </span>}
                   </button>
                   {showCatDropdown && !isMobile && (
                     <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
@@ -267,8 +273,14 @@ export default function App() {
                     border: 'none', borderRadius: 24,
                     fontWeight: tab === 'omrostningar' ? 600 : 400,
                     cursor: 'pointer', whiteSpace: 'nowrap',
+                    display: 'flex', alignItems: 'center', gap: 6,
                   }}>
                     {isMobile ? 'Röstar' : 'Omröstningar'}
+                    {!isMobile && <span style={{ display: 'flex', flexDirection: 'column', gap: 2.5, opacity: 0.55 }}>
+                      <span style={{ display: 'block', width: 13, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                      <span style={{ display: 'block', width: 9, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                      <span style={{ display: 'block', width: 11, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                    </span>}
                   </button>
                   {showVoteCatDropdown && !isMobile && (
                     <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
@@ -440,8 +452,14 @@ export default function App() {
                     border: 'none', borderRadius: 24,
                     fontWeight: tab === 'debatter' ? 600 : 400,
                     cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 6,
                   }}>
                     Debatter
+                    {!isMobile && <span style={{ display: 'flex', flexDirection: 'column', gap: 2.5, opacity: 0.55 }}>
+                      <span style={{ display: 'block', width: 13, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                      <span style={{ display: 'block', width: 9, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                      <span style={{ display: 'block', width: 11, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                    </span>}
                   </button>
                   {showCatDropdown && !isMobile && (
                     <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
@@ -493,8 +511,14 @@ export default function App() {
                     border: 'none', borderRadius: 24,
                     fontWeight: tab === 'omrostningar' ? 600 : 400,
                     cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 6,
                   }}>
                     Omröstningar
+                    {!isMobile && <span style={{ display: 'flex', flexDirection: 'column', gap: 2.5, opacity: 0.55 }}>
+                      <span style={{ display: 'block', width: 13, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                      <span style={{ display: 'block', width: 9, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                      <span style={{ display: 'block', width: 11, height: 1.5, borderRadius: 1, background: 'currentColor' }} />
+                    </span>}
                   </button>
                   {showVoteCatDropdown && !isMobile && (
                     <div style={{ position: 'absolute', top: '100%', right: 0, paddingTop: 6, zIndex: 100 }}>
