@@ -10,32 +10,39 @@ import { useIsMobile } from './hooks/useIsMobile'
 
 type Tab = 'debatter' | 'omrostningar' | 'valkompass' | 'fragstund'
 
-const CATEGORIES = ['Alla', 'Migration', 'Ekonomi', 'Klimat', 'Vård', 'Försvar', 'Utbildning', 'Utrikespolitik']
+const CATEGORIES = ['Alla', 'Migration', 'Ekonomi', 'Klimat', 'Vård', 'Försvar', 'Utbildning', 'Utrikespolitik', 'Jämställdhet', 'Rättsväsendet', 'Näringsliv']
 
 function getCategory(text: string): { label: string; color: string; lightColor: string } {
   const t = text.toLowerCase()
   if (t.match(/äldreom/)) return { label: 'Äldreomsorg', color: '#b8916a', lightColor: '#8a5a2a' }
-  if (t.match(/ekonomi|budget|skatt|finans|moms|pension/)) return { label: 'Ekonomi', color: '#6a9e7f', lightColor: '#2d6a4a' }
-  if (t.match(/vård|sjukvård|hälso|omsorg/)) return { label: 'Vård', color: '#9a6e9e', lightColor: '#6a3a6a' }
-  if (t.match(/migration|asyl|gräns|utvisning|flykt/)) return { label: 'Migration', color: '#6a8aae', lightColor: '#2a4a7a' }
-  if (t.match(/trafik|väg|järnväg|bostad|hyres/)) return { label: 'Trafik & Bostad', color: '#8a8aae', lightColor: '#4a4a7a' }
+  if (t.match(/ekonomi|budget|skatt|finans|moms|pension|lönetranspar|konkurrens|riksrevision/)) return { label: 'Ekonomi', color: '#6a9e7f', lightColor: '#2d6a4a' }
+  if (t.match(/vård|sjukvård|hälso|omsorg|sjukförsäkring|samsjuklighet|funktionsrätt|funktionsned|lss/)) return { label: 'Vård', color: '#9a6e9e', lightColor: '#6a3a6a' }
+  if (t.match(/migration|asyl|gräns|utvisning|flykt|integration/)) return { label: 'Migration', color: '#6a8aae', lightColor: '#2a4a7a' }
+  if (t.match(/trafik|väg|järnväg|bostad|hyres|förköp/)) return { label: 'Trafik & Bostad', color: '#8a8aae', lightColor: '#4a4a7a' }
   if (t.match(/försvar|nato|militär|säkerhet/)) return { label: 'Försvar', color: '#8a9a6e', lightColor: '#4a6a3a' }
   if (t.match(/utbildning|skola|lärare|förskola|högskola/)) return { label: 'Utbildning', color: '#7a8aae', lightColor: '#3a4a7a' }
-  if (t.match(/klimat|miljö|utsläpp|energi|kärnkraft/)) return { label: 'Klimat', color: '#6a9e8a', lightColor: '#2a6a5a' }
-  return { label: 'Riksdag', color: 'rgba(255,255,255,0.3)', lightColor: '#888' }
+  if (t.match(/klimat|miljö|utsläpp|energi|kärnkraft|vindkraft|elnät|grön omställning/)) return { label: 'Klimat', color: '#6a9e8a', lightColor: '#2a6a5a' }
+  if (t.match(/jämställd|föräldraförsäkring|kvinno|hbtqi/)) return { label: 'Jämställdhet', color: '#c47a9a', lightColor: '#8a3a5a' }
+  if (t.match(/brott|straff|polis|fängels|kriminal|påföljd|rättspolitik|rättslig|frihetsberövande|moské|terroris/)) return { label: 'Rättsväsendet', color: '#a07850', lightColor: '#6a4a20' }
+  if (t.match(/näringsliv|företag|postnord|bolagsstyrning|ägarpolicy|datacenter|arbetsmarknad/)) return { label: 'Näringsliv', color: '#5a9aae', lightColor: '#2a5a6a' }
+  if (t.match(/utrik|iran|ukraina|\bfn\b|\beu\b|bistånd|israel|mänskliga rättigheter|internationell/)) return { label: 'Utrikespolitik', color: '#7a7aae', lightColor: '#3a3a7a' }
+  return { label: 'Övrigt', color: 'rgba(255,255,255,0.3)', lightColor: '#888' }
 }
 
 function matchesVoteCategory(vote: Vote, cat: string): boolean {
   if (cat === 'Alla') return true
   const text = ((vote.humanTitle ?? '') + vote.title).toLowerCase()
   const map: Record<string, string[]> = {
-    'Migration': ['migration', 'asyl', 'gräns', 'utvisning', 'flykt'],
-    'Ekonomi': ['ekonomi', 'budget', 'skatt', 'finansi', 'moms', 'arbete', 'pension'],
-    'Klimat': ['klimat', 'miljö', 'utsläpp', 'energi', 'kärnkraft'],
-    'Vård': ['vård', 'sjukvård', 'hälso', 'äldreomsorg', 'omsorg'],
+    'Migration': ['migration', 'asyl', 'gräns', 'utvisning', 'flykt', 'integration'],
+    'Ekonomi': ['ekonomi', 'budget', 'skatt', 'finansi', 'moms', 'arbete', 'pension', 'konkurrens', 'riksrevision'],
+    'Klimat': ['klimat', 'miljö', 'utsläpp', 'energi', 'kärnkraft', 'vindkraft', 'elnät', 'grön omställning'],
+    'Vård': ['vård', 'sjukvård', 'hälso', 'äldreomsorg', 'omsorg', 'sjukförsäkring', 'samsjuklighet', 'funktionsrätt', 'lss'],
     'Försvar': ['försvar', 'nato', 'militär', 'säkerhet'],
     'Utbildning': ['utbildning', 'skola', 'förskola', 'lärare', 'högskola'],
-    'Utrikespolitik': ['utrik', 'iran', 'ukraina', 'fn ', 'eu ', 'bistånd'],
+    'Utrikespolitik': ['utrik', 'iran', 'ukraina', 'fn ', 'eu ', 'bistånd', 'israel', 'mänskliga rättigheter', 'internationell'],
+    'Jämställdhet': ['jämställd', 'föräldraförsäkring', 'kvinno', 'hbtqi', 'lönetranspar'],
+    'Rättsväsendet': ['brott', 'straff', 'polis', 'fängels', 'kriminal', 'påföljd', 'rättspolitik', 'rättslig', 'frihetsberövande'],
+    'Näringsliv': ['näringsliv', 'företag', 'postnord', 'bolagsstyrning', 'ägarpolicy', 'datacenter', 'arbetsmarknad'],
   }
   return (map[cat] ?? []).some(k => text.includes(k))
 }
@@ -44,13 +51,16 @@ function matchesCategory(debate: Debate, cat: string): boolean {
   if (cat === 'Alla') return true
   const text = (debate.title + debate.topic).toLowerCase()
   const map: Record<string, string[]> = {
-    'Migration': ['migration', 'asyl', 'gräns', 'utvisning', 'flykt'],
-    'Ekonomi': ['ekonomi', 'budget', 'skatt', 'finansi', 'moms', 'arbete', 'pension'],
-    'Klimat': ['klimat', 'miljö', 'utsläpp', 'energi', 'kärnkraft'],
-    'Vård': ['vård', 'sjukvård', 'hälso', 'äldreomsorg', 'omsorg'],
+    'Migration': ['migration', 'asyl', 'gräns', 'utvisning', 'flykt', 'integration'],
+    'Ekonomi': ['ekonomi', 'budget', 'skatt', 'finansi', 'moms', 'arbete', 'pension', 'konkurrens', 'riksrevision'],
+    'Klimat': ['klimat', 'miljö', 'utsläpp', 'energi', 'kärnkraft', 'vindkraft', 'elnät', 'grön omställning'],
+    'Vård': ['vård', 'sjukvård', 'hälso', 'äldreomsorg', 'omsorg', 'sjukförsäkring', 'samsjuklighet', 'funktionsrätt', 'lss'],
     'Försvar': ['försvar', 'nato', 'militär', 'säkerhet'],
     'Utbildning': ['utbildning', 'skola', 'förskola', 'lärare', 'högskola'],
-    'Utrikespolitik': ['utrik', 'iran', 'ukraina', 'fn ', 'eu ', 'bistånd'],
+    'Utrikespolitik': ['utrik', 'iran', 'ukraina', 'fn ', 'eu ', 'bistånd', 'israel', 'mänskliga rättigheter', 'internationell'],
+    'Jämställdhet': ['jämställd', 'föräldraförsäkring', 'kvinno', 'hbtqi', 'lönetranspar'],
+    'Rättsväsendet': ['brott', 'straff', 'polis', 'fängels', 'kriminal', 'påföljd', 'rättspolitik', 'rättslig', 'frihetsberövande', 'moské'],
+    'Näringsliv': ['näringsliv', 'företag', 'postnord', 'bolagsstyrning', 'ägarpolicy', 'datacenter', 'arbetsmarknad'],
   }
   return (map[cat] ?? []).some(k => text.includes(k))
 }
