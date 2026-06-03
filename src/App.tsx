@@ -385,15 +385,21 @@ export default function App() {
               <>
                 <IntroSection isMobile={isMobile} dark={false} onNavigate={(t) => setTab(t as Tab)} />
 
-                <LightHeroCard debate={filteredDebates[0]} onClick={() => openDebate(filteredDebates[0].id)} isMobile={isMobile} />
-
-                {filteredDebates.length > 1 && (
-                  <LightSubgrid debates={filteredDebates.slice(1, isMobile ? 3 : 4)} onSelect={id => openDebate(id)} isMobile={isMobile} />
-                )}
-
-                {filteredDebates.length > (isMobile ? 3 : 4) && (
-                  <LightFeedSection debates={filteredDebates.slice(isMobile ? 3 : 4)} onSelect={id => openDebate(id)} />
-                )}
+                {Array.from({ length: Math.ceil(filteredDebates.length / (isMobile ? 8 : 9)) }, (_, gi) => {
+                  const gs = isMobile ? 8 : 9
+                  const g = filteredDebates.slice(gi * gs, (gi + 1) * gs)
+                  return (
+                    <React.Fragment key={gi}>
+                      <LightHeroCard debate={g[0]} onClick={() => openDebate(g[0].id)} isMobile={isMobile} />
+                      {g.length > 1 && (
+                        <LightSubgrid debates={g.slice(1, isMobile ? 3 : 4)} onSelect={id => openDebate(id)} isMobile={isMobile} />
+                      )}
+                      {g.length > (isMobile ? 3 : 4) && (
+                        <LightFeedSection debates={g.slice(isMobile ? 3 : 4)} onSelect={id => openDebate(id)} />
+                      )}
+                    </React.Fragment>
+                  )
+                })}
               </>
             )}
           </div>
@@ -623,15 +629,21 @@ export default function App() {
             <>
               <IntroSection isMobile={isMobile} dark={true} onNavigate={(t) => setTab(t as Tab)} />
 
-              <DarkHeroCard debate={filteredDebates[0]} onClick={() => openDebate(filteredDebates[0].id)} isMobile={isMobile} />
-
-              {filteredDebates.length > 1 && (
-                <DarkSubgrid debates={filteredDebates.slice(1, isMobile ? 3 : 4)} onSelect={id => openDebate(id)} isMobile={isMobile} />
-              )}
-
-              {filteredDebates.length > (isMobile ? 3 : 4) && (
-                <DarkFeedSection debates={filteredDebates.slice(isMobile ? 3 : 4)} onSelect={id => openDebate(id)} />
-              )}
+              {Array.from({ length: Math.ceil(filteredDebates.length / (isMobile ? 8 : 9)) }, (_, gi) => {
+                const gs = isMobile ? 8 : 9
+                const g = filteredDebates.slice(gi * gs, (gi + 1) * gs)
+                return (
+                  <React.Fragment key={gi}>
+                    <DarkHeroCard debate={g[0]} onClick={() => openDebate(g[0].id)} isMobile={isMobile} />
+                    {g.length > 1 && (
+                      <DarkSubgrid debates={g.slice(1, isMobile ? 3 : 4)} onSelect={id => openDebate(id)} isMobile={isMobile} />
+                    )}
+                    {g.length > (isMobile ? 3 : 4) && (
+                      <DarkFeedSection debates={g.slice(isMobile ? 3 : 4)} onSelect={id => openDebate(id)} />
+                    )}
+                  </React.Fragment>
+                )
+              })}
             </>
           )}
         </div>
