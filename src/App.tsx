@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
-import type { Debate, Vote, Fragstund } from './types'
-import { useDebates, useVotes, useFragstund } from './hooks/useData'
+import type { Debate, Vote, Fragstund, Presskonferens } from './types'
+import { useDebates, useVotes, useFragstund, usePresskonferenser } from './hooks/useData'
 import { getParty } from './types'
 import DebateDetail from './components/DebateDetail'
 import VoteCard from './components/VoteCard'
@@ -109,6 +109,7 @@ export default function App() {
   const { debates, loading: debatesLoading, error: debatesError, updateDebate } = useDebates()
   const { votes, loading: votesLoading, error: votesError } = useVotes()
   const { fragstund, loading: fragstundLoading, error: fragstundError } = useFragstund()
+  const { presskonferenser } = usePresskonferenser()
 
   function toggleCategory(cat: string) {
     if (cat === 'Alla') { setActiveCategories(new Set(['Alla'])); return }
@@ -385,6 +386,8 @@ export default function App() {
               <>
                 <IntroSection isMobile={isMobile} dark={false} onNavigate={(t) => setTab(t as Tab)} />
 
+                {presskonferenser.length > 0 && <LightPresskonferensSection items={presskonferenser} />}
+
                 {Array.from({ length: Math.ceil(filteredDebates.length / (isMobile ? 8 : 9)) }, (_, gi) => {
                   const gs = isMobile ? 8 : 9
                   const g = filteredDebates.slice(gi * gs, (gi + 1) * gs)
@@ -628,6 +631,8 @@ export default function App() {
           ) : (
             <>
               <IntroSection isMobile={isMobile} dark={true} onNavigate={(t) => setTab(t as Tab)} />
+
+              {presskonferenser.length > 0 && <DarkPresskonferensSection items={presskonferenser} />}
 
               {Array.from({ length: Math.ceil(filteredDebates.length / (isMobile ? 8 : 9)) }, (_, gi) => {
                 const gs = isMobile ? 8 : 9
@@ -1073,6 +1078,38 @@ function DarkFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void 
   )
 }
 
+function DarkPresskonferensSection({ items }: { items: Presskonferens[] }) {
+  return (
+    <div style={{ padding: '0 16px 8px' }}>
+      <div style={{ padding: '14px 4px 8px', fontSize: 10, fontWeight: 700, color: 'rgba(155,125,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+        Pressträffar
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {items.map(item => (
+          <div key={item.id} style={{
+            background: 'rgba(155,125,255,0.07)',
+            border: '1px solid rgba(155,125,255,0.18)',
+            borderRadius: 10,
+            padding: '16px 22px',
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9b7dff', marginBottom: 5 }}>
+              Pressträff · {formatDateShort(item.date)}
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#fff', fontWeight: 500, lineHeight: 1.4, marginBottom: item.summary ? 8 : 0 }}>
+              {item.title}
+            </div>
+            {item.summary && (
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
+                {item.summary}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function DarkStatusMessage({ message }: { message: string }) {
   return (
     <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.25)' }}>
@@ -1446,6 +1483,38 @@ function LightFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void
       </div>
       <div style={{ fontSize: 11, color: '#ccc', marginTop: 4 }}>
         {formatDateShort(debate.date)} · {debate.venue}
+      </div>
+    </div>
+  )
+}
+
+function LightPresskonferensSection({ items }: { items: Presskonferens[] }) {
+  return (
+    <div style={{ padding: '0 16px 8px' }}>
+      <div style={{ padding: '14px 4px 8px', fontSize: 10, fontWeight: 700, color: '#6a4aaa', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+        Pressträffar
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {items.map(item => (
+          <div key={item.id} style={{
+            background: '#f0ecfb',
+            border: '1px solid #d8ccf0',
+            borderRadius: 10,
+            padding: '16px 22px',
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6a4aaa', marginBottom: 5 }}>
+              Pressträff · {formatDateShort(item.date)}
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#1a1535', fontWeight: 500, lineHeight: 1.4, marginBottom: item.summary ? 8 : 0 }}>
+              {item.title}
+            </div>
+            {item.summary && (
+              <div style={{ fontSize: 13, color: '#5a5070', lineHeight: 1.6 }}>
+                {item.summary}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   )

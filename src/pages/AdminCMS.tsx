@@ -10,7 +10,7 @@ function adminHeaders() {
   return { 'Content-Type': 'application/json', 'x-admin-key': getAdminKey() }
 }
 
-type Tab = 'debatter' | 'forslag' | 'omrostningar' | 'intro' | 'statistik'
+type Tab = 'debatter' | 'forslag' | 'omrostningar' | 'presskonferenser' | 'intro' | 'statistik'
 
 // ── Login ─────────────────────────────────────────────────────────────────────
 
@@ -394,6 +394,7 @@ export default function AdminCMS() {
   const [tab, setTab] = useState<Tab>('debatter')
   const [debates, setDebates] = useState<any[]>([])
   const [votes, setVotes] = useState<any[]>([])
+  const [presskonferenser, setPresskonferenser] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -408,13 +409,15 @@ export default function AdminCMS() {
   async function loadAll() {
     setLoading(true)
     try {
-      const [dRes, vRes] = await Promise.all([
+      const [dRes, vRes, pRes] = await Promise.all([
         fetch(`${BACKEND}/admin/debates`, { headers: adminHeaders() }),
         fetch(`${BACKEND}/admin/votes`, { headers: adminHeaders() }),
+        fetch(`${BACKEND}/admin/presskonferenser`, { headers: adminHeaders() }),
       ])
-      const [d, v] = await Promise.all([dRes.json(), vRes.json()])
+      const [d, v, p] = await Promise.all([dRes.json(), vRes.json(), pRes.json()])
       setDebates(Array.isArray(d) ? d : [])
       setVotes(Array.isArray(v) ? v : [])
+      setPresskonferenser(Array.isArray(p) ? p : [])
     } catch(e) {
       console.error('loadAll failed:', e)
     } finally {
@@ -472,6 +475,8 @@ export default function AdminCMS() {
   const approvedBet = betDebates.filter(d => d.status === 'approved')
   const pendingVotes = votes.filter(v => v.status === 'pending')
   const approvedVotes = votes.filter(v => v.status === 'approved')
+  const pendingPress = presskonferenser.filter(p => p.status === 'pending')
+  const approvedPress = presskonferenser.filter(p => p.status === 'approved')
 
   return (
     <div style={{ minHeight: '100vh', background: '#0b0b18', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
@@ -482,9 +487,9 @@ export default function AdminCMS() {
         </a>
         <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', background: 'rgba(155,125,255,0.15)', borderRadius: 20, padding: '3px 10px' }}>Admin CMS</span>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-          {(['debatter', 'forslag', 'omrostningar', 'intro', 'statistik'] as Tab[]).map(t => (
+          {(['debatter', 'forslag', 'omrostningar', 'presskonferenser', 'intro', 'statistik'] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)} style={{ fontSize: 14, color: tab === t ? '#fff' : 'rgba(255,255,255,0.35)', padding: '0 14px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48, fontWeight: tab === t ? 500 : 400, cursor: 'pointer' }}>
-              {t === 'debatter' ? `Debatter (${pendingDebates.length})` : t === 'forslag' ? `Förslag (${pendingBet.length})` : t === 'omrostningar' ? `Omröstningar (${pendingVotes.length})` : t === 'intro' ? 'Intro-sektion' : 'Statistik'}
+              {t === 'debatter' ? `Debatter (${pendingDebates.length})` : t === 'forslag' ? `Förslag (${pendingBet.length})` : t === 'omrostningar' ? `Omröstningar (${pendingVotes.length})` : t === 'presskonferenser' ? `Pressträff (${pendingPress.length})` : t === 'intro' ? 'Intro-sektion' : 'Statistik'}
             </button>
           ))}
           <button onClick={() => { localStorage.removeItem('civica_admin_key'); setAuthed(false) }} style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', padding: '0 14px', background: 'none', border: 'none', borderLeft: '0.5px solid rgba(255,255,255,0.07)', height: 48, cursor: 'pointer' }}>
@@ -570,6 +575,72 @@ export default function AdminCMS() {
               </>
             )}
           </>
+        ) : tab === 'presskonferenser' ? (
+          <>
+            <div style={{ marginBottom: 20 }}>
+              <button
+                onClick={async () => {
+                  const dokId = prompt('Riksdagen dok_id (t.ex. HDC220260918pk1):')
+                  if (!dokId) return
+                  const title = prompt('Titel:') ?? ''
+                  const date = prompt('Datum (YYYY-MM-DD HH:MM):') ?? ''
+                  const summary = prompt('Sammanfattning:') ?? ''
+                  const res = await fetch(`${BACKEND}/admin/presskonferenser`, {
+                    method: 'POST', headers: adminHeaders(),
+                    body: JSON.stringify({ id: dokId, dok_id: dokId, title, date, summary })
+                  })
+                  const data = await res.json()
+                  if (data.id) setPresskonferenser(prev => [data, ...prev])
+                  else alert('Fel: ' + JSON.stringify(data))
+                }}
+                style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(155,125,255,0.15)', border: '1px solid rgba(155,125,255,0.3)', color: '#9b7dff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              >
+                + Lägg till pressträff
+              </button>
+            </div>
+            <SectionHeader label="Väntar på godkännande" count={pendingPress.length} />
+            {pendingPress.length === 0
+              ? <Empty text="Inga pressträffar väntar" />
+              : pendingPress.map(row => (
+                <PresskonferensAdminCard key={row.id} row={row}
+                  onApprove={async () => {
+                    await fetch(`${BACKEND}/admin/presskonferenser/${row.id}/approve`, { method: 'POST', headers: adminHeaders() })
+                    setPresskonferenser(prev => prev.map(p => p.id === row.id ? { ...p, status: 'approved' } : p))
+                  }}
+                  onDelete={async () => {
+                    if (!confirm('Radera pressträffen?')) return
+                    await fetch(`${BACKEND}/admin/presskonferenser/${row.id}`, { method: 'DELETE', headers: adminHeaders() })
+                    setPresskonferenser(prev => prev.filter(p => p.id !== row.id))
+                  }}
+                  onSave={async (data: any) => {
+                    const res = await fetch(`${BACKEND}/admin/presskonferenser/${row.id}`, { method: 'PATCH', headers: adminHeaders(), body: JSON.stringify(data) })
+                    const updated = await res.json()
+                    setPresskonferenser(prev => prev.map(p => p.id === row.id ? updated : p))
+                  }}
+                />
+              ))
+            }
+            {approvedPress.length > 0 && (
+              <>
+                <SectionHeader label="Publicerade" count={approvedPress.length} dimmed />
+                {approvedPress.map(row => (
+                  <PresskonferensAdminCard key={row.id} row={row}
+                    onApprove={() => {}}
+                    onDelete={async () => {
+                      if (!confirm('Radera pressträffen?')) return
+                      await fetch(`${BACKEND}/admin/presskonferenser/${row.id}`, { method: 'DELETE', headers: adminHeaders() })
+                      setPresskonferenser(prev => prev.filter(p => p.id !== row.id))
+                    }}
+                    onSave={async (data: any) => {
+                      const res = await fetch(`${BACKEND}/admin/presskonferenser/${row.id}`, { method: 'PATCH', headers: adminHeaders(), body: JSON.stringify(data) })
+                      const updated = await res.json()
+                      setPresskonferenser(prev => prev.map(p => p.id === row.id ? updated : p))
+                    }}
+                  />
+                ))}
+              </>
+            )}
+          </>
         ) : (
           <>
             <div style={{ marginBottom: 20, display: 'flex', gap: 10 }}>
@@ -627,6 +698,38 @@ export default function AdminCMS() {
             )}
           </>
         )}
+      </div>
+    </div>
+  )
+}
+
+function PresskonferensAdminCard({ row, onApprove, onDelete, onSave }: {
+  row: any; onApprove: () => void; onDelete: () => void; onSave: (data: any) => Promise<void>
+}) {
+  const [title, setTitle] = useState(row.title ?? '')
+  const [summary, setSummary] = useState(row.summary ?? '')
+  const [saving, setSaving] = useState(false)
+
+  async function save() {
+    setSaving(true)
+    await onSave({ title, summary })
+    setSaving(false)
+  }
+
+  return (
+    <div style={{ background: '#13102b', border: '1px solid rgba(155,125,255,0.15)', borderRadius: 12, padding: '20px 24px', marginBottom: 12 }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+        <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9b7dff', background: 'rgba(155,125,255,0.12)', borderRadius: 4, padding: '2px 8px' }}>Pressträff</span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>{row.date?.slice(0, 10)}</span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginLeft: 'auto' }}>{row.id}</span>
+        {row.status === 'approved' && <span style={{ fontSize: 10, color: '#4ade80', fontWeight: 700 }}>● PUBLICERAD</span>}
+      </div>
+      <Field label="Titel" value={title} onChange={setTitle} />
+      <Field label="Sammanfattning" value={summary} onChange={setSummary} multiline />
+      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+        <Btn color="#9b7dff" onClick={save} disabled={saving}>{saving ? 'Sparar…' : 'Spara'}</Btn>
+        {row.status === 'pending' && <Btn color="#4ade80" onClick={onApprove}>Godkänn</Btn>}
+        <Btn color="#ef4444" onClick={onDelete}>Radera</Btn>
       </div>
     </div>
   )

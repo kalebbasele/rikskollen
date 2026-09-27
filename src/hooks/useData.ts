@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { Debate, Vote, Fragstund } from '../types'
+import type { Debate, Vote, Fragstund, Presskonferens } from '../types'
 
 const BACKEND = 'https://web-production-1e2f2.up.railway.app'
 
@@ -74,6 +74,26 @@ export function useFragstund() {
   }, [])
 
   return { fragstund, loading, error }
+}
+
+// ── Presskonferenser ──────────────────────────────────────────────────────────
+
+export function usePresskonferenser() {
+  const [presskonferenser, setPresskonferenser] = useState<Presskonferens[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch(`${BACKEND}/api/public/presskonferenser`)
+      .then(r => r.json())
+      .then((data: Presskonferens[]) => {
+        if (!cancelled) { setPresskonferenser(data); setLoading(false) }
+      })
+      .catch(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  return { presskonferenser, loading }
 }
 
 // Kept for DebateDetail compatibility

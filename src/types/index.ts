@@ -95,6 +95,17 @@ export interface Vote {
   aiError?: string
 }
 
+// --- Presskonferens ---
+export interface Presskonferens {
+  id: string
+  dok_id?: string
+  title: string
+  date: string
+  summary?: string
+  status: string
+  created_at?: string
+}
+
 // --- Frågestund ---
 export interface Fragstund {
   id: string
