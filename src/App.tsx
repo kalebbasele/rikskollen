@@ -1085,26 +1085,49 @@ function DarkPresskonferensSection({ items }: { items: Presskonferens[] }) {
         Pressträffar
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {items.map(item => (
-          <div key={item.id} style={{
-            background: 'rgba(155,125,255,0.07)',
-            border: '1px solid rgba(155,125,255,0.18)',
-            borderRadius: 10,
-            padding: '16px 22px',
-          }}>
-            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9b7dff', marginBottom: 5 }}>
-              Pressträff · {formatDateShort(item.date)}
-            </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#fff', fontWeight: 500, lineHeight: 1.4, marginBottom: item.summary ? 8 : 0 }}>
-              {item.title}
-            </div>
-            {item.summary && (
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
-                {item.summary}
+        {items.map(item => {
+          const inner = (
+            <div style={{
+              background: 'rgba(155,125,255,0.07)',
+              border: '1px solid rgba(155,125,255,0.18)',
+              borderRadius: 10,
+              overflow: 'hidden',
+              display: 'flex',
+              cursor: item.url ? 'pointer' : 'default',
+            }}>
+              {item.image_url && (
+                <div style={{
+                  width: 120, minWidth: 120, height: 100,
+                  backgroundImage: `url(${item.image_url})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  flexShrink: 0,
+                }} />
+              )}
+              <div style={{ padding: '14px 18px', flex: 1 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9b7dff', marginBottom: 5 }}>
+                  Pressträff · {formatDateShort(item.date)}
+                </div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#fff', fontWeight: 500, lineHeight: 1.4, marginBottom: item.summary ? 7 : 0 }}>
+                  {item.title}
+                </div>
+                {item.summary && (
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.55 }}>
+                    {item.summary}
+                  </div>
+                )}
+                {item.url && (
+                  <div style={{ fontSize: 11, color: '#9b7dff', marginTop: 8, fontWeight: 600 }}>
+                    Se pressträffen →
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ))}
+            </div>
+          )
+          return item.url
+            ? <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>{inner}</a>
+            : <div key={item.id}>{inner}</div>
+        })}
       </div>
     </div>
   )
@@ -1495,26 +1518,49 @@ function LightPresskonferensSection({ items }: { items: Presskonferens[] }) {
         Pressträffar
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {items.map(item => (
-          <div key={item.id} style={{
-            background: '#f0ecfb',
-            border: '1px solid #d8ccf0',
-            borderRadius: 10,
-            padding: '16px 22px',
-          }}>
-            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6a4aaa', marginBottom: 5 }}>
-              Pressträff · {formatDateShort(item.date)}
-            </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#1a1535', fontWeight: 500, lineHeight: 1.4, marginBottom: item.summary ? 8 : 0 }}>
-              {item.title}
-            </div>
-            {item.summary && (
-              <div style={{ fontSize: 13, color: '#5a5070', lineHeight: 1.6 }}>
-                {item.summary}
+        {items.map(item => {
+          const inner = (
+            <div style={{
+              background: '#f0ecfb',
+              border: '1px solid #d8ccf0',
+              borderRadius: 10,
+              overflow: 'hidden',
+              display: 'flex',
+              cursor: item.url ? 'pointer' : 'default',
+            }}>
+              {item.image_url && (
+                <div style={{
+                  width: 120, minWidth: 120, height: 100,
+                  backgroundImage: `url(${item.image_url})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  flexShrink: 0,
+                }} />
+              )}
+              <div style={{ padding: '14px 18px', flex: 1 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6a4aaa', marginBottom: 5 }}>
+                  Pressträff · {formatDateShort(item.date)}
+                </div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#1a1535', fontWeight: 500, lineHeight: 1.4, marginBottom: item.summary ? 7 : 0 }}>
+                  {item.title}
+                </div>
+                {item.summary && (
+                  <div style={{ fontSize: 13, color: '#5a5070', lineHeight: 1.55 }}>
+                    {item.summary}
+                  </div>
+                )}
+                {item.url && (
+                  <div style={{ fontSize: 11, color: '#6a4aaa', marginTop: 8, fontWeight: 600 }}>
+                    Se pressträffen →
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ))}
+            </div>
+          )
+          return item.url
+            ? <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>{inner}</a>
+            : <div key={item.id}>{inner}</div>
+        })}
       </div>
     </div>
   )

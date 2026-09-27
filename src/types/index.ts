@@ -102,6 +102,8 @@ export interface Presskonferens {
   title: string
   date: string
   summary?: string
+  url?: string
+  image_url?: string
   status: string
   created_at?: string
 }
