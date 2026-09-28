@@ -1080,55 +1080,74 @@ function DarkFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void 
 
 function DarkPresskonferensSection({ items }: { items: Presskonferens[] }) {
   return (
-    <div style={{ padding: '0 16px 8px' }}>
-      <div style={{ padding: '14px 4px 8px', fontSize: 10, fontWeight: 700, color: 'rgba(155,125,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-        Pressträffar
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {items.map(item => {
-          const inner = (
-            <div style={{
-              background: 'rgba(155,125,255,0.07)',
-              border: '1px solid rgba(155,125,255,0.18)',
-              borderRadius: 10,
-              overflow: 'hidden',
-              display: 'flex',
-              cursor: item.url ? 'pointer' : 'default',
-            }}>
-              {item.image_url && (
+    <div style={{ padding: '0 16px 16px' }}>
+      {items.map(item => {
+        const inner = (
+          <div style={{
+            borderRadius: 14,
+            overflow: 'hidden',
+            cursor: item.url ? 'pointer' : 'default',
+            position: 'relative',
+            background: '#13102b',
+            border: '1px solid rgba(155,125,255,0.15)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
+          }}>
+            {/* Image */}
+            {item.image_url && (
+              <div style={{
+                width: '100%',
+                height: 200,
+                backgroundImage: `url(${item.image_url})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center top',
+                position: 'relative',
+              }}>
                 <div style={{
-                  width: 120, minWidth: 120, height: 100,
-                  backgroundImage: `url(${item.image_url})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  flexShrink: 0,
+                  position: 'absolute', inset: 0,
+                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(13,10,46,0.85) 100%)',
                 }} />
-              )}
-              <div style={{ padding: '14px 18px', flex: 1 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#9b7dff', marginBottom: 5 }}>
-                  Pressträff · {formatDateShort(item.date)}
+                <div style={{
+                  position: 'absolute', top: 14, left: 16,
+                  background: '#9b7dff',
+                  color: '#fff',
+                  fontSize: 10, fontWeight: 800,
+                  textTransform: 'uppercase', letterSpacing: '0.12em',
+                  padding: '4px 10px', borderRadius: 5,
+                }}>
+                  Pressträff
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#fff', fontWeight: 500, lineHeight: 1.4, marginBottom: item.summary ? 7 : 0 }}>
-                  {item.title}
+                <div style={{
+                  position: 'absolute', bottom: 16, left: 16, right: 16,
+                }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: '#fff', lineHeight: 1.3, textShadow: '0 1px 6px rgba(0,0,0,0.6)' }}>
+                    {item.title}
+                  </div>
                 </div>
-                {item.summary && (
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.55 }}>
-                    {item.summary}
-                  </div>
-                )}
-                {item.url && (
-                  <div style={{ fontSize: 11, color: '#9b7dff', marginTop: 8, fontWeight: 600 }}>
-                    Se pressträffen →
-                  </div>
-                )}
               </div>
+            )}
+            {/* Body */}
+            <div style={{ padding: '14px 18px 16px' }}>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>
+                {formatDateShort(item.date)}
+              </div>
+              {item.summary && (
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.65 }}>
+                  {item.summary}
+                </div>
+              )}
+              {item.url && (
+                <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 12, color: '#9b7dff', fontWeight: 700 }}>Se pressträffen</span>
+                  <span style={{ fontSize: 14, color: '#9b7dff' }}>→</span>
+                </div>
+              )}
             </div>
-          )
-          return item.url
-            ? <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>{inner}</a>
-            : <div key={item.id}>{inner}</div>
-        })}
-      </div>
+          </div>
+        )
+        return item.url
+          ? <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>{inner}</a>
+          : <div key={item.id}>{inner}</div>
+      })}
     </div>
   )
 }
@@ -1513,55 +1532,71 @@ function LightFeedRow({ debate, onClick }: { debate: Debate; onClick: () => void
 
 function LightPresskonferensSection({ items }: { items: Presskonferens[] }) {
   return (
-    <div style={{ padding: '0 16px 8px' }}>
-      <div style={{ padding: '14px 4px 8px', fontSize: 10, fontWeight: 700, color: '#6a4aaa', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-        Pressträffar
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {items.map(item => {
-          const inner = (
-            <div style={{
-              background: '#f0ecfb',
-              border: '1px solid #d8ccf0',
-              borderRadius: 10,
-              overflow: 'hidden',
-              display: 'flex',
-              cursor: item.url ? 'pointer' : 'default',
-            }}>
-              {item.image_url && (
+    <div style={{ padding: '0 16px 16px' }}>
+      {items.map(item => {
+        const inner = (
+          <div style={{
+            borderRadius: 14,
+            overflow: 'hidden',
+            cursor: item.url ? 'pointer' : 'default',
+            background: '#fff',
+            border: '1px solid #e0dbd3',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+          }}>
+            {item.image_url && (
+              <div style={{
+                width: '100%',
+                height: 200,
+                backgroundImage: `url(${item.image_url})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center top',
+                position: 'relative',
+              }}>
                 <div style={{
-                  width: 120, minWidth: 120, height: 100,
-                  backgroundImage: `url(${item.image_url})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  flexShrink: 0,
+                  position: 'absolute', inset: 0,
+                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(20,10,50,0.75) 100%)',
                 }} />
-              )}
-              <div style={{ padding: '14px 18px', flex: 1 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6a4aaa', marginBottom: 5 }}>
-                  Pressträff · {formatDateShort(item.date)}
+                <div style={{
+                  position: 'absolute', top: 14, left: 16,
+                  background: '#6a4aaa',
+                  color: '#fff',
+                  fontSize: 10, fontWeight: 800,
+                  textTransform: 'uppercase', letterSpacing: '0.12em',
+                  padding: '4px 10px', borderRadius: 5,
+                }}>
+                  Pressträff
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: '#1a1535', fontWeight: 500, lineHeight: 1.4, marginBottom: item.summary ? 7 : 0 }}>
-                  {item.title}
+                <div style={{
+                  position: 'absolute', bottom: 16, left: 16, right: 16,
+                }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: '#fff', lineHeight: 1.3, textShadow: '0 1px 6px rgba(0,0,0,0.5)' }}>
+                    {item.title}
+                  </div>
                 </div>
-                {item.summary && (
-                  <div style={{ fontSize: 13, color: '#5a5070', lineHeight: 1.55 }}>
-                    {item.summary}
-                  </div>
-                )}
-                {item.url && (
-                  <div style={{ fontSize: 11, color: '#6a4aaa', marginTop: 8, fontWeight: 600 }}>
-                    Se pressträffen →
-                  </div>
-                )}
               </div>
+            )}
+            <div style={{ padding: '14px 18px 16px' }}>
+              <div style={{ fontSize: 11, color: '#999', marginBottom: 8 }}>
+                {formatDateShort(item.date)}
+              </div>
+              {item.summary && (
+                <div style={{ fontSize: 13, color: '#444', lineHeight: 1.65 }}>
+                  {item.summary}
+                </div>
+              )}
+              {item.url && (
+                <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 12, color: '#6a4aaa', fontWeight: 700 }}>Se pressträffen</span>
+                  <span style={{ fontSize: 14, color: '#6a4aaa' }}>→</span>
+                </div>
+              )}
             </div>
-          )
-          return item.url
-            ? <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>{inner}</a>
-            : <div key={item.id}>{inner}</div>
-        })}
-      </div>
+          </div>
+        )
+        return item.url
+          ? <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>{inner}</a>
+          : <div key={item.id}>{inner}</div>
+      })}
     </div>
   )
 }
